@@ -1,0 +1,23 @@
+[
+  { "id": 1, "front": "O que é um algoritmo?", "back": "Uma sequência finita de passos bem definidos para resolver um problema ou realizar uma tarefa." },
+  { "id": 2, "front": "O que significa Notação Big O?", "back": "Uma maneira de descrever a complexidade temporal ou espacial de um algoritmo em termos de crescimento assintótico." },
+  { "id": 3, "front": "O que é uma estrutura de dados?", "back": "Uma forma organizada de armazenar e manipular dados (ex.: arrays, listas, filas, pilhas, árvores, grafos)." },
+  { "id": 4, "front": "O que é uma lista ligada (linked list)?", "back": "Uma coleção linear de nós onde cada nó aponta para o próximo, permitindo inserções/remoções eficientes em posições arbitrárias." },
+  { "id": 5, "front": "O que é uma árvore (tree)?", "back": "Uma estrutura hierárquica composta por nós com relações pai-filho; uma árvore binária tem no máximo dois filhos por nó." },
+  { "id": 6, "front": "O que é um grafo (graph)?", "back": "Um conjunto de vértices e arestas que conectam pares de vértices, usado para modelar relacionamentos e redes." },
+  { "id": 7, "front": "O que é uma tabela de hash (hash table)?", "back": "Uma estrutura que associa chaves a valores usando uma função de hash para permitir buscas, inserções e remoções rápidas." },
+  { "id": 8, "front": "Quais são algoritmos de ordenação comuns?", "back": "Exemplos: Bubble Sort, Insertion Sort, Merge Sort, Quick Sort e Heap Sort — variam em complexidade e uso prático." },
+  { "id": 9, "front": "O que é busca binária?", "back": "Um algoritmo que busca um elemento em um array ordenado dividindo repetidamente o espaço de busca pela metade; complexo em O(log n)." },
+  { "id": 10, "front": "O que é programação dinâmica?", "back": "Uma técnica para resolver problemas dividindo-os em subproblemas e salvando resultados (memoização) para evitar recomputação." },
+  { "id": 11, "front": "O que é recursão?", "back": "Quando uma função se chama a si mesma para resolver subproblemas; deve ter uma condição base para terminar." },
+  { "id": 12, "front": "O que é um banco de dados relacional?", "back": "Um sistema que organiza dados em tabelas relacionadas, usando SQL para consulta e suporte a transações ACID." },
+  { "id": 13, "front": "O que é NoSQL?", "back": "Um conjunto de soluções de banco de dados não relacionais (documento, chave-valor, coluna, grafo) que priorizam escalabilidade e flexibilidade de esquema." },
+  { "id": 14, "front": "O que é um sistema operacional (SO)?", "back": "Software que gerencia recursos do computador (processos, memória, dispositivos) e fornece abstrações para aplicações." },
+  { "id": 15, "front": "Qual a diferença entre concorrência e paralelismo?", "back": "Concorrência é lidar com múltiplas tarefas potencialmente sobrepostas; paralelismo é executar tarefas simultaneamente em múltiplos núcleos/processadores." },
+  { "id": 16, "front": "O que é gerenciamento de memória?", "back": "Técnicas para alocar, usar e liberar memória (stack vs heap) e mecanismos como coleta de lixo (GC) em linguagens gerenciadas." },
+  { "id": 17, "front": "Quais são os fundamentos de redes (networking)?", "back": "Modelos e protocolos como OSI/TCP-IP, endereçamento IP, roteamento, e camadas que separam responsabilidades de comunicação." },
+  { "id": 18, "front": "O que é HTTP?", "back": "Um protocolo de aplicação para comunicação cliente-servidor na web baseado em requisições e respostas (GET, POST, etc.)." },
+  { "id": 19, "front": "O que é criptografia vs hashing?", "back": "Criptografia é reversível com chave para confidencialidade; hashing é função unidirecional para verificar integridade ou armazenar senhas (com salt)." },
+  { "id": 20, "front": "O que é arquitetura de computador?", "back": "O desenho e organização dos componentes de um computador (CPU, memória, barramentos, cache) e como executam instruções." },
+  { "id": 21, "front": "O que é pensamento computacional?", "back": "O pensamento computacional é uma habilidade cognitiva para resolver problemas complexos de forma eficiente e estruturada, decompondo-os em partes menores, identificando padrões, abstraindo detalhes irrelevantes e criando algoritmos." }
+]
