@@ -1,0 +1,14 @@
+{
+  "name": "flashcard",
+  "dockerComposeFile": ["../docker-compose.yaml"],
+  "service": "app",
+  "workspaceFolder": "/home/node/app",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+    }
+  }
+}
