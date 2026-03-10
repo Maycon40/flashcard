@@ -3,13 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run services:wait:database && npm run migrations:up && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "test": "concurrently -n next,jest  -k -s command-jest \"next dev --webpack\" \"jest --runInBand\"",
+    "test:watch": "jest --watchAll --runInBand --verbose",
+    "services:wait:database": "node infra/scripts/wait-for-postgres.js",
+    "migrations:up": "node-pg-migrate -m infra/migrations --envPath .env.development up",
+    "migrations:up:dry": "node-pg-migrate -m infra/migrations --envPath .env.development --dry-run up",
+    "migrations:create": "node-pg-migrate --migrations-dir infra/migrations create",
+    "lint:check": "npm run lint:eslint:check && npm run lint:prettier:check",
+    "lint:eslint:check": "eslint .",
+    "lint:prettier:check": "prettier --check .",
+    "lint:prettier:fix": "prettier --write .",
+    "prepare": "husky",
+    "commit": "cz"
   },
   "dependencies": {
+    "dotenv": "^17.3.1",
+    "dotenv-expand": "^12.0.3",
     "next": "16.1.6",
+    "node-pg-migrate": "^8.0.4",
+    "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "swr": "^2.4.1"
