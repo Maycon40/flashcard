@@ -1,11 +1,23 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+// eslint.config.js
 
-const eslintConfig = defineConfig([
+import { defineConfig, globalIgnores } from "eslint/config";
+import js from "@eslint/js";
+import prettierConfig from "eslint-config-prettier";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import jest from "eslint-plugin-jest";
+
+export default defineConfig([
   ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
+  js.configs.recommended,
+  prettierConfig,
+  {
+    files: ["tests/**"],
+    ...jest.configs["flat/recommended"],
+    rules: {
+      ...jest.configs["flat/recommended"].rules,
+      "jest/prefer-expect-assertions": "off",
+    },
+  },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
@@ -14,5 +26,3 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
 ]);
-
-export default eslintConfig;
