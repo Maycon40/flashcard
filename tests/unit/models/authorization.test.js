@@ -1,7 +1,7 @@
-import { InternalServerError } from "infra/errors";
-import authorization from "models/authorization";
+import { InternalServerError } from "@/infra/errors";
+import authorization from "@/models/authorization.ts";
 
-describe("models/authorization.js", () => {
+describe("@/models/authorization", () => {
   describe(".can()", () => {
     test("Without user", () => {
       expect(authorization.can).toThrow(InternalServerError);

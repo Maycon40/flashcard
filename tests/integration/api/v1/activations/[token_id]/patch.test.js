@@ -1,8 +1,8 @@
 import { version as uuidVersion } from "uuid";
 
 import orchestrator from "tests/orchestrator";
-import user from "models/user";
-import activation from "models/activation";
+import user from "@/models/user";
+import activation from "@/models/activation";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
