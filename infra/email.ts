@@ -1,15 +1,18 @@
 import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { ServiceError } from "./errors";
 
-const transporter = nodemailer.createTransport({
+const transporterConfig: SMTPTransport.Options = {
   host: process.env.EMAIL_SMTP_HOST,
-  port: process.env.EMAIL_SMTP_PORT,
+  port: Number(process.env.EMAIL_SMTP_PORT),
   auth: {
     user: process.env.EMAIL_SMTP_USER,
     pass: process.env.EMAIL_SMTP_PASSWORD,
   },
   secure: process.env.NODE_ENV === "production",
-});
+};
+
+const transporter = nodemailer.createTransport(transporterConfig);
 
 async function send(mailOptions: any) {
   try {
