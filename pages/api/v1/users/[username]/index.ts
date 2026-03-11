@@ -18,7 +18,7 @@ export default router.handler(controller.errorHandlers);
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context?.user;
   const username = request.query.username;
-  const userFound = await user.findOneByUsername(username);
+  const userFound = await user.findOneByUsername(username as string);
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,
@@ -37,7 +37,7 @@ async function patchHandler(
   const userInputValues = request.body;
 
   const currentUser = request.context?.user;
-  const targetUser = await user.findOneByUsername(username);
+  const targetUser = await user.findOneByUsername(username as string);
 
   if (!authorization.can(currentUser, "update:user", targetUser)) {
     throw new ForbiddenError({
@@ -47,7 +47,10 @@ async function patchHandler(
     });
   }
 
-  const updatedUser = await user.updateByUsername(username, userInputValues);
+  const updatedUser = await user.updateByUsername(
+    username as string,
+    userInputValues,
+  );
 
   const secureOutputValues = authorization.filterOutput(
     currentUser,
