@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 
-async function hash(password) {
+async function hash(password: string) {
   const rounds = getNumberOfRounds();
   const pepper = process.env.PASSWORD_PEPPER;
 
@@ -17,7 +17,7 @@ function getNumberOfRounds() {
   return rounds;
 }
 
-async function compare(providedPassword, storedPassword) {
+async function compare(providedPassword: string, storedPassword: string) {
   const pepper = process.env.PASSWORD_PEPPER;
 
   return await bcryptjs.compare(providedPassword + pepper, storedPassword);

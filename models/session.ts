@@ -1,10 +1,10 @@
-import crypto from "node:crypto";
-import database from "infra/database.js";
-import { UnauthorizedError } from "infra/errors";
+import crypto from "crypto";
+import database from "@/infra/database";
+import { UnauthorizedError } from "@/infra/errors";
 
 const EXPIRATION_IN_MILLISECONDS = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
-async function create(userId) {
+async function create(userId: string) {
   const token = crypto.randomBytes(48).toString("hex");
 
   const expiresAt = getExpirationDate();
@@ -13,7 +13,11 @@ async function create(userId) {
 
   return newSession;
 
-  async function runInsertQuery(token, userId, expiresAt) {
+  async function runInsertQuery(
+    token: string,
+    userId: string,
+    expiresAt: Date,
+  ) {
     const results = await database.query({
       text: `
         INSERT INTO
@@ -36,12 +40,12 @@ function getExpirationDate() {
   return expiresAt;
 }
 
-async function findOneValidByToken(sessionToken) {
+async function findOneValidByToken(sessionToken: string) {
   const sessionObject = await runSelectQuery(sessionToken);
 
   return sessionObject;
 
-  async function runSelectQuery(sessionToken) {
+  async function runSelectQuery(sessionToken: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -69,14 +73,14 @@ async function findOneValidByToken(sessionToken) {
   }
 }
 
-async function renew(sessionId) {
+async function renew(sessionId: string) {
   const expiresAt = getExpirationDate();
 
   const renewdSession = await runUpdateQuery(sessionId, expiresAt);
 
   return renewdSession;
 
-  async function runUpdateQuery(sessionId, expiresAt) {
+  async function runUpdateQuery(sessionId: string, expiresAt: Date) {
     const results = await database.query({
       text: `
         UPDATE
@@ -97,12 +101,12 @@ async function renew(sessionId) {
   }
 }
 
-async function expireById(sessionId) {
+async function expireById(sessionId: string) {
   const expiredSession = await runUpdateQuery(sessionId);
 
   return expiredSession;
 
-  async function runUpdateQuery(sessionId) {
+  async function runUpdateQuery(sessionId: string) {
     const results = await database.query({
       text: `
       UPDATE

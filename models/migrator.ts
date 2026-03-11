@@ -1,7 +1,7 @@
-import migrationRunner from "node-pg-migrate";
+import migrationRunner, { RunnerOption } from "node-pg-migrate";
 import { join } from "node:path";
-import database from "infra/database";
-import { ServiceError } from "infra/errors";
+import database from "@/infra/database";
+import { ServiceError } from "@/infra/errors";
 
 const defaultMigrationOptions = {
   dryRun: true,
@@ -20,13 +20,13 @@ async function listPendingMigrations() {
     const pendingMigrations = await migrationRunner({
       ...defaultMigrationOptions,
       dbClient,
-    });
+    } as RunnerOption);
 
     return pendingMigrations;
   } catch (error) {
     const migrateObjectError = new ServiceError({
       message: "Erro ao listar as migrações.",
-      cause: error,
+      cause: error as Error,
     });
 
     throw migrateObjectError;
@@ -45,13 +45,13 @@ async function runPendingMigrations() {
       ...defaultMigrationOptions,
       dbClient,
       dryRun: false,
-    });
+    } as RunnerOption);
 
     return pendingMigrations;
   } catch (error) {
     const migrateObjectError = new ServiceError({
       message: "Erro ao rodar as migrações.",
-      cause: error,
+      cause: error as Error,
     });
 
     throw migrateObjectError;

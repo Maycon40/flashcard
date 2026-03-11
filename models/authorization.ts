@@ -1,4 +1,5 @@
-import { InternalServerError } from "infra/errors";
+import { InternalServerError } from "@/infra/errors";
+import { Resource, User } from "@/types/types";
 
 const availableFeatures = [
   // USER
@@ -24,13 +25,13 @@ const availableFeatures = [
   "read:status:all",
 ];
 
-function can(userObject, requiredFeature, resource) {
+function can(userObject: User, requiredFeature: string, resource?: Resource) {
   validateUser(userObject);
   validateFeature(requiredFeature);
 
   let authorized = false;
 
-  if (userObject.features.includes(requiredFeature)) {
+  if (userObject.features?.includes(requiredFeature)) {
     authorized = true;
   }
 
@@ -48,7 +49,7 @@ function can(userObject, requiredFeature, resource) {
   return authorized;
 }
 
-function filterOutput(userObject, feature, resouce) {
+function filterOutput(userObject: User, feature: string, resouce: any) {
   validateUser(userObject);
   validateFeature(feature);
   validateResource(resouce);
@@ -89,7 +90,7 @@ function filterOutput(userObject, feature, resouce) {
       updated_at: resouce.updated_at,
     };
   } else if (feature === "read:migration") {
-    return resouce.map((migration) => {
+    return resouce.map((migration: any) => {
       return {
         name: migration.name,
         path: migration.path,
@@ -97,7 +98,7 @@ function filterOutput(userObject, feature, resouce) {
       };
     });
   } else if (feature === "read:status") {
-    const result = {
+    const result: any = {
       updated_at: resouce.updated_at,
       dependencies: {
         database: {
@@ -116,7 +117,7 @@ function filterOutput(userObject, feature, resouce) {
   }
 }
 
-function validateUser(userObject) {
+function validateUser(userObject: User) {
   if (!userObject || !userObject.features) {
     throw new InternalServerError({
       cause: "É necessário fornecer um user no model authorization.",
@@ -124,7 +125,7 @@ function validateUser(userObject) {
   }
 }
 
-function validateFeature(feature) {
+function validateFeature(feature: string) {
   if (!feature || !availableFeatures.includes(feature)) {
     throw new InternalServerError({
       cause:
@@ -133,7 +134,7 @@ function validateFeature(feature) {
   }
 }
 
-function validateResource(resource) {
+function validateResource(resource: any) {
   if (!resource) {
     throw new InternalServerError({
       cause: "É necessário fornecer um resource no model authorization.",

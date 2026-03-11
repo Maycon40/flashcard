@@ -1,19 +1,20 @@
-import database from "infra/database";
-import email from "infra/email";
-import { ForbiddenError, NotFoundError } from "infra/errors";
-import user from "models/user";
+import database from "@/infra/database";
+import email from "@/infra/email";
+import { ForbiddenError, NotFoundError } from "@/infra/errors";
+import user from "@/models/user";
 import authorization from "./authorization";
+import { ActivationToken, User } from "@/types/types";
 
 const EXPIRATION_IN_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
 
-async function create(userId) {
+async function create(userId: string) {
   const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
 
   const token = await runInsertQuery(userId, expiresAt);
 
   return token;
 
-  async function runInsertQuery(userId, expiresAt) {
+  async function runInsertQuery(userId: string, expiresAt: Date) {
     const results = await database.query({
       text: `
         INSERT INTO
@@ -30,14 +31,14 @@ async function create(userId) {
   }
 }
 
-async function markTokenAsUsed(tokenId) {
+async function markTokenAsUsed(tokenId: string) {
   const activatedToken = await runUpdateQuery(tokenId);
 
   await activateUserByUserId(activatedToken.user_id);
 
   return activatedToken;
 
-  async function runUpdateQuery(tokenId) {
+  async function runUpdateQuery(tokenId: string) {
     const results = await database.query({
       text: `
         UPDATE
@@ -57,7 +58,7 @@ async function markTokenAsUsed(tokenId) {
     return results.rows[0];
   }
 
-  async function activateUserByUserId(userId) {
+  async function activateUserByUserId(userId: string) {
     const userToActivate = await user.findOneById(userId);
 
     if (!authorization.can(userToActivate, "read:activation_token")) {
@@ -77,12 +78,12 @@ async function markTokenAsUsed(tokenId) {
   }
 }
 
-async function findOneValidById(tokenId) {
+async function findOneValidById(tokenId: string) {
   const token = await runSelectQuery(tokenId);
 
   return token;
 
-  async function runSelectQuery(tokenId) {
+  async function runSelectQuery(tokenId: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -110,7 +111,11 @@ async function findOneValidById(tokenId) {
   }
 }
 
-async function sendEmailToUser(user, activationToken, origin) {
+async function sendEmailToUser(
+  user: User,
+  activationToken: ActivationToken,
+  origin: string,
+) {
   await email.send({
     from: "Contato <contato@gmail.com>",
     to: user.email,

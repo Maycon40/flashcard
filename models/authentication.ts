@@ -2,11 +2,11 @@ import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from "infra/errors";
-import password from "models/password";
-import user from "models/user";
+} from "@/infra/errors";
+import password from "@/models/password";
+import user from "@/models/user";
 
-async function validate(email, providedPassword) {
+async function validate(email: string, providedPassword: string) {
   try {
     const storedUser = await findUserByEmail(email);
     await validatePassword(providedPassword, storedUser.password);
@@ -24,7 +24,7 @@ async function validate(email, providedPassword) {
     throw error;
   }
 
-  async function findUserByEmail(email) {
+  async function findUserByEmail(email: string) {
     try {
       const storedUser = await user.findOneByEmail(email);
 
@@ -41,7 +41,10 @@ async function validate(email, providedPassword) {
     }
   }
 
-  async function validatePassword(providedPassword, storedPassword) {
+  async function validatePassword(
+    providedPassword: string,
+    storedPassword: string,
+  ) {
     const correctPasswordMatch = await password.compare(
       providedPassword,
       storedPassword,

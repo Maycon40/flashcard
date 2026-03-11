@@ -1,10 +1,11 @@
-import database from "infra/database.js";
-import password from "models/password.js";
-import { NotFoundError, ValidationError } from "infra/errors";
+import database from "@/infra/database";
+import password from "@/models/password";
+import { NotFoundError, ValidationError } from "@/infra/errors";
+import { User } from "@/types/types";
 
-async function create(userInputValues) {
-  await validateUniqueUsername(userInputValues.username);
-  await validateUniqueEmail(userInputValues.email);
+async function create(userInputValues: User) {
+  await validateUniqueUsername(userInputValues.username || "");
+  await validateUniqueEmail(userInputValues.email || "");
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
 
@@ -12,7 +13,7 @@ async function create(userInputValues) {
 
   return newUser;
 
-  async function runInsertQuery(userInputValues) {
+  async function runInsertQuery(userInputValues: User) {
     const { username, email, password, features } = userInputValues;
 
     const results = await database.query({
@@ -30,27 +31,27 @@ async function create(userInputValues) {
     return results.rows[0];
   }
 
-  function injectDefaultFeaturesInObject(userInputValues) {
+  function injectDefaultFeaturesInObject(userInputValues: User) {
     userInputValues.features = ["read:activation_token"];
   }
 }
 
-async function updateByUsername(username, userInputValues) {
+async function updateByUsername(username: string, userInputValues: User) {
   const currentUser = await findOneByUsername(username);
 
   if (
     "username" in userInputValues &&
-    userInputValues.username.toLowerCase() !==
+    userInputValues.username?.toLowerCase() !==
       currentUser.username.toLowerCase()
   ) {
-    await validateUniqueUsername(userInputValues.username);
+    await validateUniqueUsername(userInputValues.username || "");
   }
 
   if (
     "email" in userInputValues &&
-    userInputValues.email.toLowerCase() !== currentUser.email.toLowerCase()
+    userInputValues.email?.toLowerCase() !== currentUser.email.toLowerCase()
   ) {
-    await validateUniqueEmail(userInputValues.email);
+    await validateUniqueEmail(userInputValues.email || "");
   }
 
   if ("password" in userInputValues) {
@@ -66,7 +67,7 @@ async function updateByUsername(username, userInputValues) {
 
   return updatedUser;
 
-  async function runUpdateQuery(userWithNewValues) {
+  async function runUpdateQuery(userWithNewValues: User) {
     const result = await database.query({
       text: `
         UPDATE
@@ -95,7 +96,7 @@ async function updateByUsername(username, userInputValues) {
   }
 }
 
-async function validateUniqueUsername(username) {
+async function validateUniqueUsername(username: string) {
   const results = await database.query({
     text: `
     SELECT
@@ -108,7 +109,7 @@ async function validateUniqueUsername(username) {
     values: [username],
   });
 
-  if (results.rowCount > 0) {
+  if (results.rowCount && results.rowCount > 0) {
     throw new ValidationError({
       message: "O nome de usuário já está sendo utilizado.",
       action: "Utilize outro nome de usuário.",
@@ -116,7 +117,7 @@ async function validateUniqueUsername(username) {
   }
 }
 
-async function validateUniqueEmail(email) {
+async function validateUniqueEmail(email: string) {
   const results = await database.query({
     text: `
     SELECT
@@ -129,7 +130,7 @@ async function validateUniqueEmail(email) {
     values: [email],
   });
 
-  if (results.rowCount > 0) {
+  if (results.rowCount && results.rowCount > 0) {
     throw new ValidationError({
       message: "O email já está sendo utilizado.",
       action: "Utilize outro email.",
@@ -137,17 +138,17 @@ async function validateUniqueEmail(email) {
   }
 }
 
-async function hashPasswordInObject(userInputValues) {
-  const hashedPassword = await password.hash(userInputValues.password);
+async function hashPasswordInObject(userInputValues: User) {
+  const hashedPassword = await password.hash(userInputValues.password || "");
   userInputValues.password = hashedPassword;
 }
 
-async function findOneById(userId) {
+async function findOneById(userId: string) {
   const userFound = await runSelectQuery(userId);
 
   return userFound;
 
-  async function runSelectQuery(userId) {
+  async function runSelectQuery(userId: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -173,12 +174,12 @@ async function findOneById(userId) {
   }
 }
 
-async function findOneByUsername(username) {
+async function findOneByUsername(username: string) {
   const userFound = await runSelectQuery(username);
 
   return userFound;
 
-  async function runSelectQuery(username) {
+  async function runSelectQuery(username: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -204,12 +205,12 @@ async function findOneByUsername(username) {
   }
 }
 
-async function findOneByEmail(email) {
+async function findOneByEmail(email: string) {
   const userFound = await runSelectQuery(email);
 
   return userFound;
 
-  async function runSelectQuery(email) {
+  async function runSelectQuery(email: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -235,12 +236,12 @@ async function findOneByEmail(email) {
   }
 }
 
-async function setFeatures(userId, features) {
+async function setFeatures(userId: string, features: User["features"]) {
   const updatedUser = await runUpdateQuery(userId, features);
 
   return updatedUser;
 
-  async function runUpdateQuery(userId, features) {
+  async function runUpdateQuery(userId: string, features: User["features"]) {
     const results = await database.query({
       text: `
           UPDATE
@@ -261,12 +262,12 @@ async function setFeatures(userId, features) {
   }
 }
 
-async function addFeatures(userId, features) {
+async function addFeatures(userId: string, features: User["features"]) {
   const updatedUser = await runUpdateQuery(userId, features);
 
   return updatedUser;
 
-  async function runUpdateQuery(userId, features) {
+  async function runUpdateQuery(userId: string, features: User["features"]) {
     const results = await database.query({
       text: `
           UPDATE
