@@ -6,6 +6,8 @@ import migrator from "models/migrator";
 import session from "models/session";
 import user from "models/user";
 import activation from "models/activation";
+import deck from "models/deck";
+import card from "models/card";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -59,6 +61,25 @@ async function createUser(userObject = {}) {
     email: userObject.email || faker.internet.email(),
     password: userObject.password || "senha123",
   });
+}
+
+async function createDeck(name, userId) {
+  return await deck.create(
+    {
+      name: name || faker.person.firstName(),
+    },
+    userId,
+  );
+}
+
+async function createCard(name, description, deckId) {
+  return await card.create(
+    {
+      name: name || faker.person.firstName(),
+      description: description || faker.person.firstName(),
+    },
+    deckId,
+  );
 }
 
 async function createActivation(userObject) {
@@ -130,6 +151,8 @@ const orchestrator = {
   clearDatabase,
   runPendingMigrations,
   createUser,
+  createDeck,
+  createCard,
   createActivation,
   activateUser,
   createSession,
