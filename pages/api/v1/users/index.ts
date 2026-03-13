@@ -16,7 +16,7 @@ export default router.handler(controller.errorHandlers);
 async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToPost = request.context?.user;
 
-  const protocol = request.headers["x-forwarded-proto"] ?? "http";
+  const protocol = request.headers["x-forwarded-proto"] ?? "https";
   const host = request.headers.host;
   const origin = `${protocol}://${host}`;
 

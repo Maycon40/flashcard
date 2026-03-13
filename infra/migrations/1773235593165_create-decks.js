@@ -9,7 +9,6 @@ exports.up = (pgm) => {
     name: {
       type: "varchar(500)",
       notNull: true,
-      unique: true,
     },
 
     user_id: {

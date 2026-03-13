@@ -1,139 +1,146 @@
 "use client";
 
-import { useState } from "react";
-import useSWR from "swr";
+import Link from "next/link";
 
-type Flashcard = {
-  id: number;
-  front: string;
-  back: string;
-};
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+import Layout from "@/components/Layout";
 
 export default function Home() {
-  const {
-    data: cards = [],
-    error,
-    isLoading,
-  } = useSWR<Flashcard[]>("/flashcards.json", fetcher);
-  const [index, setIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const current = cards && cards.length > 0 ? cards[index] : undefined;
-
-  function nextCard() {
-    setIsFlipped(false);
-    setIndex((i) => (cards.length === 0 ? 0 : (i + 1) % cards.length));
-  }
-
-  function handleEvaluation() {
-    // Sem lógica de scheduling por enquanto — apenas avança para o próximo cartão
-    nextCard();
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black p-8">
-      <main className="w-full max-w-3xl">
-        <header className="mb-8 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Flashcards
-          </h1>
+    <Layout>
+      <div className="mx-auto max-w-5xl px-6 py-12">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+              Aprenda de verdade com flashcards
+            </h2>
+            <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
+              Use a repetição ativa e a revisão espaçada para memorizar mais
+              rápido e com menos esforço. Simples, eficiente e baseado em
+              evidências.
+            </p>
 
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
-              {cards.length > 0 ? `${index + 1} / ${cards.length}` : "—"}
+            <div className="flex gap-3">
+              <Link
+                href="/decks"
+                className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
+              >
+                Ver baralhos
+              </Link>
+              <Link
+                href="/decks"
+                className="inline-flex items-center px-5 py-3 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100"
+              >
+                Criar baralho
+              </Link>
             </div>
           </div>
-        </header>
 
-        <section className="flex flex-col items-center gap-6">
-          {isLoading ? (
-            <div className="w-full">
-              <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white p-6 shadow-lg transition-all duration-300 dark:bg-zinc-900">
-                <div className="flex flex-col gap-4">
-                  <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
-
-                  <div className="max-h-[60vh] overflow-hidden rounded-md bg-zinc-100 p-4 text-lg font-medium text-zinc-900 dark:bg-zinc-800">
-                    <div className="h-22 w-full rounded bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-36 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
-                    <div className="ml-auto h-4 w-48 rounded bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="rounded-2xl bg-white p-6 text-center shadow-sm dark:bg-zinc-900">
-              <p className="text-red-600">Erro ao carregar flashcards.</p>
-            </div>
-          ) : current ? (
-            <div className="w-full">
-              <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white p-6 shadow-lg transition-all duration-300 dark:bg-zinc-900">
-                <div className="flex flex-col gap-4">
-                  <div className="text-zinc-400 text-sm">Cartão</div>
-
-                  <div className="max-h-[60vh] overflow-auto rounded-md bg-transparent p-4 text-lg font-medium text-zinc-900 dark:text-zinc-50">
-                    {!isFlipped ? (
-                      <div className="whitespace-pre-wrap">{current.front}</div>
-                    ) : (
-                      <div className="whitespace-pre-wrap">{current.back}</div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setIsFlipped((f) => !f)}
-                      className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-200 cursor-pointer"
-                    >
-                      {isFlipped ? "Mostrar frente" : "Virar cartão"}
-                    </button>
-
-                    <div className="ml-auto text-sm text-zinc-500">
-                      Clique no botão de avaliação para avançar
-                    </div>
+          <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
+            <h3 className="text-xl font-semibold mb-4">
+              Por que flashcards funcionam?
+            </h3>
+            <ul className="space-y-4 text-zinc-700 dark:text-zinc-300">
+              <li className="flex gap-3">
+                <svg
+                  className="h-6 w-6 text-indigo-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <div>
+                  <strong>Recuperação ativa</strong>
+                  <div className="text-sm text-zinc-500">
+                    Lembrar ativamente fortalece memórias mais que releituras.
                   </div>
                 </div>
-              </div>
+              </li>
 
-              {/* Evaluation controls: aparecem quando o cartão está virado */}
-              {isFlipped && (
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  <button
-                    onClick={handleEvaluation}
-                    className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 transition-colors hover:bg-red-100 cursor-pointer"
-                  >
-                    Errou
-                  </button>
-                  <button
-                    onClick={handleEvaluation}
-                    className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-700 transition-colors hover:bg-yellow-100 cursor-pointer"
-                  >
-                    Fácil
-                  </button>
-                  <button
-                    onClick={handleEvaluation}
-                    className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700 transition-colors hover:bg-green-100 cursor-pointer"
-                  >
-                    Muito fácil
-                  </button>
+              <li className="flex gap-3">
+                <svg
+                  className="h-6 w-6 text-indigo-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4l3 3"
+                  />
+                </svg>
+                <div>
+                  <strong>Repetição espaçada</strong>
+                  <div className="text-sm text-zinc-500">
+                    Revisões em intervalos aumentam retenção a longo prazo.
+                  </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="rounded-2xl bg-white p-8 text-center shadow-lg dark:bg-zinc-900">
-              <p className="text-zinc-600 dark:text-zinc-400">
-                Nenhum flashcard encontrado.
-              </p>
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
-                Adicione flashcards em <code>/public/flashcards.json</code>
-              </p>
-            </div>
-          )}
+              </li>
+
+              <li className="flex gap-3">
+                <svg
+                  className="h-6 w-6 text-indigo-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 7h18M3 12h18M3 17h18"
+                  />
+                </svg>
+                <div>
+                  <strong>Foco no essencial</strong>
+                  <div className="text-sm text-zinc-500">
+                    Fragmentar o conteúdo em perguntas objetivas facilita a
+                    revisão.
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
         </section>
-      </main>
-    </div>
+
+        <section className="mt-12 rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-md">
+          <h3 className="text-2xl font-semibold mb-4">Benefícios</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-zinc-700 dark:text-zinc-300">
+            <div className="space-y-2">
+              <h4 className="font-semibold">Aprendizado ativo</h4>
+              <p className="text-sm">
+                Envolva-se na recuperação de informações — é a forma mais
+                eficiente de consolidar conhecimento.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-semibold">Economia de tempo</h4>
+              <p className="text-sm">
+                Revisões curtas e regulares substituem horas de estudo passivo.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-semibold">Personalizável</h4>
+              <p className="text-sm">
+                Crie decks para qualquer assunto, ajuste a dificuldade e
+                acompanhe seu progresso.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </Layout>
   );
 }

@@ -19,6 +19,7 @@ exports.up = (pgm) => {
     date_to_review: {
       type: "timestamptz",
       notNull: true,
+      default: pgm.func("timezone('utc', now())"),
     },
 
     deck_id: {
