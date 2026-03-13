@@ -88,6 +88,14 @@ describe("PATCH /api/v1/sessions", () => {
         "create:session",
         "read:session",
         "update:user",
+        "read:card",
+        "create:card",
+        "update:card",
+        "delete:card",
+        "read:deck",
+        "create:deck",
+        "update:deck",
+        "delete:deck",
       ]);
     });
 

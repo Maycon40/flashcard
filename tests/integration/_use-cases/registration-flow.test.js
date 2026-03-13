@@ -109,6 +109,14 @@ describe("Use case: Registration Flow (all sucessful)", () => {
       "create:session",
       "read:session",
       "update:user",
+      "read:card",
+      "create:card",
+      "update:card",
+      "delete:card",
+      "read:deck",
+      "create:deck",
+      "update:deck",
+      "delete:deck",
     ]);
   });
 
@@ -149,7 +157,19 @@ describe("Use case: Registration Flow (all sucessful)", () => {
       id: responseBody.id,
       username: createUserResponseBody.username,
       email: responseBody.email,
-      features: ["create:session", "read:session", "update:user"],
+      features: [
+        "create:session",
+        "read:session",
+        "update:user",
+        "read:card",
+        "create:card",
+        "update:card",
+        "delete:card",
+        "read:deck",
+        "create:deck",
+        "update:deck",
+        "delete:deck",
+      ],
       created_at: responseBody.created_at,
       updated_at: responseBody.updated_at,
     });
