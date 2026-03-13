@@ -70,7 +70,7 @@ describe("Use case: Registration Flow (all sucessful)", () => {
 
     expect(lastEmail).toEqual({
       id: 1,
-      sender: "<contato@gmail.com>",
+      sender: "<contato@contato.com>",
       recipients: ["<RegistrationFlow@gmail.com>"],
       subject: "Ative o seu cadastro",
       text: lastEmail.text,
