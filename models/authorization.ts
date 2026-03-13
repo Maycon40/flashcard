@@ -23,6 +23,20 @@ const availableFeatures = [
   // STATUS
   "read:status",
   "read:status:all",
+
+  // CARD
+  "read:card",
+  "read:card:all",
+  "create:card",
+  "update:card",
+  "delete:card",
+
+  // DECK
+  "read:deck",
+  "read:deck:all",
+  "create:deck",
+  "update:deck",
+  "delete:deck",
 ];
 
 function can(userObject: User, requiredFeature: string, resource?: Resource) {
@@ -114,6 +128,47 @@ function filterOutput(userObject: User, feature: string, resouce: any) {
     }
 
     return result;
+  } else if (feature === "read:deck") {
+    return {
+      id: resouce.id,
+      name: resouce.name,
+      user_id: resouce.user_id,
+      created_at: resouce.created_at,
+      updated_at: resouce.updated_at,
+    };
+  } else if (feature === "read:deck:all") {
+    return resouce.map((item: any) => {
+      return {
+        id: item.id,
+        name: item.name,
+        user_id: item.user_id,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      };
+    });
+  } else if (feature === "read:card") {
+    return {
+      id: resouce.id,
+      name: resouce.name,
+      description: resouce.description,
+      deck_id: resouce.deck_id,
+      date_to_review: resouce.date_to_review,
+      created_at: resouce.created_at,
+      updated_at: resouce.updated_at,
+    };
+  } else if (feature === "read:card:all") {
+    return resouce.map((item: any) => {
+      return {
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        deck_id: item.deck_id,
+        deck_name: item.deck_name,
+        date_to_review: item.date_to_review,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      };
+    });
   }
 }
 
