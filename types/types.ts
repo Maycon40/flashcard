@@ -7,6 +7,21 @@ export interface User {
   password?: string;
 }
 
+export interface Deck {
+  id?: string;
+  name?: string;
+  user_id?: string;
+}
+
+export interface Card {
+  id?: string;
+  name?: string;
+  description?: string;
+  date_to_review?: Date | string;
+  deck_id?: string;
+  deck_name?: string;
+}
+
 export interface ActivationToken {
   id: string;
 }
