@@ -33,12 +33,14 @@ export default function EditCardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [isImportant, setIsImportant] = useState(false);
 
   useEffect(() => {
     if (card) {
       setName(card.name as string);
       setDescription(card.description || "");
       setSelectedDeck(card.deck_name || "");
+      setIsImportant(card.important || false);
     }
   }, [card]);
 
@@ -75,6 +77,7 @@ export default function EditCardPage() {
           body: JSON.stringify({
             name: name.trim(),
             description: description.trim(),
+            important: isImportant,
             deck_name: selectedDeck,
           }),
         },
@@ -219,6 +222,23 @@ export default function EditCardPage() {
               placeholder="Descrição ou resposta do cartão"
               disabled={isSubmitting}
             />
+          </div>
+
+          <div className="flex items-center">
+            <input
+              id="important"
+              name="important"
+              type="checkbox"
+              checked={isImportant}
+              onChange={(e) => setIsImportant(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            <label
+              htmlFor="important"
+              className="ml-2 block text-sm text-zinc-700 dark:text-zinc-300"
+            >
+              É um cartão importante?
+            </label>
           </div>
 
           <div className="flex items-center gap-4 pt-2">

@@ -9,18 +9,18 @@ async function create(card: Card, deckId: string): Promise<Card> {
   return newCard;
 
   async function runInsertQuery(card: Card, deckId: string) {
-    const { name, description } = card;
+    const { name, description, important } = card;
 
     const results = await database.query({
       text: `
         INSERT INTO
-          cards (name, description, deck_id)
+          cards (name, description, important, deck_id)
         VALUES
-          ($1, $2, $3)
+          ($1, $2, $3, $4)
         RETURNING
           *
       ;`,
-      values: [name, description, deckId],
+      values: [name, description, Boolean(important), deckId],
     });
 
     return results.rows[0];
@@ -49,6 +49,8 @@ async function findAll(decks: Deck[]): Promise<Card[]> {
         JOIN decks ON cards.deck_id = decks.id
         WHERE
           deck_id = ANY($1)
+        ORDER BY
+          cards.date_to_review ASC
         ;`,
       values: [deckIds],
     });
@@ -64,7 +66,7 @@ async function findAll(decks: Deck[]): Promise<Card[]> {
   }
 }
 
-async function findAllToReview(decks: Deck[]) {
+async function findAllToReview(decks: Deck[], important: boolean) {
   const cards = await findAll(decks);
 
   const cardsToReview: Card[] = [];
@@ -72,7 +74,8 @@ async function findAllToReview(decks: Deck[]) {
   for (const card of cards) {
     if (
       card.date_to_review &&
-      new Date(card.date_to_review) <= new Date(Date.now())
+      new Date(card.date_to_review) <= new Date(Date.now()) &&
+      card.important == important
     ) {
       cardsToReview.push(card);
     }
@@ -175,6 +178,12 @@ async function updateByDeckIdAndName(
     deck_id: deckId || cardValues.deck_id,
   };
 
+  if (cardNewValues.important !== undefined) {
+    cardWithNewValues.important = Boolean(cardNewValues.important);
+  } else {
+    cardWithNewValues.important = Boolean(cardValues.important);
+  }
+
   const updatedUser = await runUpdateQuery(cardWithNewValues);
 
   return updatedUser;
@@ -188,7 +197,8 @@ async function updateByDeckIdAndName(
           name = $2,
           description = $3,
           date_to_review = $4,
-          deck_id = $5,
+          important = $5,
+          deck_id = $6,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -201,6 +211,7 @@ async function updateByDeckIdAndName(
         cardValues.name,
         cardValues.description,
         cardValues.date_to_review,
+        cardValues.important,
         cardValues.deck_id,
       ],
     });

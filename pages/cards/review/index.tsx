@@ -7,17 +7,24 @@ import Link from "next/link";
 import LayoutDashboard from "@/components/LayoutDashboard";
 import { withAuth } from "@/infra/auth";
 import { Card } from "@/types/types";
+import { useRouter } from "next/router";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export const getServerSideProps = withAuth();
 
 export default function ReviewPage() {
+  const router = useRouter();
+  const { important } = router.query;
+
   const {
     data: cards,
     error,
     isLoading,
-  } = useSWR<Card[]>("/api/v1/cards/review", fetcher);
+  } = useSWR<Card[]>(
+    `/api/v1/cards/review?important=${important || "false"}`,
+    fetcher,
+  );
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);

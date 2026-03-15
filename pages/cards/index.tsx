@@ -14,6 +14,7 @@ type Card = {
   description?: string;
   deck_id?: string;
   deck_name?: string;
+  important?: boolean;
 };
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -28,6 +29,7 @@ export default function CardsPage() {
   const [description, setDescription] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
+  const [isImportant, setIsImportant] = useState(false);
 
   const {
     data: cards = [],
@@ -54,7 +56,11 @@ export default function CardsPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name.trim(), description }),
+          body: JSON.stringify({
+            name: name.trim(),
+            description,
+            important: isImportant,
+          }),
         },
       );
 
@@ -65,6 +71,7 @@ export default function CardsPage() {
         setDescription("");
         setCreating(false);
         setSelectedDeck(null);
+        setIsImportant(false);
         await mutate("/api/v1/cards");
       } else {
         setCreateError(
@@ -164,6 +171,23 @@ export default function CardsPage() {
               />
             </div>
 
+            <div className="flex items-center">
+              <input
+                id="important"
+                name="important"
+                type="checkbox"
+                checked={isImportant}
+                onChange={(e) => setIsImportant(e.target.checked)}
+                className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label
+                htmlFor="important"
+                className="ml-2 block text-sm text-zinc-700 dark:text-zinc-300"
+              >
+                É um cartão importante?
+              </label>
+            </div>
+
             <div>
               <button
                 type="submit"
@@ -195,8 +219,17 @@ export default function CardsPage() {
                   key={card.id}
                   className="rounded-lg border border-zinc-100 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900"
                 >
-                  <h3 className="font-semibold">{card.name}</h3>
-                  <p className="text-sm text-zinc-500">{card.description}</p>
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold">{card.name}</h3>
+                    {card.important && (
+                      <span className="text-xs font-bold text-yellow-500 bg-yellow-100 dark:bg-yellow-900/50 dark:text-yellow-400 px-2 py-1 rounded-full">
+                        Importante
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {card.description}
+                  </p>
                   <p className="text-xs text-zinc-400 mt-2">
                     {card.deck_name
                       ? `Baralho: ${card.deck_name}`
