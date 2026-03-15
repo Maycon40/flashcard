@@ -129,15 +129,16 @@ export default function CardsPage() {
                 <option className="bg-zinc-900" value="">
                   -- selecione um baralho --
                 </option>
-                {decks.map((d) => (
-                  <option
-                    className="bg-zinc-900"
-                    key={d.id || d.name}
-                    value={d.name || d.id}
-                  >
-                    {d.name}
-                  </option>
-                ))}
+                {decks.length > 0 &&
+                  decks.map((d) => (
+                    <option
+                      className="bg-zinc-900"
+                      key={d.id || d.name}
+                      value={d.name || d.id}
+                    >
+                      {d.name}
+                    </option>
+                  ))}
               </select>
             </div>
 
