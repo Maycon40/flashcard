@@ -62,6 +62,7 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
           body: JSON.stringify({
             name: "Novo nome",
             description: "Nova descrição",
+            important: true,
             difficulty: "easy",
           }),
         },
@@ -75,6 +76,7 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
         id: responseBody.id,
         name: "Novo nome",
         description: "Nova descrição",
+        important: true,
         deck_id: createdDeck.id,
         date_to_review: responseBody.date_to_review,
         created_at: responseBody.created_at,

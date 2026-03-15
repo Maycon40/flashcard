@@ -18,6 +18,7 @@ export interface Card {
   name?: string;
   description?: string;
   date_to_review?: Date | string;
+  important?: boolean;
   deck_id?: string;
   deck_name?: string;
 }

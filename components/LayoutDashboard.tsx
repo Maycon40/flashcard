@@ -28,7 +28,7 @@ export default function LayoutDashboard({ children }: Props) {
           <aside className="md:col-span-1">
             <div className="sticky top-6 rounded-lg bg-white dark:bg-zinc-900 p-4 shadow-sm">
               <div className="mb-6 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-md bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                <div className="h-10 w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                   FC
                 </div>
                 <div>
