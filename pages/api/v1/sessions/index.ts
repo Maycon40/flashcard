@@ -27,7 +27,7 @@ async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   if (!authorization.can(authenticatedUser, "create:session")) {
     throw new ForbiddenError({
       message: "Você não tem permissão para fazer login.",
-      action: "Verifique se o seu usuário possui já foi ativado.",
+      action: "Verifique se o seu usuário já foi ativado.",
     });
   }
 
