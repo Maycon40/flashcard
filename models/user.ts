@@ -1,7 +1,12 @@
 import database from "@/infra/database";
 import password from "@/models/password";
-import { NotFoundError, ValidationError } from "@/infra/errors";
+import {
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "@/infra/errors";
 import { User } from "@/types/types";
+import authentication from "./authentication";
 
 async function create(userInputValues: User) {
   await validateUniqueUsername(userInputValues.username || "");
@@ -36,7 +41,10 @@ async function create(userInputValues: User) {
   }
 }
 
-async function updateByUsername(username: string, userInputValues: User) {
+async function updateByUsername(
+  username: string,
+  userInputValues: User & { old_password: string | undefined },
+) {
   const currentUser = await findOneByUsername(username);
 
   if (
@@ -56,6 +64,23 @@ async function updateByUsername(username: string, userInputValues: User) {
 
   if ("password" in userInputValues) {
     await hashPasswordInObject(userInputValues);
+
+    try {
+      await authentication.validate(
+        currentUser.email,
+        userInputValues.old_password || "",
+      );
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        throw new ValidationError({
+          message: "Dados enviados não conferem.",
+          action: "Verifique se os dados enviados estão corretos.",
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
   }
 
   const userWithNewValues = {
