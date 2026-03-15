@@ -60,6 +60,12 @@ export default function LayoutDashboard({ children }: Props) {
                 >
                   Cartões
                 </Link>
+                <Link
+                  href="/profile"
+                  className="block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  Perfil
+                </Link>
                 <button
                   onClick={(e) => logout(e)}
                   className="w-full text-left block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-red-600 cursor-pointer"

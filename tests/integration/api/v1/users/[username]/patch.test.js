@@ -192,6 +192,7 @@ describe("PATCH /api/v1/users/[username]", () => {
             Cookie: `session_id=${newSession.token}`,
           },
           body: JSON.stringify({
+            old_password: "senha123",
             password: "newPassword",
           }),
         },
