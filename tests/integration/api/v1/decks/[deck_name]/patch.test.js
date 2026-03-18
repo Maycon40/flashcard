@@ -99,7 +99,51 @@ describe("PATCH /api/v1/decks/[deck_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Esse baralho foi encontrado no sistema.",
+        message: "Esse baralho não foi encontrado no sistema.",
+        action: "Verifique se o nome do baralho foi digitado corretamente.",
+        status_code: 404,
+      });
+    });
+  });
+
+  describe("Another user", () => {
+    test("With other user's data", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      const createdUser2 = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser2.id);
+
+      const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/decks/${createdDeck.name}`,
+        {
+          method: "PATCH",
+          headers: {
+            Cookie: `session_id=${newSessionUser2.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Novo nome do Baralho",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "Esse baralho não foi encontrado no sistema.",
         action: "Verifique se o nome do baralho foi digitado corretamente.",
         status_code: 404,
       });

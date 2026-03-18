@@ -1,13 +1,14 @@
 import database from "@/infra/database";
 import { NotFoundError, ValidationError } from "@/infra/errors";
 import { Deck } from "@/types/types";
+import card from "@/models/card";
 
 async function create(deck: Deck, userId: string) {
   await validateUniqueDeckName(deck.name || "", userId);
 
-  const newUser = await runInsertQuery(deck, userId);
+  const newDeck = await runInsertQuery(deck, userId);
 
-  return newUser;
+  return newDeck;
 
   async function runInsertQuery(deck: Deck, userId: string) {
     const { name } = deck;
@@ -64,6 +65,8 @@ async function findAllByUserId(userId: string) {
           decks
         WHERE
           user_id = $1
+        ORDER BY
+          LOWER(name)
         ;`,
       values: [userId],
     });
@@ -100,7 +103,7 @@ async function findOneByUserIdAndName(userId: string, deckName: string) {
 
     if (results.rowCount === 0) {
       throw new NotFoundError({
-        message: "Esse baralho foi encontrado no sistema.",
+        message: "Esse baralho não foi encontrado no sistema.",
         action: "Verifique se o nome do baralho foi digitado corretamente.",
       });
     }
@@ -125,9 +128,9 @@ async function updateByUserIdAndName(deckValues: Deck, deckNewValues: Deck) {
     name: deckNewValues.name,
   };
 
-  const updatedUser = await runUpdateQuery(deckWithNewValues);
+  const updatedDeck = await runUpdateQuery(deckWithNewValues);
 
-  return updatedUser;
+  return updatedDeck;
 
   async function runUpdateQuery(deckValues: Deck) {
     const result = await database.query({
@@ -150,11 +153,24 @@ async function updateByUserIdAndName(deckValues: Deck, deckNewValues: Deck) {
 }
 
 async function deleteById(deckId: string) {
-  const deletedUser = await runUpdateQuery(deckId);
+  try {
+    await card.findAllByDeckId(deckId);
 
-  return deletedUser;
+    throw new ValidationError({
+      message: "Não é possível excluir um baralho que ainda contém cartões.",
+      action: "Apague os cartões do baralho ou mova-os para um outro baralho.",
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      const deletedDeck = await runDeleteQuery(deckId);
 
-  async function runUpdateQuery(deckId: string) {
+      return deletedDeck;
+    }
+
+    throw error;
+  }
+
+  async function runDeleteQuery(deckId: string) {
     const result = await database.query({
       text: `
         DELETE FROM
