@@ -1,31 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import useSWR from "swr";
 import Link from "next/link";
 
-import LayoutDashboard from "@/components/LayoutDashboard";
+import LayoutDashboard from "@/components/layout/Dashboard";
 import { withAuth } from "@/infra/auth";
 import { Card } from "@/types/types";
-import { useRouter } from "next/router";
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+export const getServerSideProps = withAuth(async (context) => {
+  const { req, query } = context;
+  const { important } = query;
 
-export const getServerSideProps = withAuth();
+  const proto = (req.headers["x-forwarded-proto"] as string) || "http";
+  const host = req.headers["host"];
+  const origin = `${proto}://${host}`;
 
-export default function ReviewPage() {
-  const router = useRouter();
-  const { important } = router.query;
-
-  const {
-    data: cards,
-    error,
-    isLoading,
-  } = useSWR<Card[]>(
-    `/api/v1/cards/review?important=${important || "false"}`,
-    fetcher,
+  const resCards = await fetch(
+    `${origin}/api/v1/cards/review?important=${important || "false"}`,
+    {
+      headers: {
+        cookie: req.headers.cookie || "",
+      },
+    },
   );
 
+  const cards = await resCards.json();
+
+  return {
+    props: {
+      cards,
+    },
+  };
+});
+
+export default function ReviewPage({ cards }: { cards: Card[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,28 +73,6 @@ export default function ReviewPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <LayoutDashboard>
-        <h1 className="text-2xl font-semibold mb-6">Revisão</h1>
-        <div className="animate-pulse">
-          <div className="h-80 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-        </div>
-      </LayoutDashboard>
-    );
-  }
-
-  if (error) {
-    return (
-      <LayoutDashboard>
-        <h1 className="text-2xl font-semibold mb-6">Revisão</h1>
-        <div className="rounded-md bg-red-50 border border-red-200 p-4 text-red-700">
-          Erro ao carregar os cartões para revisão.
-        </div>
-      </LayoutDashboard>
-    );
-  }
-
   if (!cards || cards.length === 0 || currentIndex >= cards.length) {
     return (
       <LayoutDashboard>
@@ -118,7 +104,7 @@ export default function ReviewPage() {
         <strong>{currentCard.deck_name}</strong>
       </p>
 
-      <div className="rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg min-h-[320px] flex flex-col justify-center items-center text-center">
+      <div className="rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg min-h-80 flex flex-col justify-center items-center text-center">
         {!isFlipped ? (
           <div className="flex flex-col items-center gap-8">
             <h2 className="text-3xl font-bold">{currentCard.name}</h2>
@@ -133,7 +119,7 @@ export default function ReviewPage() {
           <div className="flex flex-col items-center gap-6 w-full">
             <h2 className="text-2xl font-semibold">{currentCard.name}</h2>
             <div className="w-full border-t border-zinc-200 dark:border-zinc-700 my-2"></div>
-            <p className="text-xl text-zinc-600 dark:text-zinc-300">
+            <p className="text-xl text-justify text-zinc-600 dark:text-zinc-300 whitespace-pre-line">
               {currentCard.description}
             </p>
 

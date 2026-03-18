@@ -1,50 +1,73 @@
 "use client";
 
-import { useRouter } from "next/router";
-import useSWR, { useSWRConfig } from "swr";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
-import LayoutDashboard from "@/components/LayoutDashboard";
+import LayoutDashboard from "@/components/layout/Dashboard";
 import { withAuth } from "@/infra/auth";
-import { Card, Deck } from "@/types/types";
+import { Card, Deck, TypeError } from "@/types/types";
+import ErrorComponent from "@/components/error";
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+export const getServerSideProps = withAuth(async (context) => {
+  const { req, query } = context;
+  const { id } = query;
 
-export const getServerSideProps = withAuth();
+  const proto = (req.headers["x-forwarded-proto"] as string) || "http";
+  const host = req.headers["host"];
+  const origin = `${proto}://${host}`;
 
-export default function EditCardPage() {
+  const [resCard, resDecks] = await Promise.all([
+    fetch(`${origin}/api/v1/cards/id/${id}`, {
+      headers: {
+        cookie: req.headers.cookie || "",
+      },
+    }),
+    fetch(`${origin}/api/v1/decks`, {
+      headers: {
+        cookie: req.headers.cookie || "",
+      },
+    }),
+  ]);
+
+  const card = await resCard.json();
+  const decks = await resDecks.json();
+
+  let error = false;
+
+  if (resCard.status >= 400) {
+    error = card;
+  }
+
+  return {
+    props: {
+      card,
+      decks,
+      error,
+    },
+  };
+});
+
+export default function EditCardPage({
+  card,
+  decks,
+  error,
+}: {
+  card: Card;
+  decks: Deck[];
+  error: TypeError;
+}) {
   const router = useRouter();
-  const { id } = router.query;
-  const { mutate } = useSWRConfig();
 
-  const { data: cards, error: cardsError } = useSWR<Card[]>(
-    "/api/v1/cards",
-    fetcher,
-  );
-
-  const { data: decks = [] } = useSWR<Deck[]>("/api/v1/decks", fetcher);
-
-  const card = useMemo(() => cards?.find((c) => c.id === id), [cards, id]);
-
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedDeck, setSelectedDeck] = useState("");
+  const [name, setName] = useState(card.name || "");
+  const [description, setDescription] = useState(card.description || "");
+  const [selectedDeck, setSelectedDeck] = useState(card.deck_name || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [isImportant, setIsImportant] = useState(false);
+  const [isImportant, setIsImportant] = useState(card.important || false);
 
-  useEffect(() => {
-    if (card) {
-      setName(card.name as string);
-      setDescription(card.description || "");
-      setSelectedDeck(card.deck_name || "");
-      setIsImportant(card.important || false);
-    }
-  }, [card]);
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -67,35 +90,23 @@ export default function EditCardPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(
-        `/api/v1/cards/${encodeURIComponent(
-          card.deck_name!,
-        )}/${encodeURIComponent(card.name as string)}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim(),
-            description: description.trim(),
-            important: isImportant,
-            deck_name: selectedDeck,
-          }),
-        },
-      );
+      const res = await fetch(`/api/v1/cards/id/${card.id as string}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim(),
+          important: isImportant,
+          deck_name: selectedDeck,
+        }),
+      });
 
       if (res.ok) {
         setSubmitSuccess(true);
-        await mutate("/api/v1/cards");
-        if (card.deck_name) {
-          await mutate(`/api/v1/cards/${encodeURIComponent(card.deck_name)}`);
-        }
-        if (selectedDeck && selectedDeck !== card.deck_name) {
-          await mutate(`/api/v1/cards/${encodeURIComponent(selectedDeck)}`);
-        }
 
         setTimeout(() => {
           router.push("/cards");
-        }, 1000);
+        }, 500);
       } else {
         const body = await res.json().catch(() => ({}));
         setSubmitError(body?.message || "Falha ao atualizar o cartão.");
@@ -107,35 +118,12 @@ export default function EditCardPage() {
     }
   }
 
-  const isLoading = (!cards && !cardsError) || !decks;
-
-  if (isLoading) {
+  if (error) {
     return (
       <LayoutDashboard>
-        <div className="animate-pulse">
-          <div className="h-8 w-1/3 rounded bg-zinc-200 dark:bg-zinc-800 mb-8" />
-          <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900 space-y-4">
-            <div className="h-4 w-1/4 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-10 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-1/4 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-24 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-10 w-32 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-          </div>
-        </div>
-      </LayoutDashboard>
-    );
-  }
-
-  if (cardsError || (cards && !card)) {
-    return (
-      <LayoutDashboard>
-        <div className="rounded-md bg-red-50 border border-red-200 p-4 text-red-700">
-          {cardsError ? "Erro ao carregar o cartão." : "Cartão não encontrado."}
-        </div>
-        <div className="mt-4">
-          <Link href="/cards" className="text-indigo-600 hover:underline">
-            Voltar para a lista de cartões
-          </Link>
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold">Editar Cartão</h1>
+          <ErrorComponent>{error.message}</ErrorComponent>
         </div>
       </LayoutDashboard>
     );
@@ -168,20 +156,6 @@ export default function EditCardPage() {
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
-              Nome (Frente)
-            </label>
-            <input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-              placeholder="Título do cartão"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div>
             <label htmlFor="deck" className="block text-sm font-medium mb-1">
               Baralho
             </label>
@@ -205,6 +179,20 @@ export default function EditCardPage() {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-1">
+              Nome (Frente)
+            </label>
+            <input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
+              placeholder="Título do cartão"
+              disabled={isSubmitting}
+            />
           </div>
 
           <div>
