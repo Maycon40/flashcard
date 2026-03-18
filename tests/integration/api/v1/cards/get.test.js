@@ -128,4 +128,46 @@ describe("GET /api/v1/cards", () => {
       });
     });
   });
+
+  describe("Another user", () => {
+    test("With other user's data", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const createdUser2 = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser2.id);
+
+      const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
+
+      const response = await fetch(`http://localhost:3000/api/v1/cards`, {
+        headers: {
+          Cookie: `session_id=${newSessionUser2.token}`,
+        },
+      });
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "Nenhum baralho foi encontrado no sistema.",
+        action: "Verifique se o usuário já criou algum baralho.",
+        status_code: 404,
+      });
+    });
+  });
 });

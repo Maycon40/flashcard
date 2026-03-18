@@ -50,7 +50,8 @@ async function findAll(decks: Deck[]): Promise<Card[]> {
         WHERE
           deck_id = ANY($1)
         ORDER BY
-          cards.date_to_review ASC
+          cards.important DESC,
+          LOWER(cards.name) ASC
         ;`,
       values: [deckIds],
     });
@@ -68,27 +69,44 @@ async function findAll(decks: Deck[]): Promise<Card[]> {
 
 async function findAllToReview(decks: Deck[], important: boolean) {
   const cards = await findAll(decks);
-
-  const cardsToReview: Card[] = [];
+  const cardIds: Card["id"][] = [];
 
   for (const card of cards) {
-    if (
-      card.date_to_review &&
-      new Date(card.date_to_review) <= new Date(Date.now()) &&
-      card.important == important
-    ) {
-      cardsToReview.push(card);
-    }
+    cardIds.push(card.id);
   }
 
-  if (cardsToReview.length === 0) {
-    throw new NotFoundError({
-      message: "Nenhum cartão para revisar foi encontrado no sistema.",
-      action: "Espere até que existam novos cartões para revisar.",
-    });
-  }
+  const cardsToReview = await runSelectQuery(cardIds, important);
 
   return cardsToReview;
+
+  async function runSelectQuery(cardIds: Card["id"][], important: boolean) {
+    const results = await database.query({
+      text: `
+        SELECT
+          cards.*,
+          decks.name as deck_name
+        FROM
+          cards
+        JOIN decks ON cards.deck_id = decks.id
+        WHERE
+          cards.id = ANY($1) AND
+          cards.date_to_review <= timezone('utc', now()) AND
+          cards.important = $2
+        ORDER BY
+          cards.date_to_review ASC
+        ;`,
+      values: [cardIds, important],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "Nenhum cartão para revisar foi encontrado no sistema.",
+        action: "Espere até que existam novos cartões para revisar.",
+      });
+    }
+
+    return results.rows;
+  }
 }
 
 async function findAllByDeckId(deckId: string): Promise<Card[]> {
@@ -100,11 +118,13 @@ async function findAllByDeckId(deckId: string): Promise<Card[]> {
     const results = await database.query({
       text: `
         SELECT
-          *
+          cards.*,
+          decks.name as deck_name
         FROM
           cards
+        JOIN decks ON cards.deck_id = decks.id
         WHERE
-          deck_id = $1
+          cards.deck_id = $1
         ;`,
       values: [deckId],
     });
@@ -120,29 +140,33 @@ async function findAllByDeckId(deckId: string): Promise<Card[]> {
   }
 }
 
-async function findOneByDeckIdAndName(deckId: string, cardName: string) {
-  const cardFound = await runSelectQuery(deckId, cardName);
+async function findOneById(cardId: string, userId: string) {
+  const cardFound = await runSelectQuery(cardId, userId);
 
   return cardFound;
 
-  async function runSelectQuery(deckId: string, cardName: string) {
+  async function runSelectQuery(cardId: string, userId: string) {
     const results = await database.query({
       text: `
         SELECT
-          *
+          cards.*,
+          decks.name as deck_name
         FROM
           cards
+        JOIN decks ON cards.deck_id = decks.id
         WHERE
-          deck_id = $1 AND
-          name = $2
+          cards.id = $1 AND
+          decks.user_id = $2
+        LIMIT
+          1
         ;`,
-      values: [deckId, cardName],
+      values: [cardId, userId],
     });
 
     if (results.rowCount === 0) {
       throw new NotFoundError({
-        message: "Nenhum cartão foi encontrado no sistema.",
-        action: "Verifique se o usuário já criou algum cartão.",
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o id do cartão está correto.",
       });
     }
 
@@ -150,7 +174,7 @@ async function findOneByDeckIdAndName(deckId: string, cardName: string) {
   }
 }
 
-async function updateByDeckIdAndName(
+async function updateById(
   cardValues: Card,
   cardNewValues: Card & { difficulty: string },
   userId: string,
@@ -260,8 +284,8 @@ const card = {
   findAll,
   findAllToReview,
   findAllByDeckId,
-  findOneByDeckIdAndName,
-  updateByDeckIdAndName,
+  findOneById,
+  updateById,
   deleteById,
 };
 
