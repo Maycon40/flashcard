@@ -153,6 +153,7 @@ function filterOutput(userObject: User, feature: string, resouce: any) {
       description: resouce.description,
       important: resouce.important,
       deck_id: resouce.deck_id,
+      deck_name: resouce.deck_name,
       date_to_review: resouce.date_to_review,
       created_at: resouce.created_at,
       updated_at: resouce.updated_at,
