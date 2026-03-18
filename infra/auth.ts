@@ -2,36 +2,52 @@ import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 export async function ensureUser(
   context: GetServerSidePropsContext,
-): Promise<Boolean> {
+): Promise<any> {
   const { req } = context;
 
   const proto = (req.headers["x-forwarded-proto"] as string) || "http";
   const host = req.headers["host"];
   const origin = `${proto}://${host}`;
 
-  try {
-    const res = await fetch(`${origin}/api/v1/user`, {
-      headers: {
-        cookie: req.headers.cookie || "",
-      },
-    });
+  const res = await fetch(`${origin}/api/v1/user`, {
+    headers: {
+      cookie: req.headers.cookie || "",
+    },
+  });
 
-    if (res.status === 200) {
-      return true;
-    }
-  } catch {
-    // ignore network/fetch errors and fallthrough to redirect
+  if (res.status === 200) {
+    const user = await res.json();
+
+    return {
+      props: {
+        user,
+      },
+    };
   }
 
   return false;
 }
 
-export function withAuth(): GetServerSideProps {
-  return async (context) => {
+// eslint-disable-next-line no-unused-vars
+type AuthCallback = (context: GetServerSidePropsContext) => Promise<any> | any;
+
+export function withAuth(func?: AuthCallback): GetServerSideProps {
+  return async (context: GetServerSidePropsContext) => {
     const auth = await ensureUser(context);
 
     if (auth) {
-      return { props: {} };
+      if (func) {
+        const res = await func(context);
+
+        return {
+          props: {
+            ...res.props,
+            ...auth.props,
+          },
+        };
+      }
+
+      return { props: auth.props };
     }
 
     return {
