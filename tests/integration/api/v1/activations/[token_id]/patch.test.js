@@ -11,12 +11,12 @@ beforeAll(async () => {
   await orchestrator.deleteAllEmails();
 });
 
-describe("PATCH /api/v1/sessions", () => {
+describe("PATCH /api/v1/activations/[token_id]", () => {
   let createdUser;
   let activationId;
 
   describe("Default user", () => {
-    test("With valid session", async () => {
+    test("With valid token", async () => {
       const response = await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
