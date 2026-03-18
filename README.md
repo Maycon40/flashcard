@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flashcard
 
-## Getting Started
+O **Flashcard** é uma aplicação web focada em produtividade acadêmica. Utilizando a técnica de cartões de memória, o sistema ajuda o usuário a transferir informações da memória de curto prazo para a de longo prazo, otimizando a retenção do conteúdo aprendido.
 
-First, run the development server:
+Caso queira entender mais sobre os beneficios do flashcard: [Exame](https://exame.com/carreira/guia-de-carreira/como-usar-flashcards-para-estudar-melhor-e-aprender-materias-complexas/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🧠 Como funciona?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O sistema utiliza um algoritmo de repetição baseada em feedback:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Errei:** O intervalo para a próxima revisão é muito curto.
+- **Fácil:** O intervalo para a próxima revisão é curto.
+- **Muito Fácil:** O cartão será exibido novamente após um longo período.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## ✨ Funcionalidades
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [x] **Gestão de Baralhos:** Organize seus estudos por temas ou disciplinas.
+- [x] **Flashcards Dinâmicos:** Crie, edite e organize seus cards com descrições detalhadas.
+- [x] **Revisão Inteligente:** Sistema de feedback que prioriza o que você ainda não decorou.
+- [x] **Interface Responsiva:** Estude pelo computador, tablet ou celular.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Tecnologias Utilizadas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O projeto foi construído com o que há de mais moderno no ecossistema web:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **[Next.js](https://nextjs.org/):** Framework React para SSR, SSG e rotas de API.
+- **[Tailwind CSS](https://tailwindcss.com/):** Estilização moderna e utilitária.
+- **[React](https://reactjs.org/):** Componentização e gerenciamento de estado.
+- **[TypeScript](https://www.typescriptlang.org/):** Segurança e tipagem estática (opcional, adicione se estiver usando).
+
+---
+
+## Versão online do projeto:
+
+- Caso você queira começar a usar flashcards: https://flash.maycon.dev.br/
+
+---
+
+## Como Executar o Projeto:
+
+1. **Clone o Repositório:**
+   ```bash
+   git clone https://github.com/Maycon40/flashcard.git
+   ```
+2. **Instale as Dependências:**
+   ```bash
+   npm install
+   ```
+3. **Inicie o Servidor de Desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
+
+- Acesse o aplicativo em http://localhost:3000.
+
+---
+
+## Fontes
+
+Benefícios do flashcard: https://exame.com/carreira/guia-de-carreira/como-usar-flashcards-para-estudar-melhor-e-aprender-materias-complexas/
