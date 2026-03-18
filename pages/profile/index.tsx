@@ -1,28 +1,17 @@
+import { useState, SubmitEvent } from "react";
+
 import { withAuth } from "@/infra/auth";
 import { User } from "@/types/types";
-import LayoutDashboard from "@/components/LayoutDashboard";
-import React, { useState, useEffect } from "react";
-import useSWR, { useSWRConfig } from "swr";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+import LayoutDashboard from "@/components/layout/Dashboard";
 
 export const getServerSideProps = withAuth();
 
-export default function ProfilePage() {
-  const { data: user, error: userError } = useSWR<User>(
-    "/api/v1/user",
-    fetcher,
-  );
-  const { mutate } = useSWRConfig();
-
-  // State for profile information
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+export default function ProfilePage({ user }: { user: User }) {
+  const [username, setUsername] = useState(user.username || "");
   const [profileSubmitting, setProfileSubmitting] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
 
-  // State for password change
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,14 +19,7 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      setUsername(user.username || "");
-      setEmail(user.email || "");
-    }
-  }, [user]);
-
-  async function handleProfileUpdate(e: React.FormEvent) {
+  async function handleProfileUpdate(e: SubmitEvent) {
     e.preventDefault();
     setProfileError(null);
     setProfileSuccess(null);
@@ -47,14 +29,13 @@ export default function ProfilePage() {
       const res = await fetch(`/api/v1/users/${user?.username}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email }),
+        body: JSON.stringify({ username, email: user.email }),
       });
 
       const body = await res.json().catch(() => ({}));
 
       if (res.ok) {
         setProfileSuccess("Perfil atualizado com sucesso!");
-        await mutate("/api/v1/user"); // Revalidate user data
       } else {
         setProfileError(
           body?.action || body?.message || "Falha ao atualizar o perfil.",
@@ -67,7 +48,7 @@ export default function ProfilePage() {
     }
   }
 
-  async function handlePasswordChange(e: React.FormEvent) {
+  async function handlePasswordChange(e: SubmitEvent) {
     e.preventDefault();
     setPasswordError(null);
     setPasswordSuccess(null);
@@ -110,16 +91,6 @@ export default function ProfilePage() {
     } finally {
       setPasswordSubmitting(false);
     }
-  }
-
-  if (userError) {
-    return (
-      <LayoutDashboard>
-        <div className="rounded-md bg-red-50 border border-red-200 p-4 text-red-700">
-          Erro ao carregar informações do usuário.
-        </div>
-      </LayoutDashboard>
-    );
   }
 
   if (!user) {
@@ -171,7 +142,7 @@ export default function ProfilePage() {
               <label className="block text-sm font-medium mb-1">Email</label>
               <input
                 id="email"
-                value={email}
+                value={user.email}
                 className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-gray-800 outline-0 text-sm cursor-auto"
                 readOnly={true}
               />

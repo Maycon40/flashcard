@@ -1,7 +1,7 @@
 import type { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout";
 
 interface Props {
   success: boolean;
