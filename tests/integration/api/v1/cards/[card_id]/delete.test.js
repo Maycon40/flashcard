@@ -8,13 +8,13 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
+describe("DELETE /api/v1/cards/id/[card_id]", () => {
   describe("Anonymous user", () => {
     test("Without permission", async () => {
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/baralho/carta`,
+        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
-          method: "PATCH",
+          method: "DELETE",
         },
       );
 
@@ -52,19 +52,12 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/${createdDeck.name}/${createdCard.name}`,
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
         {
-          method: "PATCH",
+          method: "DELETE",
           headers: {
-            "Content-Type": "application/json",
             Cookie: `session_id=${newSession.token}`,
           },
-          body: JSON.stringify({
-            name: "Novo nome",
-            description: "Nova descrição",
-            important: true,
-            difficulty: "easy",
-          }),
         },
       );
 
@@ -74,9 +67,9 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
 
       expect(responseBody).toEqual({
         id: responseBody.id,
-        name: "Novo nome",
-        description: "Nova descrição",
-        important: true,
+        name: "Nome do Cartão",
+        description: "Descrição do Cartão",
+        important: false,
         deck_id: createdDeck.id,
         date_to_review: responseBody.date_to_review,
         created_at: responseBody.created_at,
@@ -88,8 +81,17 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
 
-      expect(responseBody.updated_at > responseBody.created_at).toBe(true);
-      expect(responseBody.date_to_review > responseBody.updated_at).toBe(true);
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response2.status).toBe(404);
     });
 
     test("With not created card", async () => {
@@ -99,15 +101,10 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
 
       const newSession = await orchestrator.createSession(createdUser.id);
 
-      const createdDeck = await orchestrator.createDeck(
-        "Baralho sem cartões",
-        createdUser.id,
-      );
-
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/${createdDeck.name}/carta`,
+        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
-          method: "PATCH",
+          method: "DELETE",
           headers: {
             Cookie: `session_id=${newSession.token}`,
           },
@@ -120,25 +117,42 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi encontrado no sistema.",
-        action: "Verifique se o usuário já criou algum cartão.",
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o id do cartão está correto.",
         status_code: 404,
       });
     });
+  });
 
-    test("With not created deck", async () => {
+  describe("Another user", () => {
+    test("With other user's data", async () => {
       const createdUser = await orchestrator.createUser();
 
       await orchestrator.activateUser(createdUser.id);
 
-      const newSession = await orchestrator.createSession(createdUser.id);
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const createdUser2 = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser2.id);
+
+      const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/baralho/carta`,
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
         {
-          method: "PATCH",
+          method: "DELETE",
           headers: {
-            Cookie: `session_id=${newSession.token}`,
+            Cookie: `session_id=${newSessionUser2.token}`,
           },
         },
       );
@@ -149,8 +163,8 @@ describe("PATCH /api/v1/cards/[deck_name]/[card_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Esse baralho foi encontrado no sistema.",
-        action: "Verifique se o nome do baralho foi digitado corretamente.",
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o id do cartão está correto.",
         status_code: 404,
       });
     });

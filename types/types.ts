@@ -23,6 +23,13 @@ export interface Card {
   deck_name?: string;
 }
 
+export interface TypeError {
+  name: string;
+  message: string;
+  action: string;
+  status_code: number;
+}
+
 export interface ActivationToken {
   id: string;
 }

@@ -108,7 +108,58 @@ describe("POST /api/v1/cards/[deck_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Esse baralho foi encontrado no sistema.",
+        message: "Esse baralho não foi encontrado no sistema.",
+        action: "Verifique se o nome do baralho foi digitado corretamente.",
+        status_code: 404,
+      });
+    });
+  });
+
+  describe("Another user", () => {
+    test("With other user's data", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const createdUser2 = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser2.id);
+
+      const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/cards/${createdDeck.name}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSessionUser2.token}`,
+          },
+          body: JSON.stringify({
+            name: "Nome do Cartão",
+            description: "Descrição do Cartão",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "Esse baralho não foi encontrado no sistema.",
         action: "Verifique se o nome do baralho foi digitado corretamente.",
         status_code: 404,
       });

@@ -8,11 +8,11 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
+describe("GET /api/v1/cards/id/[card_id]", () => {
   describe("Anonymous user", () => {
     test("Without permission", async () => {
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/baralho/carta`,
+        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
       );
 
       expect(response.status).toBe(403);
@@ -49,7 +49,7 @@ describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/${createdDeck.name}/${createdCard.name}`,
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
         {
           headers: {
             Cookie: `session_id=${newSession.token}`,
@@ -65,8 +65,9 @@ describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
         id: responseBody.id,
         name: "Nome do Cartão",
         description: "Descrição do Cartão",
-        important: false,
         deck_id: createdDeck.id,
+        deck_name: createdDeck.name,
+        important: false,
         date_to_review: responseBody.date_to_review,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
@@ -85,13 +86,8 @@ describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
 
       const newSession = await orchestrator.createSession(createdUser.id);
 
-      const createdDeck = await orchestrator.createDeck(
-        "Baralho sem cartões",
-        createdUser.id,
-      );
-
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/${createdDeck.name}/carta`,
+        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
           headers: {
             Cookie: `session_id=${newSession.token}`,
@@ -105,24 +101,41 @@ describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi encontrado no sistema.",
-        action: "Verifique se o usuário já criou algum cartão.",
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o id do cartão está correto.",
         status_code: 404,
       });
     });
+  });
 
-    test("With not created deck", async () => {
+  describe("Another user", () => {
+    test("With other user's data", async () => {
       const createdUser = await orchestrator.createUser();
 
       await orchestrator.activateUser(createdUser.id);
 
-      const newSession = await orchestrator.createSession(createdUser.id);
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const createdUser2 = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser2.id);
+
+      const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/baralho/carta`,
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
         {
           headers: {
-            Cookie: `session_id=${newSession.token}`,
+            Cookie: `session_id=${newSessionUser2.token}`,
           },
         },
       );
@@ -133,8 +146,8 @@ describe("GET /api/v1/cards/[deck_name]/[card_name]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Esse baralho foi encontrado no sistema.",
-        action: "Verifique se o nome do baralho foi digitado corretamente.",
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o id do cartão está correto.",
         status_code: 404,
       });
     });

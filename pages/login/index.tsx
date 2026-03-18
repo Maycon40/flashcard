@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout";
 import { withLogin } from "@/infra/auth";
 
 export const getServerSideProps = withLogin();

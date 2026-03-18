@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout";
 import { withLogin } from "@/infra/auth";
 
 export const getServerSideProps = withLogin();

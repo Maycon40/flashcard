@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, SubmitEvent, MouseEvent } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
 
 import { Deck } from "@/types/types";
-import LayoutDashboard from "@/components/LayoutDashboard";
+import LayoutDashboard from "@/components/layout/Dashboard";
 import { withAuth } from "@/infra/auth";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -24,11 +24,12 @@ export default function DecksPage() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  async function handleCreate(e: React.FormEvent) {
+  async function handleCreate(e: SubmitEvent) {
     e.preventDefault();
     setCreateError(null);
     if (!name.trim()) return setCreateError("O nome do baralho é obrigatório.");
     setCreating(true);
+
     try {
       const res = await fetch("/api/v1/decks", {
         method: "POST",
@@ -40,7 +41,6 @@ export default function DecksPage() {
 
       if (res.status === 201) {
         setName("");
-        // Revalidar a lista de decks
         await mutate("/api/v1/decks");
       } else {
         setCreateError(
@@ -54,9 +54,27 @@ export default function DecksPage() {
     }
   }
 
+  async function deleteDeck(e: MouseEvent, deckName: string) {
+    e.preventDefault();
+
+    const res = await fetch(`/api/v1/decks/${deckName}`, {
+      method: "DELETE",
+    });
+
+    const body = await res.json().catch(() => ({}));
+
+    if (res.status == 200) {
+      await mutate("/api/v1/decks");
+    } else {
+      setCreateError(
+        body?.action || body?.message || "Falha ao criar o baralho.",
+      );
+    }
+  }
+
   return (
     <LayoutDashboard>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold">Meus baralhos</h1>
           <p className="text-sm text-zinc-500">
@@ -64,11 +82,14 @@ export default function DecksPage() {
           </p>
         </div>
 
-        <form onSubmit={handleCreate} className="flex items-center gap-2">
+        <form
+          onSubmit={handleCreate}
+          className="flex flex-wrap items-center gap-2"
+        >
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-white dark:bg-zinc-900 text-sm"
+            className="my-5 lg:my-0 rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-white dark:bg-zinc-900 text-sm"
             placeholder="Nome do novo baralho"
             aria-label="Nome do novo baralho"
           />
@@ -108,13 +129,30 @@ export default function DecksPage() {
               >
                 <h3 className="font-semibold">{deck.name}</h3>
                 <p className="text-sm text-zinc-500">Baralho criado por você</p>
-                <div className="mt-3">
-                  <Link
-                    href={`/decks/${encodeURIComponent(String(deck.name))}`}
-                    className="text-indigo-600 hover:underline"
-                  >
-                    Ver baralho
-                  </Link>
+                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                  <div>
+                    <Link
+                      href={`/decks/${encodeURIComponent(String(deck.name))}`}
+                      className="text-indigo-600 hover:underline"
+                    >
+                      Ver baralho
+                    </Link>
+                  </div>
+                  <div>
+                    <Link
+                      href={`/decks/edit/${deck.name}`}
+                      className="mr-5 text-sm font-medium text-indigo-600 hover:underline"
+                    >
+                      Editar
+                    </Link>
+                    <button
+                      type="button"
+                      className="text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
+                      onClick={(e) => deleteDeck(e, deck.name as string)}
+                    >
+                      Deletar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -127,14 +165,6 @@ export default function DecksPage() {
             <p className="mt-2 text-sm text-zinc-500">
               Crie o seu primeiro baralho usando o campo acima.
             </p>
-            <div className="mt-4">
-              <Link
-                href="/decks"
-                className="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
-              >
-                Ir para baralhos
-              </Link>
-            </div>
           </div>
         )}
       </section>
