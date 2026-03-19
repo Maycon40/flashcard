@@ -1,4 +1,5 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import type { AppProps } from "next/app";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -18,6 +19,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       className={`${geistSans.className} ${geistMono.className} antialiased`}
     >
       <Component {...pageProps} />
+      <Analytics />
       <SpeedInsights />
     </main>
   );
