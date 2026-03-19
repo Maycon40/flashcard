@@ -1,5 +1,7 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { AppProps } from "next/app";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +18,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       className={`${geistSans.className} ${geistMono.className} antialiased`}
     >
       <Component {...pageProps} />
+      <SpeedInsights />
     </main>
   );
 }
