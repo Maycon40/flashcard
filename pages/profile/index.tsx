@@ -93,20 +93,6 @@ export default function ProfilePage({ user }: { user: User }) {
     }
   }
 
-  if (!user) {
-    return (
-      <LayoutDashboard>
-        <div className="animate-pulse">
-          <div className="h-8 w-48 rounded bg-zinc-200 dark:bg-zinc-800 mb-6" />
-          <div className="space-y-4">
-            <div className="h-20 rounded bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-20 rounded bg-zinc-200 dark:bg-zinc-800" />
-          </div>
-        </div>
-      </LayoutDashboard>
-    );
-  }
-
   return (
     <LayoutDashboard>
       <h1 className="text-2xl font-semibold mb-6">Meu Perfil</h1>
