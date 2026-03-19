@@ -52,18 +52,13 @@ export default function ReviewPage({ cards }: { cards: Card[] }) {
     setIsSubmitting(true);
 
     try {
-      await fetch(
-        `/api/v1/cards/${encodeURIComponent(
-          card.deck_name,
-        )}/${encodeURIComponent(card.name)}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ difficulty }),
+      await fetch(`/api/v1/cards/id/${card.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ difficulty }),
+      });
     } catch (err) {
       console.error("Falha ao enviar a revisão:", err);
     } finally {
