@@ -72,6 +72,8 @@ async function markTokenAsUsed(tokenId: string) {
       "create:session",
       "read:session",
       "update:user",
+      "create:recovery_token",
+      "update:recovery_token",
       "read:card",
       "create:card",
       "update:card",
@@ -132,8 +134,7 @@ async function sendEmailToUser(
 
 ${origin}/register/activate/${activationToken.id}
 
-Atenciosamente,
-Equipe`,
+Atenciosamente`,
   });
 }
 
