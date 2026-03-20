@@ -1,10 +1,11 @@
+import { createRouter } from "next-connect";
+import { NextApiRequest, NextApiResponse } from "next/types";
+
 import controller from "infra/controller";
 import user from "models/user";
 import { ForbiddenError } from "infra/errors";
 import authorization from "models/authorization";
-
-import { createRouter } from "next-connect";
-import { NextApiRequest, NextApiResponse } from "next/types";
+import authentication from "@/models/authentication";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -33,11 +34,11 @@ async function patchHandler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const username = request.query.username;
+  const username = request.query.username as string;
   const userInputValues = request.body;
 
   const currentUser = request.context?.user;
-  const targetUser = await user.findOneByUsername(username as string);
+  const targetUser = await user.findOneByUsername(username);
 
   if (!authorization.can(currentUser, "update:user", targetUser)) {
     throw new ForbiddenError({
@@ -47,10 +48,14 @@ async function patchHandler(
     });
   }
 
-  const updatedUser = await user.updateByUsername(
-    username as string,
-    userInputValues,
-  );
+  if (userInputValues.password) {
+    await authentication.validate(
+      currentUser.email,
+      userInputValues.old_password || "",
+    );
+  }
+
+  const updatedUser = await user.update(targetUser, userInputValues);
 
   const secureOutputValues = authorization.filterOutput(
     currentUser,

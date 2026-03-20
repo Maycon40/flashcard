@@ -1,12 +1,7 @@
 import database from "@/infra/database";
 import password from "@/models/password";
-import {
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "@/infra/errors";
+import { NotFoundError, ValidationError } from "@/infra/errors";
 import { User } from "@/types/types";
-import authentication from "./authentication";
 
 async function create(userInputValues: User) {
   await validateUniqueUsername(userInputValues.username || "");
@@ -41,11 +36,21 @@ async function create(userInputValues: User) {
   }
 }
 
-async function updateByUsername(
-  username: string,
-  userInputValues: User & { old_password: string | undefined },
-) {
-  const currentUser = await findOneByUsername(username);
+async function update(targetUser: User, userInputValues: User) {
+  let currentUser;
+
+  if (!currentUser && targetUser.username) {
+    currentUser = await findOneByUsername(targetUser.username);
+  } else if (targetUser.email) {
+    currentUser = await findOneByEmail(targetUser.email);
+  } else if (targetUser.id) {
+    currentUser = await findOneById(targetUser.id);
+  } else {
+    throw new ValidationError({
+      message: "Não foi informado o username, email ou id",
+      action: "Informe um username, email ou id válido",
+    });
+  }
 
   if (
     "username" in userInputValues &&
@@ -64,23 +69,6 @@ async function updateByUsername(
 
   if ("password" in userInputValues) {
     await hashPasswordInObject(userInputValues);
-
-    try {
-      await authentication.validate(
-        currentUser.email,
-        userInputValues.old_password || "",
-      );
-    } catch (error) {
-      if (error instanceof UnauthorizedError) {
-        throw new ValidationError({
-          message: "Dados enviados não conferem.",
-          action: "Verifique se os dados enviados estão corretos.",
-          cause: error,
-        });
-      }
-
-      throw error;
-    }
   }
 
   const userWithNewValues = {
@@ -315,7 +303,7 @@ async function addFeatures(userId: string, features: User["features"]) {
 
 const user = {
   create,
-  updateByUsername,
+  update,
   findOneById,
   findOneByUsername,
   findOneByEmail,

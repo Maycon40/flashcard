@@ -24,6 +24,12 @@ const availableFeatures = [
   "read:status",
   "read:status:all",
 
+  // RECOVERY
+  "create:recovery_token",
+  "create:recovery_token:username",
+  "read:recovery_token",
+  "update:recovery_token",
+
   // CARD
   "read:card",
   "read:card:all",
@@ -63,48 +69,48 @@ function can(userObject: User, requiredFeature: string, resource?: Resource) {
   return authorized;
 }
 
-function filterOutput(userObject: User, feature: string, resouce: any) {
+function filterOutput(userObject: User, feature: string, resource: any) {
   validateUser(userObject);
   validateFeature(feature);
-  validateResource(resouce);
+  validateResource(resource);
 
   if (feature === "read:user") {
     return {
-      id: resouce.id,
-      username: resouce.username,
-      features: resouce.features,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      username: resource.username,
+      features: resource.features,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
-  } else if (feature === "read:user:self" && userObject.id === resouce.id) {
+  } else if (feature === "read:user:self" && userObject.id === resource.id) {
     return {
-      id: resouce.id,
-      username: resouce.username,
-      email: resouce.email,
-      features: resouce.features,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      username: resource.username,
+      email: resource.email,
+      features: resource.features,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
-  } else if (feature === "read:session" && userObject.id === resouce.user_id) {
+  } else if (feature === "read:session" && userObject.id === resource.user_id) {
     return {
-      id: resouce.id,
-      token: resouce.token,
-      user_id: resouce.user_id,
-      expires_at: resouce.expires_at,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      token: resource.token,
+      user_id: resource.user_id,
+      expires_at: resource.expires_at,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
   } else if (feature === "read:activation_token") {
     return {
-      id: resouce.id,
-      user_id: resouce.user_id,
-      used_at: resouce.used_at,
-      expires_at: resouce.expires_at,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      user_id: resource.user_id,
+      used_at: resource.used_at,
+      expires_at: resource.expires_at,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
   } else if (feature === "read:migration") {
-    return resouce.map((migration: any) => {
+    return resource.map((migration: any) => {
       return {
         name: migration.name,
         path: migration.path,
@@ -113,31 +119,31 @@ function filterOutput(userObject: User, feature: string, resouce: any) {
     });
   } else if (feature === "read:status") {
     const result: any = {
-      updated_at: resouce.updated_at,
+      updated_at: resource.updated_at,
       dependencies: {
         database: {
-          max_connections: resouce.dependencies.database.max_connections,
-          used_connections: resouce.dependencies.database.used_connections,
+          max_connections: resource.dependencies.database.max_connections,
+          used_connections: resource.dependencies.database.used_connections,
         },
       },
     };
 
     if (can(userObject, "read:status:all")) {
       result.dependencies.database.version =
-        resouce.dependencies.database.version;
+        resource.dependencies.database.version;
     }
 
     return result;
   } else if (feature === "read:deck") {
     return {
-      id: resouce.id,
-      name: resouce.name,
-      user_id: resouce.user_id,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      name: resource.name,
+      user_id: resource.user_id,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
   } else if (feature === "read:deck:all") {
-    return resouce.map((item: any) => {
+    return resource.map((item: any) => {
       return {
         id: item.id,
         name: item.name,
@@ -148,18 +154,18 @@ function filterOutput(userObject: User, feature: string, resouce: any) {
     });
   } else if (feature === "read:card") {
     return {
-      id: resouce.id,
-      name: resouce.name,
-      description: resouce.description,
-      important: resouce.important,
-      deck_id: resouce.deck_id,
-      deck_name: resouce.deck_name,
-      date_to_review: resouce.date_to_review,
-      created_at: resouce.created_at,
-      updated_at: resouce.updated_at,
+      id: resource.id,
+      name: resource.name,
+      description: resource.description,
+      important: resource.important,
+      deck_id: resource.deck_id,
+      deck_name: resource.deck_name,
+      date_to_review: resource.date_to_review,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
     };
   } else if (feature === "read:card:all") {
-    return resouce.map((item: any) => {
+    return resource.map((item: any) => {
       return {
         id: item.id,
         name: item.name,
@@ -172,6 +178,13 @@ function filterOutput(userObject: User, feature: string, resouce: any) {
         updated_at: item.updated_at,
       };
     });
+  } else if (feature === "read:recovery_token") {
+    return {
+      used_at: resource.used_at,
+      expires_at: resource.expires_at,
+      created_at: resource.created_at,
+      updated_at: resource.updated_at,
+    };
   }
 }
 

@@ -103,7 +103,13 @@ async function injectAnonymousUser(request: NextApiRequest) {
   request.context = {
     ...request.context,
     user: {
-      features: ["read:activation_token", "create:session", "create:user"],
+      features: [
+        "read:activation_token",
+        "create:session",
+        "create:user",
+        "create:recovery_token",
+        "update:recovery_token",
+      ],
     },
   };
 }

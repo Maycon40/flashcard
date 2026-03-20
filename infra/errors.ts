@@ -1,5 +1,6 @@
 export interface InternalServerErrorOptions {
   cause?: Error | string;
+  action?: string;
   statusCode?: number;
 }
 
@@ -14,18 +15,19 @@ export interface GenericErrorOptions {
   cause?: Error | string;
   message?: string;
   action?: string;
+  key?: string;
 }
 
 export class InternalServerError extends Error {
   public action: string;
   public statusCode: number;
 
-  constructor({ cause, statusCode }: InternalServerErrorOptions = {}) {
+  constructor({ cause, action, statusCode }: InternalServerErrorOptions = {}) {
     // `Error`'s constructor in some TS libs accepts an options object with `cause`.
     // Use `as any` to be compatible across TS versions.
     super("Um erro interno não inesperado aconteceu.", { cause } as any);
     this.name = "InternalServerError";
-    this.action = "Entre em contato com o suporte";
+    this.action = action || "Entre em contato com o suporte";
     this.statusCode = statusCode ?? 500;
   }
 
@@ -84,13 +86,15 @@ export class ValidationError extends Error {
 export class NotFoundError extends Error {
   public action: string;
   public statusCode: number;
+  key: string | undefined;
 
-  constructor({ cause, message, action }: GenericErrorOptions = {}) {
+  constructor({ cause, message, action, key }: GenericErrorOptions = {}) {
     super(message || "Recurso não foi encontrado.", { cause } as Error);
     this.name = "NotFoundError";
     this.action =
       action || "Verifique se as informções enviadas estão corretas.";
     this.statusCode = 404;
+    this.key = key;
   }
 
   toJSON(): ErrorJSON {
