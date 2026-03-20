@@ -112,7 +112,7 @@ async function sendEmailToUser(user: User, tokenId: string, origin: string) {
     text: `${user.username}, uma recuperação de senha foi solicitada.
 
 Clique no link abaixo para definir uma nova senha:
-${origin}/perfil/confirm-email/${tokenId}
+${origin}/recovery/confirm-email/${tokenId}
 
 Atenciosamente`,
   });
