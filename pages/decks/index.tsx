@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Deck } from "@/types/types";
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { withAuth } from "@/infra/auth";
+import ConfirmDelete from "@/components/delete";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -22,12 +23,13 @@ export default function DecksPage() {
 
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
+  const [handleError, setHandleError] = useState<string | null>(null);
+  const [deckToDelete, setDeckToDelete] = useState<string | null>(null);
 
   async function handleCreate(e: SubmitEvent) {
     e.preventDefault();
-    setCreateError(null);
-    if (!name.trim()) return setCreateError("O nome do baralho é obrigatório.");
+    setHandleError(null);
+    if (!name.trim()) return setHandleError("O nome do baralho é obrigatório.");
     setCreating(true);
 
     try {
@@ -43,12 +45,12 @@ export default function DecksPage() {
         setName("");
         await mutate("/api/v1/decks");
       } else {
-        setCreateError(
+        setHandleError(
           body?.action || body?.message || "Falha ao criar o baralho.",
         );
       }
     } catch (err: any) {
-      setCreateError(err?.message || "Erro de rede");
+      setHandleError(err?.message || "Erro de rede");
     } finally {
       setCreating(false);
     }
@@ -66,10 +68,12 @@ export default function DecksPage() {
     if (res.status == 200) {
       await mutate("/api/v1/decks");
     } else {
-      setCreateError(
+      setHandleError(
         body?.action || body?.message || "Falha ao criar o baralho.",
       );
     }
+
+    setDeckToDelete(null);
   }
 
   return (
@@ -103,9 +107,18 @@ export default function DecksPage() {
         </form>
       </div>
 
-      {createError && (
-        <div className="mb-4 text-sm text-red-600">{createError}</div>
+      {handleError && (
+        <div className="mb-4 text-sm text-red-600">{handleError}</div>
       )}
+
+      <ConfirmDelete
+        deleteState={deckToDelete}
+        setDeleteState={setDeckToDelete}
+        callback={(e: any) => deleteDeck(e, deckToDelete as string)}
+      >
+        Você tem certeza que deseja excluir o baralho{" "}
+        <strong>{deckToDelete}</strong>? Esta ação não pode ser desfeita.
+      </ConfirmDelete>
 
       <section className="space-y-6">
         {isLoading ? (
@@ -148,7 +161,7 @@ export default function DecksPage() {
                     <button
                       type="button"
                       className="text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
-                      onClick={(e) => deleteDeck(e, deck.name as string)}
+                      onClick={() => setDeckToDelete(deck.name as string)}
                     >
                       Deletar
                     </button>
