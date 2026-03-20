@@ -5,6 +5,7 @@ import database from "infra/database";
 import migrator from "models/migrator";
 import session from "models/session";
 import user from "models/user";
+import recovery from "models/recovery";
 import activation from "models/activation";
 import deck from "models/deck";
 import card from "models/card";
@@ -63,6 +64,10 @@ async function createUser(userObject = {}) {
   });
 }
 
+async function createRecoveryToken(userObject) {
+  return await recovery.create(userObject);
+}
+
 async function createDeck(name, userId) {
   return await deck.create(
     {
@@ -108,6 +113,19 @@ async function deleteAllEmails() {
   });
 }
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function hasEmailsAfterDelay(delayMs = 10) {
+  await delay(delayMs);
+
+  const response = await fetch(`${emailHttpUrl}/messages`);
+  const emailList = await response.json();
+
+  return emailList.length > 0;
+}
+
 async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
 
@@ -151,12 +169,14 @@ const orchestrator = {
   clearDatabase,
   runPendingMigrations,
   createUser,
+  createRecoveryToken,
   createDeck,
   createCard,
   createActivation,
   activateUser,
   createSession,
   deleteAllEmails,
+  hasEmailsAfterDelay,
   getLastEmail,
   extractUUID,
   verifyDateDifference,
