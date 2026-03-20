@@ -2,6 +2,7 @@ import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 import user from "@/models/user";
 import password from "@/models/password";
+import { describe } from "node:test";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -96,6 +97,8 @@ describe("PATCH /api/v1/users/[username]", () => {
           "create:session",
           "read:session",
           "update:user",
+          "create:recovery_token",
+          "update:recovery_token",
           "read:card",
           "create:card",
           "update:card",
@@ -152,6 +155,8 @@ describe("PATCH /api/v1/users/[username]", () => {
           "create:session",
           "read:session",
           "update:user",
+          "create:recovery_token",
+          "update:recovery_token",
           "read:card",
           "create:card",
           "update:card",
@@ -209,6 +214,8 @@ describe("PATCH /api/v1/users/[username]", () => {
           "create:session",
           "read:session",
           "update:user",
+          "create:recovery_token",
+          "update:recovery_token",
           "read:card",
           "create:card",
           "update:card",
@@ -382,6 +389,46 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(response2.status).toBe(200);
     });
 
+    test("With incorrect 'old password'", async () => {
+      const createdUser = await orchestrator.createUser({
+        username: "changePassword",
+        email: "changePassword@gmail.com",
+        password: "senha123",
+      });
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch(
+        "http://localhost:3000/api/v1/users/changePassword",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            old_password: "senha",
+            password: "changePassword",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(401);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "UnauthorizedError",
+        message: "Dados de autenticação não conferem.",
+        action: "Verifique se os dados enviados estão corretos.",
+        status_code: 401,
+      });
+    });
+  });
+
+  describe("Another user", () => {
     test("Editing another user without permission", async () => {
       const myUser = await orchestrator.createUser({
         username: "myUser",
