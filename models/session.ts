@@ -127,12 +127,39 @@ async function expireById(sessionId: string) {
   }
 }
 
+async function expireAllFromUserId(userId: string) {
+  const expiredSessions = await runUpdateQuery(userId);
+
+  return expiredSessions;
+
+  async function runUpdateQuery(userId: string) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        sessions
+      SET
+        expires_at = created_at - interval '1 day',
+        updated_at = now()
+      WHERE
+        user_id = $1
+        AND expires_at >= now()
+      RETURNING
+        *
+      ;`,
+      values: [userId],
+    });
+
+    return results.rows;
+  }
+}
+
 const session = {
   create,
   findOneValidByToken,
   renew,
   getExpirationDate,
   expireById,
+  expireAllFromUserId,
   EXPIRATION_IN_MILLISECONDS,
 };
 
