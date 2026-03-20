@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { SubmitEvent, useState } from "react";
 
 import Layout from "@/components/layout";
 import { withLogin } from "@/infra/auth";
@@ -11,7 +11,7 @@ export default function RecoveryPage() {
   const [errorAction, setErrorAction] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorAction(null);
 
@@ -81,13 +81,17 @@ export default function RecoveryPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="identifier"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Email
                   </label>
                   <input
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     type="text"
+                    id="identifier"
                     name="identifier"
                     className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="seu@email.com"
@@ -99,7 +103,7 @@ export default function RecoveryPage() {
                     type="submit"
                     className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
                   >
-                    Entrar
+                    Enviar
                   </button>
                 </div>
               </form>
