@@ -5,6 +5,15 @@ export interface User {
   username?: string;
   features?: string[];
   password?: string;
+  token_id?: string;
+}
+
+export interface Token {
+  user_id?: string;
+  used_at?: Date | string;
+  expires_at?: Date | string;
+  created_at?: Date | string;
+  updated_at?: Date | string;
 }
 
 export interface Deck {
