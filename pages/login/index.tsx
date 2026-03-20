@@ -12,7 +12,6 @@ export const getServerSideProps = withLogin();
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [errorAction, setErrorAction] = useState<string | null>(null);
 
   const router = useRouter();
@@ -95,7 +94,7 @@ export default function LoginPage() {
                   type="text"
                   name="identifier"
                   className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="seu@email.com ou usuario"
+                  placeholder="seu@email.com"
                 />
               </div>
 
@@ -112,18 +111,8 @@ export default function LoginPage() {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                    className="h-4 w-4"
-                  />
-                  <span>Manter-me conectado</span>
-                </label>
-
                 <Link
-                  href="/forgot"
+                  href="/recovery"
                   className="text-indigo-600 hover:underline"
                 >
                   Esqueci a senha
