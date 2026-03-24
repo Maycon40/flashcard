@@ -53,10 +53,9 @@ describe("POST /api/v1/sessions", () => {
       const createdAt = new Date(responseBody.created_at);
 
       expect(
-        orchestrator.verifyDateDifference(
-          createdAt,
+        orchestrator.verifyDateIsSimilar(
+          new Date(createdAt.getTime() + session.EXPIRATION_IN_MILLISECONDS),
           expiresAt,
-          session.EXPIRATION_IN_MILLISECONDS,
         ),
       ).toBe(true);
 

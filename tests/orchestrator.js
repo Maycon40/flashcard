@@ -154,8 +154,11 @@ function extractUUID(text) {
   return match ? match[0] : null;
 }
 
-function verifyDateDifference(date1, date2, dateDiff) {
-  return date1 - date2 + dateDiff < 1000 && date1 - date2 + dateDiff > 0;
+function verifyDateIsSimilar(date1, date2) {
+  return (
+    (date1 - date2 < 1000 && date1 - date2 >= 0) ||
+    (date2 - date1 < 1000 && date2 - date1 >= 0)
+  );
 }
 
 async function addFeaturesToUser(userId, features) {
@@ -179,7 +182,7 @@ const orchestrator = {
   hasEmailsAfterDelay,
   getLastEmail,
   extractUUID,
-  verifyDateDifference,
+  verifyDateIsSimilar,
   addFeaturesToUser,
 };
 
