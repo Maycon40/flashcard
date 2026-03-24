@@ -90,6 +90,15 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
 
       expect(responseBody.updated_at > responseBody.created_at).toBe(true);
       expect(responseBody.date_to_review > responseBody.updated_at).toBe(true);
+
+      const day = 1000 * 60 * 60 * 24;
+
+      const dateIsSimilar = orchestrator.verifyDateIsSimilar(
+        new Date(Date.now() + day * 2),
+        new Date(responseBody.date_to_review),
+      );
+
+      expect(dateIsSimilar).toBe(true);
     });
 
     test("With not created card", async () => {

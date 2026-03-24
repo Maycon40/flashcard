@@ -181,9 +181,11 @@ async function updateById(
 ) {
   let newDateToReview: Date | undefined;
   let deckId: string | undefined;
+  let newBox: string = "new";
 
-  if (cardNewValues.difficulty) {
-    newDateToReview = getNewDateToReview(cardNewValues.difficulty);
+  if (cardNewValues.difficulty && cardValues.box) {
+    newBox = getNewBox(cardValues.box, cardNewValues.difficulty);
+    newDateToReview = getNewDateToReview(newBox as string);
   }
 
   if (cardNewValues.deck_name) {
@@ -199,6 +201,7 @@ async function updateById(
     name: cardNewValues.name || cardValues.name,
     description: cardNewValues.description || cardValues.description,
     date_to_review: newDateToReview || cardValues.date_to_review,
+    box: newBox,
     deck_id: deckId || cardValues.deck_id,
   };
 
@@ -222,7 +225,8 @@ async function updateById(
           description = $3,
           date_to_review = $4,
           important = $5,
-          deck_id = $6,
+          box = $6,
+          deck_id = $7,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -236,24 +240,57 @@ async function updateById(
         cardValues.description,
         cardValues.date_to_review,
         cardValues.important,
+        cardValues.box,
         cardValues.deck_id,
       ],
     });
 
     return result.rows[0];
   }
+}
 
-  function getNewDateToReview(difficulty: string) {
-    const day = 1000 * 60 * 60 * 24;
+function getNewBox(box: string, difficulty: string) {
+  let newBox: string = box;
 
-    if (difficulty == "wrong") {
-      return new Date(Date.now() + day);
-    } else if (difficulty == "easy") {
-      return new Date(Date.now() + day * 2);
-    } else if (difficulty == "very easy") {
-      return new Date(Date.now() + day * 5);
+  if (difficulty == "wrong") {
+    newBox = "new";
+  } else if (difficulty == "easy") {
+    if (box == "new") {
+      newBox = "progress";
+    } else if (box == "consolidated") {
+      newBox = "advanced";
+    }
+  } else if (difficulty == "very easy") {
+    if (box == "new") {
+      newBox = "progress";
+    } else if (box == "progress") {
+      newBox = "secure";
+    } else if (box == "secure") {
+      newBox = "advanced";
+    } else if (box == "advanced") {
+      newBox = "consolidated";
     }
   }
+
+  return newBox;
+}
+
+function getNewDateToReview(newBox: string) {
+  const day = 1000 * 60 * 60 * 24;
+
+  if (newBox == "new") {
+    return new Date(Date.now() + day);
+  } else if (newBox == "progress") {
+    return new Date(Date.now() + day * 2);
+  } else if (newBox == "secure") {
+    return new Date(Date.now() + day * 5);
+  } else if (newBox == "advanced") {
+    return new Date(Date.now() + day * 14);
+  } else if (newBox == "consolidated") {
+    return new Date(Date.now() + day * 30);
+  }
+
+  return new Date(Date.now());
 }
 
 async function deleteById(cardId: string) {
@@ -287,6 +324,8 @@ const card = {
   findOneById,
   updateById,
   deleteById,
+  getNewBox,
+  getNewDateToReview,
 };
 
 export default card;

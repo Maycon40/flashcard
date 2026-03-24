@@ -71,10 +71,9 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       const createdAt = new Date(responseBodyActivation.created_at);
 
       expect(
-        orchestrator.verifyDateDifference(
-          createdAt,
+        orchestrator.verifyDateIsSimilar(
+          new Date(createdAt.getTime() + activation.EXPIRATION_IN_MILLISECONDS),
           expiresAt,
-          activation.EXPIRATION_IN_MILLISECONDS,
         ),
       ).toBe(true);
 
