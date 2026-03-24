@@ -39,7 +39,7 @@ export default function DashboardPage({ user }: { user: User }) {
             👋
           </h1>
           <p className="text-sm text-zinc-500">
-            Aqui estão seus baralhos e revisões pendentes.
+            Aqui estão suas revisões pendentes.
           </p>
         </div>
       </div>
