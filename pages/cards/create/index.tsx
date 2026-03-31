@@ -38,16 +38,20 @@ export default function CardsPage({ decks }: { decks: Deck[] }) {
   const [createError, setCreateError] = useState<string | null>(null);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [isImportant, setIsImportant] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
 
     setCreateError(null);
+
     if (!selectedDeck)
       return setCreateError("Selecione um baralho para associar o cartão.");
     if (!name.trim()) return setCreateError("O nome do cartão é obrigatório.");
     if (!description.trim())
       return setCreateError("A descrição do cartão é obrigatório.");
+
+    setIsSubmitting(true);
 
     try {
       const res = await fetch(
@@ -71,9 +75,11 @@ export default function CardsPage({ decks }: { decks: Deck[] }) {
         setCreateError(
           body?.action || body?.message || "Falha ao criar cartão.",
         );
+        setIsSubmitting(false);
       }
     } catch (err: any) {
       setCreateError(err?.message || "Erro de rede");
+      setIsSubmitting(false);
     }
   }
 
@@ -170,6 +176,7 @@ export default function CardsPage({ decks }: { decks: Deck[] }) {
             <button
               type="submit"
               className={`inline-flex items-center px-4 py-2 rounded-md text-white ${"bg-indigo-600 hover:bg-indigo-700"}`}
+              disabled={isSubmitting}
             >
               Criar cartão
             </button>

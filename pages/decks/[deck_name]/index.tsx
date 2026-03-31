@@ -14,20 +14,26 @@ export const getServerSideProps = withAuth(async (context) => {
   const origin = `${proto}://${host}`;
 
   const [resCards, resDeck] = await Promise.all([
-    fetch(`${origin}/api/v1/cards/${deck_name}`, {
+    fetch(`${origin}/api/v1/cards/${encodeURIComponent(deck_name as string)}`, {
       headers: {
         cookie: req.headers.cookie || "",
       },
     }),
-    fetch(`${origin}/api/v1/decks/${deck_name}`, {
+    fetch(`${origin}/api/v1/decks/${encodeURIComponent(deck_name as string)}`, {
       headers: {
         cookie: req.headers.cookie || "",
       },
     }),
   ]);
 
+  console.log("resCards", resCards);
+  console.log("resDeck", resDeck);
+
   const cards = await resCards.json();
   const deck = await resDeck.json();
+
+  console.log("cards", cards);
+  console.log("deck", deck);
 
   return {
     props: {

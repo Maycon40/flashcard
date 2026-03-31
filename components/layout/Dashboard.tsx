@@ -58,7 +58,7 @@ export default function LayoutDashboard({ children }: Props) {
                   href="/cards"
                   className="block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
-                  Cartões
+                  Meus cartões
                 </Link>
                 <Link
                   href="/profile"
