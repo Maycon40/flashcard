@@ -72,20 +72,18 @@ export default function EditCardPage({
     setSubmitError(null);
     setSubmitSuccess(false);
 
-    if (!name.trim()) {
-      setSubmitError("O nome do cartão é obrigatório.");
-      return;
-    }
-
     if (!selectedDeck) {
       setSubmitError("A seleção de um baralho é obrigatória.");
       return;
     }
 
-    if (!card) {
-      setSubmitError("Cartão não encontrado para atualização.");
+    if (!name.trim()) {
+      setSubmitError("O nome do cartão é obrigatório.");
       return;
     }
+
+    if (!description.trim())
+      return setSubmitError("A descrição do cartão é obrigatório.");
 
     setIsSubmitting(true);
 
