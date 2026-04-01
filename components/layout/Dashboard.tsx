@@ -1,17 +1,20 @@
 "use client";
 
-import React from "react";
+import { useState, ReactNode, MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import ConfirmLogout from "@/components/logout";
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function LayoutDashboard({ children }: Props) {
   const router = useRouter();
 
-  async function logout(e: React.MouseEvent) {
+  const [logoutState, setLogoutState] = useState(false);
+
+  async function logout(e: MouseEvent) {
     e.preventDefault();
 
     await fetch(`/api/v1/sessions`, {
@@ -67,7 +70,7 @@ export default function LayoutDashboard({ children }: Props) {
                   Perfil
                 </Link>
                 <button
-                  onClick={(e) => logout(e)}
+                  onClick={() => setLogoutState(true)}
                   className="w-full text-left block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-red-600 cursor-pointer"
                 >
                   Sair
@@ -75,6 +78,14 @@ export default function LayoutDashboard({ children }: Props) {
               </nav>
             </div>
           </aside>
+
+          <ConfirmLogout
+            logout={logoutState}
+            setLogout={setLogoutState}
+            callback={(e: MouseEvent) => logout(e)}
+          >
+            Você tem certeza que deseja <strong>sair</strong>?
+          </ConfirmLogout>
 
           <section className="md:col-span-5">
             <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
