@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, SubmitEvent } from "react";
 import Link from "next/link";
 
 import Layout from "@/components/layout";
-import { withLogin } from "@/infra/auth";
-
-export const getServerSideProps = withLogin();
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -18,7 +15,7 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setTouched(true);
     setErrorAction(null);

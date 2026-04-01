@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, SubmitEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 import Layout from "@/components/layout";
-import { withLogin } from "@/infra/auth";
-
-export const getServerSideProps = withLogin();
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -16,7 +13,7 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setErrorAction(null);
 

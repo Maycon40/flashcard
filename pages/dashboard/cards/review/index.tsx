@@ -1,39 +1,28 @@
 "use client";
 
+import useSWR from "swr";
 import { useState } from "react";
+import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
-import { withAuth } from "@/infra/auth";
 import { Card } from "@/types/types";
+import { fetcher } from "@/infra/fetcher";
 
-export const getServerSideProps = withAuth(async (context) => {
-  const { req, query } = context;
-  const { important } = query;
-
-  const proto = (req.headers["x-forwarded-proto"] as string) || "http";
-  const host = req.headers["host"];
-  const origin = `${proto}://${host}`;
-
-  const resCards = await fetch(
-    `${origin}/api/v1/cards/review?important=${important || "false"}`,
-    {
-      headers: {
-        cookie: req.headers.cookie || "",
-      },
-    },
-  );
-
-  const cards = await resCards.json();
-
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
-      cards,
+      important: context.query?.important,
     },
   };
-});
+}
 
-export default function ReviewPage({ cards }: { cards: Card[] }) {
+export default function ReviewPage({ important }: { important: string }) {
+  const { data: cards } = useSWR<Card[]>(
+    `/api/v1/cards/review?important=${important || "false"}`,
+    fetcher,
+  );
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
