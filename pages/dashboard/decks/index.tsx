@@ -29,9 +29,10 @@ export default function DecksPage() {
     });
 
     const body = await res.json().catch(() => ({}));
+    const updatedDecks = decks.filter((d) => d.name !== deckName);
 
     if (res.status == 200) {
-      await mutate("/api/v1/decks");
+      await mutate("/api/v1/decks", updatedDecks);
     } else {
       setHandleError(
         body?.action || body?.message || "Falha ao deletar o baralho.",
@@ -122,6 +123,7 @@ function DecksData({
       </div>
     );
   }
+  console.log("decks", decks);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
