@@ -10,9 +10,13 @@ import { fetcher } from "@/infra/fetcher";
 import ErrorComponent from "@/components/error";
 
 export default function CardsPage() {
-  const { data: cards, error } = useSWR<Card[]>(`/api/v1/cards`, fetcher);
+  const {
+    data: cards,
+    error,
+    isLoading,
+  } = useSWR<Card[]>(`/api/v1/cards`, fetcher);
 
-  if (error) {
+  if (error && error.status_code != 404) {
     return (
       <LayoutDashboard>
         <div className="flex items-center justify-between mb-6">
@@ -44,10 +48,10 @@ export default function CardsPage() {
         </div>
       </div>
 
-      {cards ? (
-        <Cards cards={cards}></Cards>
-      ) : (
+      {isLoading ? (
         <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+      ) : (
+        <Cards cards={cards || []}></Cards>
       )}
     </LayoutDashboard>
   );

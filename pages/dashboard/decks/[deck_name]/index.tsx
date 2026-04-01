@@ -16,12 +16,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function DeckDetailsPage({ deckName }: { deckName: string }) {
-  const { data: cards, error } = useSWR<Card[]>(
-    `/api/v1/cards/${encodeURIComponent(deckName)}`,
-    fetcher,
-  );
+  const {
+    data: cards,
+    error,
+    isLoading,
+  } = useSWR<Card[]>(`/api/v1/cards/${encodeURIComponent(deckName)}`, fetcher);
 
-  if (error) {
+  if (error && error.status_code != 404) {
     return (
       <LayoutDashboard>
         <div className="mb-8">
@@ -37,20 +38,20 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
     <LayoutDashboard>
       <div className="mb-8">
         <h1 className="text-3xl font-bold">{deckName}</h1>
-        {cards ? (
-          <p className="text-zinc-500">
-            {cards?.length || 0} cart{cards?.length > 1 ? "ões" : "ão"} neste
-            baralho.
-          </p>
-        ) : (
+        {isLoading ? (
           <div className="animate-pulse h-8 w-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+        ) : (
+          <p className="text-zinc-500">
+            {cards?.length || 0} cart{(cards || []).length > 1 ? "ões" : "ão"}{" "}
+            neste baralho.
+          </p>
         )}
       </div>
 
-      {cards ? (
-        <Cards cards={cards} />
-      ) : (
+      {isLoading ? (
         <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+      ) : (
+        <Cards cards={cards || []} />
       )}
     </LayoutDashboard>
   );

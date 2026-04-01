@@ -106,7 +106,7 @@ function DecksData({
     );
   }
 
-  if (error) {
+  if (error && error.status_code != 404) {
     return <ErrorComponent>Erro ao carregar seus baralhos.</ErrorComponent>;
   }
 
