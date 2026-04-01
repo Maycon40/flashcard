@@ -1,5 +1,6 @@
 import useSWR from "swr";
-import { useState, SubmitEvent } from "react";
+import { useState, SubmitEvent, MouseEvent } from "react";
+import { useRouter } from "next/router";
 
 import { User } from "@/types/types";
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -7,7 +8,14 @@ import { fetcher } from "@/infra/fetcher";
 import ErrorComponent from "@/components/error";
 
 export default function ProfilePage() {
+  const router = useRouter();
+
   const { data: user } = useSWR<User>("/api/v1/user", fetcher);
+
+  function editPassword(e: MouseEvent) {
+    e.preventDefault();
+    router.push("/recovery");
+  }
 
   return (
     <LayoutDashboard>
@@ -23,6 +31,19 @@ export default function ProfilePage() {
               <div className="h-20 rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
           )}
+        </section>
+
+        <div className="border-t border-zinc-200 dark:border-zinc-800"></div>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Alteração de Senha</h2>
+          <p>Para alterar a senha, clique no botão abaixo.</p>
+          <button
+            className="mt-4 inline-flex items-center px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+            onClick={(e) => editPassword(e)}
+          >
+            Alterar Senha
+          </button>
         </section>
       </div>
     </LayoutDashboard>
@@ -98,7 +119,7 @@ function ProfileForm({ user }: { user: User }) {
         <button
           type="submit"
           disabled={profileSubmitting}
-          className={`inline-flex items-center px-4 py-2 rounded-md text-white ${
+          className={`inline-flex items-center px-4 py-2 rounded-md text-white cursor-pointer ${
             profileSubmitting
               ? "bg-indigo-300 cursor-not-allowed"
               : "bg-indigo-600 hover:bg-indigo-700"
