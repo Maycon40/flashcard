@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, SubmitEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 import Layout from "@/components/layout";
-import { withLogin } from "@/infra/auth";
-
-export const getServerSideProps = withLogin();
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -16,7 +13,7 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setErrorAction(null);
 
@@ -122,7 +119,7 @@ export default function LoginPage() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
+                  className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 cursor-pointer"
                 >
                   Entrar
                 </button>

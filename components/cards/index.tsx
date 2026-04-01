@@ -53,11 +53,7 @@ export default function Cards({
               >
                 <div className="flex justify-between items-start">
                   <h3 className="font-semibold">{card.name}</h3>
-                  {card.important && (
-                    <span className="text-xs font-bold text-yellow-500 bg-yellow-100 dark:bg-yellow-900/50 dark:text-yellow-400 px-2 py-1 rounded-full">
-                      Importante
-                    </span>
-                  )}
+                  <CardImportant important={card.important} />
                 </div>
                 <p className="text-sm text-zinc-500 mt-1">
                   {sliceText(card.description as string)}
@@ -67,7 +63,7 @@ export default function Cards({
                 </p>
                 <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-end">
                   <Link
-                    href={`/cards/edit/${card.id}`}
+                    href={`/dashboard/cards/edit/${card.id}`}
                     className="mr-5 text-sm font-medium text-indigo-600 hover:underline"
                   >
                     Editar
@@ -94,6 +90,18 @@ export default function Cards({
           </div>
         )}
       </section>
+    </>
+  );
+}
+
+function CardImportant({ important }: { important: boolean | undefined }) {
+  return (
+    <>
+      {important && (
+        <span className="text-xs font-bold text-yellow-500 bg-yellow-100 dark:bg-yellow-900/50 dark:text-yellow-400 px-2 py-1 rounded-full">
+          Importante
+        </span>
+      )}
     </>
   );
 }

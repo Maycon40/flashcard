@@ -16,7 +16,7 @@ export default function ConfirmDelete({
                 onClick={callback}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
               >
-                Excluir agora
+                Excluir
               </button>
               <button
                 onClick={() => setDeleteState(null)}

@@ -1,10 +1,7 @@
 import { SubmitEvent, useState } from "react";
 
 import Layout from "@/components/layout";
-import { withLogin } from "@/infra/auth";
 import Link from "next/link";
-
-export const getServerSideProps = withLogin();
 
 export default function RecoveryPage() {
   const [identifier, setIdentifier] = useState("");
@@ -72,7 +69,7 @@ export default function RecoveryPage() {
             </div>
           ) : (
             <div className="rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Recuperar</h3>
+              <h3 className="text-xl font-semibold mb-4">Recuperar Senha</h3>
               {errorAction && (
                 <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
                   {errorAction}
@@ -101,7 +98,7 @@ export default function RecoveryPage() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
+                    className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 cursor-pointer"
                   >
                     Enviar
                   </button>
