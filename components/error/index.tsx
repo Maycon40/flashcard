@@ -1,6 +1,6 @@
 export default function ErrorComponent({ children }: any) {
   return (
-    <div className="h-20 mt-10 flex justify-center items-center bg-red-400 text-white font-bold border-red-600 border-2 rounded-2xl">
+    <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
       {children}
     </div>
   );
