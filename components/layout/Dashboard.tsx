@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 interface Props {
   children: React.ReactNode;
@@ -49,19 +49,19 @@ export default function LayoutDashboard({ children }: Props) {
                   Painel
                 </Link>
                 <Link
-                  href="/decks"
+                  href="/dashboard/decks"
                   className="block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
                   Meus baralhos
                 </Link>
                 <Link
-                  href="/cards"
+                  href="/dashboard/cards"
                   className="block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
                   Meus cartões
                 </Link>
                 <Link
-                  href="/profile"
+                  href="/dashboard/profile"
                   className="block rounded-md px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
                   Perfil
