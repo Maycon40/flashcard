@@ -1,3 +1,4 @@
+import { useSWRConfig } from "swr";
 import { useState, MouseEvent, ReactNode } from "react";
 
 import { Card } from "@/types/types";
@@ -12,22 +13,21 @@ function sliceText(text: string) {
   return text;
 }
 
-export default function Cards({
-  cards: initialCards,
-}: {
-  cards: Card[];
-}): ReactNode {
-  const [cards, setCards] = useState<Card[]>(initialCards);
+export default function Cards({ cards }: { cards: Card[] }): ReactNode {
+  const { mutate } = useSWRConfig();
+
   const [cardToDelete, setCardToDelete] = useState<string | null>(null);
 
   async function deleteCard(e: MouseEvent, cardId: string) {
     e.preventDefault();
 
-    setCards(cards.filter((card) => card.id !== cardId));
+    const updatedCards = cards.filter((c) => c.id !== cardId);
 
     await fetch(`/api/v1/cards/id/${cardId}`, {
       method: "DELETE",
     });
+
+    await mutate("/api/v1/cards", updatedCards);
 
     setCardToDelete(null);
   }
