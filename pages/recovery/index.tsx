@@ -1,10 +1,7 @@
 import { SubmitEvent, useState } from "react";
 
 import Layout from "@/components/layout";
-import { withLogin } from "@/infra/auth";
 import Link from "next/link";
-
-export const getServerSideProps = withLogin();
 
 export default function RecoveryPage() {
   const [identifier, setIdentifier] = useState("");
