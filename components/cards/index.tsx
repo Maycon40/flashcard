@@ -21,13 +21,15 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
   async function deleteCard(e: MouseEvent, cardId: string) {
     e.preventDefault();
 
-    const updatedCards = cards.filter((c) => c.id !== cardId);
-
     await fetch(`/api/v1/cards/id/${cardId}`, {
       method: "DELETE",
     });
 
-    await mutate("/api/v1/cards", updatedCards);
+    await mutate(
+      (key: any) => typeof key === "string" && key.includes("/api/v1/cards"),
+      undefined,
+      { revalidate: true },
+    );
 
     setCardToDelete(null);
   }
@@ -85,7 +87,7 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
               Nenhum cartão encontrado.
             </p>
             <p className="mt-2 text-sm text-zinc-500">
-              Clique em Criar para adicionar o primeiro cartão.
+              Clique em <strong>Criar</strong> para adicionar o primeiro cartão.
             </p>
           </div>
         )}

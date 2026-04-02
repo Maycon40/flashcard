@@ -2,8 +2,7 @@
 
 import useSWR from "swr";
 import { useState, SubmitEvent } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Deck } from "@/types/types";
@@ -11,6 +10,13 @@ import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 
 export default function CreateCardPage() {
+  const router = useRouter();
+
+  function back(e: MouseEvent) {
+    e.preventDefault();
+    router.back();
+  }
+
   return (
     <LayoutDashboard>
       <div className="flex items-center justify-between mb-6">
@@ -20,25 +26,25 @@ export default function CreateCardPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard/cards"
+          <button
+            onClick={(e: any) => back(e)}
             className="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
           >
             Cancelar
-          </Link>
+          </button>
         </div>
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
         <h3 className="text-lg font-semibold mb-3">Novo cartão</h3>
-        <CreateCardForm />
+        <CreateCardForm router={router} />
       </div>
     </LayoutDashboard>
   );
 }
 
-function CreateCardForm() {
-  const router = useRouter();
+function CreateCardForm({ router }: { router: NextRouter }) {
+  const deckName = router.query.deck_name;
 
   const { data: decks } = useSWR<Deck[]>(`/api/v1/decks`, fetcher);
 
@@ -54,7 +60,7 @@ function CreateCardForm() {
 
     setCreateError(null);
 
-    if (!selectedDeck)
+    if (!selectedDeck && !deckName)
       return setCreateError("Selecione um baralho para associar o cartão.");
     if (!name.trim()) return setCreateError("O nome do cartão é obrigatório.");
     if (!description.trim())
@@ -64,7 +70,7 @@ function CreateCardForm() {
 
     try {
       const res = await fetch(
-        `/api/v1/cards/${encodeURIComponent(selectedDeck)}`,
+        `/api/v1/cards/${encodeURIComponent(String(selectedDeck || deckName))}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -79,7 +85,7 @@ function CreateCardForm() {
       const body = await res.json().catch(() => ({}));
 
       if (res.status === 201) {
-        router.push("/dashboard/cards");
+        router.back();
       } else {
         setCreateError(
           body?.action || body?.message || "Falha ao criar cartão.",
@@ -103,7 +109,7 @@ function CreateCardForm() {
         <div>
           <label className="block text-sm font-medium mb-1">Baralho</label>
           <select
-            value={selectedDeck || ""}
+            value={selectedDeck || deckName || ""}
             onChange={(e) => setSelectedDeck(e.target.value || null)}
             className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
           >

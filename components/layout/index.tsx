@@ -14,10 +14,10 @@ export default function Layout({ children }: LayoutProps) {
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+              <div className="h-8 w-8 md:h-10 md:w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                 FC
               </div>
-              <h1 className="text-lg font-semibold">Flashcard</h1>
+              <h1 className="text-base md:text-lg font-semibold">Flashcard</h1>
             </Link>
           </div>
 
