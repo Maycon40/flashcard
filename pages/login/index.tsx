@@ -54,11 +54,11 @@ export default function LoginPage() {
             <h2 className="text-3xl font-extrabold mb-4">
               Faça login e continue aprendendo
             </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+            <p className="hidden md:block text-zinc-600 dark:text-zinc-400 mb-6">
               Acesse seus baralhos, acompanhe progresso e estude com revisão
               espaçada onde estiver.
             </p>
-            <ul className="space-y-3 text-zinc-700 dark:text-zinc-300">
+            <ul className="hidden md:block space-y-3 text-zinc-700 dark:text-zinc-300">
               <li className="flex gap-3">
                 <span className="text-indigo-600 font-bold">•</span>
                 <span>Sincronize progresso entre dispositivos</span>
