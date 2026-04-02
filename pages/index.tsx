@@ -19,16 +19,16 @@ export default function Home() {
 
             <div className="flex gap-3">
               <Link
-                href="/decks"
+                href="/dashboard/decks"
                 className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
               >
-                Ver baralhos
+                Criar baralho
               </Link>
               <Link
-                href="/decks"
+                href="/dashboard/cards"
                 className="inline-flex items-center px-5 py-3 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100"
               >
-                Criar baralho
+                Criar cartão
               </Link>
             </div>
           </div>
