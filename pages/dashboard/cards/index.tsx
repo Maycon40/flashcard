@@ -16,8 +16,6 @@ export default function CardsPage() {
     isLoading,
   } = useSWR<Card[]>(`/api/v1/cards`, fetcher);
 
-  console.log("cards", cards);
-
   if (error && error.status_code != 404) {
     return (
       <LayoutDashboard>

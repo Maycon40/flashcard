@@ -69,11 +69,11 @@ export default function SignupPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-3xl font-extrabold mb-4">Crie sua conta</h2>
-            <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+            <p className="hidden md:block text-zinc-600 dark:text-zinc-400 mb-6">
               Comece a criar e revisar seus flashcards com revisão espaçada e
               retenção otimizada.
             </p>
-            <ul className="space-y-3 text-zinc-700 dark:text-zinc-300">
+            <ul className="hidden md:block space-y-3 text-zinc-700 dark:text-zinc-300">
               <li className="flex gap-3">
                 <span className="text-indigo-600 font-bold">•</span>
                 <span>Sincronize seu progresso</span>
