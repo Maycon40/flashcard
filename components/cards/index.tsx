@@ -51,6 +51,38 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
     setCardToDelete(null);
   }
 
+  async function exportCard(e: MouseEvent) {
+    e.preventDefault();
+
+    const card = cards.filter((card) => card.id === openMenuId);
+
+    const jsonString = JSON.stringify(
+      {
+        name: card[0].name,
+        description: card[0].description,
+        important: card[0].important,
+        deck_name: card[0].deck_name,
+      },
+      null,
+      2,
+    );
+
+    setOpenMenuId(null);
+
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cartão-${card[0].name}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
   return (
     <>
       <ConfirmDelete
@@ -105,11 +137,18 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
                         <div className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 z-20 overflow-hidden">
                           <Link
                             href={`/dashboard/cards/review/${card.id}`}
-                            className="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                            className="w-full block px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
                             onClick={() => setOpenMenuId(null)}
                           >
                             Revisar
                           </Link>
+                          <button
+                            type="button"
+                            onClick={(e) => exportCard(e)}
+                            className="w-full block px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                          >
+                            Exportar
+                          </button>
                         </div>
                       )}
                     </div>

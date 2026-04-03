@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
@@ -22,6 +23,66 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
     error,
     isLoading,
   } = useSWR<Card[]>(`/api/v1/cards/${encodeURIComponent(deckName)}`, fetcher);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenu(false);
+      }
+    }
+
+    if (openMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenu]);
+
+  const filteredCards = useMemo(() => {
+    if (!cards) return [];
+    const query = searchQuery.toLowerCase();
+    return cards.filter(
+      (card) =>
+        card.name?.toLowerCase().includes(query) ||
+        card.description?.toLowerCase().includes(query),
+    );
+  }, [cards, searchQuery]);
+
+  async function exportCards(e: MouseEvent) {
+    e.preventDefault();
+    setOpenMenu(false);
+
+    const cardsJson = [];
+
+    for (const card of filteredCards) {
+      cardsJson.push({
+        name: card.name,
+        description: card.description,
+        important: card.important,
+        deck_name: card.deck_name,
+      });
+    }
+
+    const jsonString = JSON.stringify(cardsJson, null, 2);
+
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cartões.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
 
   if (
     error &&
@@ -54,12 +115,77 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
           )}
         </div>
 
-        <Link
-          href={`/dashboard/cards/create?deck_name=${deckName}`}
-          className="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
-        >
-          Criar cartão
-        </Link>
+        <div className="mt-5 md:mt-0 flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full sm:w-64">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                className="h-5 w-5 text-zinc-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Pesquisar cartões..."
+              className="block w-full pl-10 pr-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md leading-5 bg-white dark:bg-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="w-full md:w-auto flex items-center gap-2">
+            <Link
+              href={`/dashboard/cards/create?deck_name=${deckName}`}
+              className="w-full sm:w-auto justify-center inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+            >
+              Criar cartão
+            </Link>
+
+            <div className="relative" ref={openMenu ? menuRef : null}>
+              <button
+                type="button"
+                className="p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors"
+                onClick={() => setOpenMenu(openMenu ? false : true)}
+                aria-label="Opções do cartão"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+
+              {openMenu && (
+                <div className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 z-20 overflow-hidden">
+                  <Link
+                    href={`/dashboard/cards/import`}
+                    className="w-full block px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                    onClick={() => setOpenMenu(false)}
+                  >
+                    Importar
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={(e: any) => exportCards(e)}
+                    className="w-full block px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                  >
+                    Exportar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {isLoading ? (
