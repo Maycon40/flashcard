@@ -18,7 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function ReviewPage({ important }: { important: string }) {
-  const { data: cards, mutate } = useSWR<Card[]>(
+  const { data: cards } = useSWR<Card[]>(
     `/api/v1/cards/review?important=${important || "false"}`,
     fetcher,
   );
@@ -39,7 +39,6 @@ export default function ReviewPage({ important }: { important: string }) {
     }
 
     setIsSubmitting(true);
-    mutate(undefined, { revalidate: true });
 
     try {
       await fetch(`/api/v1/cards/id/${card.id}`, {

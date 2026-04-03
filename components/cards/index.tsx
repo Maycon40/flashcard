@@ -1,5 +1,5 @@
 import { useSWRConfig } from "swr";
-import { useState, MouseEvent, ReactNode } from "react";
+import { useState, MouseEvent, ReactNode, useEffect, useRef } from "react";
 
 import { Card } from "@/types/types";
 import Link from "next/link";
@@ -17,6 +17,23 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
   const { mutate } = useSWRConfig();
 
   const [cardToDelete, setCardToDelete] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    }
+
+    if (openMenuId) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenuId]);
 
   async function deleteCard(e: MouseEvent, cardId: string) {
     e.preventDefault();
@@ -54,8 +71,49 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
                 className="rounded-lg border border-zinc-100 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900"
               >
                 <div className="flex justify-between items-start">
-                  <h3 className="font-semibold">{card.name}</h3>
-                  <CardImportant important={card.important} />
+                  <div className="flex-1 mr-2">
+                    <h3 className="font-semibold">{card.name}</h3>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <CardImportant important={card.important} />
+                    <div
+                      className="relative"
+                      ref={openMenuId === String(card.id) ? menuRef : null}
+                    >
+                      <button
+                        type="button"
+                        className="p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors"
+                        onClick={() =>
+                          setOpenMenuId(
+                            openMenuId === String(card.id)
+                              ? null
+                              : String(card.id),
+                          )
+                        }
+                        aria-label="Opções do cartão"
+                      >
+                        <svg
+                          className="h-5 w-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                      </button>
+
+                      {openMenuId === String(card.id) && (
+                        <div className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 z-20 overflow-hidden">
+                          <Link
+                            href={`/dashboard/cards/review/${card.id}`}
+                            className="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            Revisar
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <p className="text-sm text-zinc-500 mt-1">
                   {sliceText(card.description as string)}

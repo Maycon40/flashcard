@@ -1,25 +1,43 @@
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Card, User } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
+  const { mutate } = useSWRConfig();
+
   const { data: user, isLoading: userLoading } = useSWR<User>(
     "/api/v1/user",
     fetcher,
   );
 
+  useEffect(() => {
+    mutate("/api/v1/cards/review?important=true", undefined, {
+      revalidate: true,
+    });
+    mutate("/api/v1/cards/review?important=false", undefined, {
+      revalidate: true,
+    });
+  }, [mutate]);
+
   const {
     data: importantCardsToReview = [],
     isLoading: reviewLoadingImportant,
-  } = useSWR<Card[]>("/api/v1/cards/review?important=true", fetcher);
+    isValidating: reviewValidatingImportant,
+  } = useSWR<Card[]>("/api/v1/cards/review?important=true", fetcher, {
+    revalidateOnMount: true,
+  });
 
-  const { data: cardsToReview = [], isLoading: reviewLoading } = useSWR<Card[]>(
-    "/api/v1/cards/review?important=false",
-    fetcher,
-  );
+  const {
+    data: cardsToReview = [],
+    isLoading: reviewLoading,
+    isValidating: reviewValidating,
+  } = useSWR<Card[]>("/api/v1/cards/review?important=false", fetcher, {
+    revalidateOnMount: true,
+  });
 
   return (
     <LayoutDashboard>
@@ -42,7 +60,7 @@ export default function DashboardPage() {
 
       <section className="mb-8">
         <h2>Cartão Importante para Revisar:</h2>
-        {reviewLoadingImportant ? (
+        {reviewLoadingImportant || reviewValidatingImportant ? (
           <div className="animate-pulse">
             <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
           </div>
@@ -76,7 +94,7 @@ export default function DashboardPage() {
 
       <section className="mb-8">
         <h2>Cartão Não Importante para Revisar:</h2>
-        {reviewLoading ? (
+        {reviewLoading || reviewValidating ? (
           <div className="animate-pulse">
             <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
           </div>
