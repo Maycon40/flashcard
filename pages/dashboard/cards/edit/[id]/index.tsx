@@ -19,10 +19,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function EditCardPage({ cardId }: { cardId: string }) {
-  const { data: card, error } = useSWR<Card>(
-    `/api/v1/cards/id/${cardId}`,
-    fetcher,
-  );
+  const {
+    data: card,
+    error,
+    isLoading,
+    isValidating,
+  } = useSWR<Card>(`/api/v1/cards/id/${cardId}`, fetcher, {
+    revalidateOnMount: true,
+  });
 
   if (error) {
     return (
@@ -48,7 +52,7 @@ export default function EditCardPage({ cardId }: { cardId: string }) {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
-        {card ? (
+        {card && !isValidating && !isLoading ? (
           <EditCardForm card={card} />
         ) : (
           <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
