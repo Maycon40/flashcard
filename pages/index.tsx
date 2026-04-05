@@ -132,7 +132,7 @@ export default function Home() {
             <div className="space-y-2">
               <h4 className="font-semibold">Personalizável</h4>
               <p className="text-sm">
-                Crie decks para qualquer assunto, ajuste a dificuldade e
+                Crie baralhos para qualquer assunto, ajuste a dificuldade e
                 acompanhe seu progresso.
               </p>
             </div>
