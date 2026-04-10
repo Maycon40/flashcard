@@ -125,6 +125,9 @@ async function findAllByDeckId(deckId: string): Promise<Card[]> {
         JOIN decks ON cards.deck_id = decks.id
         WHERE
           cards.deck_id = $1
+        ORDER BY
+          cards.important DESC,
+          LOWER(cards.name) ASC
         ;`,
       values: [deckId],
     });
@@ -179,14 +182,7 @@ async function updateById(
   cardNewValues: Card & { difficulty: string },
   userId: string,
 ) {
-  let newDateToReview: Date | undefined;
   let deckId: string | undefined;
-  let newBox: string = "new";
-
-  if (cardNewValues.difficulty && cardValues.box) {
-    newBox = getNewBox(cardValues.box, cardNewValues.difficulty);
-    newDateToReview = getNewDateToReview(newBox as string);
-  }
 
   if (cardNewValues.deck_name) {
     const { id } = await deck.findOneByUserIdAndName(
@@ -200,10 +196,15 @@ async function updateById(
     ...cardValues,
     name: cardNewValues.name || cardValues.name,
     description: cardNewValues.description || cardValues.description,
-    date_to_review: newDateToReview || cardValues.date_to_review,
-    box: newBox,
     deck_id: deckId || cardValues.deck_id,
   };
+
+  if (cardNewValues.difficulty && cardValues.box) {
+    const newBox = getNewBox(cardValues.box, cardNewValues.difficulty);
+    const newDateToReview = getNewDateToReview(newBox as string);
+    cardWithNewValues.box = newBox;
+    cardWithNewValues.date_to_review = newDateToReview;
+  }
 
   if (cardNewValues.important !== undefined) {
     cardWithNewValues.important = Boolean(cardNewValues.important);
