@@ -53,6 +53,8 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
     );
   }, [cards, searchQuery]);
 
+  console.log("cards", cards);
+
   async function exportCards(e: MouseEvent) {
     e.preventDefault();
     setOpenMenu(false);
@@ -191,7 +193,7 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
       {isLoading ? (
         <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
       ) : (
-        <Cards cards={cards || []} />
+        <Cards cards={filteredCards || []} />
       )}
     </LayoutDashboard>
   );

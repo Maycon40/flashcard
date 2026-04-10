@@ -68,6 +68,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         },
       );
 
+      expect(createdCard.box).toBe("new");
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
@@ -77,6 +78,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         name: "Novo nome",
         description: "Nova descrição",
         deck_id: createdDeck.id,
+        box: "progress",
         important: true,
         date_to_review: responseBody.date_to_review,
         created_at: responseBody.created_at,
@@ -99,6 +101,38 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       );
 
       expect(dateIsSimilar).toBe(true);
+
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: false,
+          }),
+        },
+      );
+
+      expect(response2.status).toBe(200);
+
+      const response2Body = await response2.json();
+
+      expect(response2Body).toEqual({
+        id: response2Body.id,
+        name: "Novo nome",
+        description: "Nova descrição",
+        deck_id: createdDeck.id,
+        box: "progress",
+        important: false,
+        date_to_review: response2Body.date_to_review,
+        created_at: response2Body.created_at,
+        updated_at: response2Body.updated_at,
+      });
     });
 
     test("With not created card", async () => {

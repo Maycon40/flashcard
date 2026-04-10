@@ -67,6 +67,7 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
         description: "Descrição do Cartão",
         deck_id: createdDeck.id,
         deck_name: createdDeck.name,
+        box: "new",
         important: false,
         date_to_review: responseBody.date_to_review,
         created_at: responseBody.created_at,
