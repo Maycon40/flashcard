@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import Cards from "@/components/cards";
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -17,12 +18,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-export default function DeckDetailsPage({ deckName }: { deckName: string }) {
+export default function DeckDetailsPage() {
+  const { query } = useRouter();
+  const deckName = query?.deck_name;
+
   const {
     data: cards,
     error,
     isLoading,
-  } = useSWR<Card[]>(`/api/v1/cards/${encodeURIComponent(deckName)}`, fetcher);
+  } = useSWR<Card[]>(
+    `/api/v1/cards/${encodeURIComponent(String(query?.deck_name))}`,
+    fetcher,
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -52,8 +59,6 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
         card.description?.toLowerCase().includes(query),
     );
   }, [cards, searchQuery]);
-
-  console.log("cards", cards);
 
   async function exportCards(e: MouseEvent) {
     e.preventDefault();
@@ -107,7 +112,7 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
       <div className="flex flex-wrap items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">{deckName}</h1>
-          {isLoading ? (
+          {isLoading || !query ? (
             <div className="animate-pulse h-8 w-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
           ) : (
             <p className="text-zinc-500">
@@ -190,7 +195,7 @@ export default function DeckDetailsPage({ deckName }: { deckName: string }) {
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoading || !query ? (
         <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
       ) : (
         <Cards cards={filteredCards || []} />

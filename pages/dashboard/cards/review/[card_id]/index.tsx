@@ -2,25 +2,24 @@
 
 import useSWR from "swr";
 import { useState } from "react";
-import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Card } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      cardId: context.params?.card_id,
-    },
-  };
-}
+export default function ReviewPage() {
+  const { query } = useRouter();
 
-export default function ReviewPage({ cardId }: { cardId: string }) {
-  const { data: card } = useSWR<Card>(`/api/v1/cards/id/${cardId}`, fetcher);
+  const { data: card, isLoading } = useSWR<Card>(
+    `/api/v1/cards/id/${query?.card_id}`,
+    fetcher,
+  );
 
-  const [currentCard, setCurrentCard] = useState<string | null>(cardId);
+  const [currentCard, setCurrentCard] = useState<string | null>(
+    String(card?.id),
+  );
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,7 +28,7 @@ export default function ReviewPage({ cardId }: { cardId: string }) {
 
     try {
       if (new Date(String(card?.date_to_review)) < new Date(Date.now())) {
-        await fetch(`/api/v1/cards/id/${cardId}`, {
+        await fetch(`/api/v1/cards/id/${card?.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -37,14 +36,25 @@ export default function ReviewPage({ cardId }: { cardId: string }) {
           body: JSON.stringify({ difficulty }),
         });
       }
-    } catch (err) {
-      console.error("Falha ao enviar a revisão:", err);
     } finally {
       setIsSubmitting(false);
       setIsFlipped(false);
       setCurrentCard(null);
     }
   };
+
+  if (isLoading || !query) {
+    return (
+      <LayoutDashboard>
+        <h1 className="text-2xl font-semibold mb-2">Revisão</h1>
+        <p className="text-sm text-zinc-500 mb-6">Revisando cartão</p>
+
+        <div className="animate-pulse">
+          <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+      </LayoutDashboard>
+    );
+  }
 
   if (!currentCard) {
     return (

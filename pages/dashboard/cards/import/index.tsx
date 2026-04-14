@@ -69,7 +69,6 @@ function ImportCardForm() {
     try {
       const content = await file.text();
       const data = JSON.parse(content);
-      console.log("data", data);
 
       const cardsToImport = Array.isArray(data) ? data : [data];
 

@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import { useState, SubmitEvent } from "react";
-import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -9,17 +8,12 @@ import Link from "next/link";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      deckName: context.params?.deck_name,
-    },
-  };
-}
+export default function EditDeckPage() {
+  const { query } = useRouter();
+  const deckName = query?.deck_name;
 
-export default function EditDeckPage({ deckName }: { deckName: string }) {
   const { data: deck, error } = useSWR<Deck>(
-    `/api/v1/decks/${encodeURIComponent(deckName)}`,
+    `/api/v1/decks/${encodeURIComponent(String(deckName))}`,
     fetcher,
   );
 
@@ -46,7 +40,7 @@ export default function EditDeckPage({ deckName }: { deckName: string }) {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
-        {deck ? (
+        {deck && query ? (
           <EditForm deck={deck} />
         ) : (
           <div className="animate-pulse">

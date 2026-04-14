@@ -26,7 +26,6 @@ export default function ReviewPage() {
 
     const card = cards[currentIndex];
     if (!card.deck_name || !card.name) {
-      console.error("O cartão não possui `deck_name` ou `name`", card);
       setIsFlipped(false);
       setCurrentIndex(currentIndex + 1);
       return;
@@ -42,17 +41,12 @@ export default function ReviewPage() {
         },
         body: JSON.stringify({ difficulty }),
       });
-    } catch (err) {
-      console.error("Falha ao enviar a revisão:", err);
     } finally {
       setIsSubmitting(false);
       setIsFlipped(false);
       setCurrentIndex(currentIndex + 1);
     }
   };
-
-  console.log("isLoading", isLoading);
-  console.log("query", query);
 
   if (isLoading || !query) {
     return (

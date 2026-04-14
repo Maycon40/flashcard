@@ -96,7 +96,9 @@ export default function CardsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Cartões</h1>
-          <p className="text-sm text-zinc-500">Gerencie todos os cartões</p>
+          <p className="text-sm text-zinc-500">
+            Gerencie todos os {(cards || []).length} cartões
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">

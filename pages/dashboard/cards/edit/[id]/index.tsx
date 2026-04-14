@@ -1,7 +1,6 @@
 "use client";
 
 import useSWR from "swr";
-import { GetServerSidePropsContext } from "next";
 import { useState, SubmitEvent, MouseEvent } from "react";
 import { useRouter } from "next/router";
 
@@ -10,21 +9,15 @@ import { Card, Deck } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      cardId: context.params?.id,
-    },
-  };
-}
+export default function EditCardPage() {
+  const { query } = useRouter();
 
-export default function EditCardPage({ cardId }: { cardId: string }) {
   const {
     data: card,
     error,
     isLoading,
     isValidating,
-  } = useSWR<Card>(`/api/v1/cards/id/${cardId}`, fetcher, {
+  } = useSWR<Card>(`/api/v1/cards/id/${query?.id}`, fetcher, {
     revalidateOnMount: true,
   });
 
@@ -52,7 +45,7 @@ export default function EditCardPage({ cardId }: { cardId: string }) {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
-        {card && !isValidating && !isLoading ? (
+        {card && !isValidating && !isLoading && query ? (
           <EditCardForm card={card} />
         ) : (
           <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
