@@ -7,6 +7,7 @@ import { Deck } from "@/types/types";
 import Link from "next/link";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
+import ButtonComponent from "@/components/button";
 
 export default function EditDeckPage() {
   const { query } = useRouter();
@@ -114,13 +115,9 @@ function EditForm({ deck }: { deck: Deck }) {
       </div>
 
       <div className="flex items-center gap-4 pt-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? "Salvando..." : "Salvar Alterações"}
-        </button>
+        <ButtonComponent isLoading={isSubmitting}>
+          {isSubmitting ? "Salvando" : "Salvar Alterações"}
+        </ButtonComponent>
         <Link
           href="/dashboard/decks"
           className="text-sm text-zinc-600 hover:underline"
