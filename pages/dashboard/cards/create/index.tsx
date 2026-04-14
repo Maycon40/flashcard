@@ -8,6 +8,7 @@ import LayoutDashboard from "@/components/layout/Dashboard";
 import { Deck } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
+import ButtonComponent from "@/components/button";
 
 export default function CreateCardPage() {
   const router = useRouter();
@@ -171,13 +172,9 @@ function CreateCardForm({ router }: { router: NextRouter }) {
         </div>
 
         <div>
-          <button
-            type="submit"
-            className={`inline-flex items-center px-4 py-2 rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"} `}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Criando..." : "Criar cartão"}
-          </button>
+          <ButtonComponent isLoading={isSubmitting}>
+            {isSubmitting ? "Criando" : "Criar cartão"}
+          </ButtonComponent>
         </div>
       </form>
     </>

@@ -4,6 +4,7 @@ import { useState, SubmitEvent } from "react";
 import Link from "next/link";
 
 import Layout from "@/components/layout";
+import ButtonComponent from "@/components/button";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -184,13 +185,13 @@ export default function SignupPage() {
                   </div>
 
                   <div className="pt-2">
-                    <button
-                      type="submit"
+                    <ButtonComponent
+                      className="w-full justify-center"
                       disabled={isDisabled}
-                      className={`w-full inline-flex justify-center items-center px-4 py-2 rounded-md text-white font-medium ${isDisabled ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"}`}
+                      isLoading={isSubmitting}
                     >
-                      {isSubmitting ? "Criando..." : "Criar conta"}
-                    </button>
+                      {isSubmitting ? "Criando" : "Criar conta"}
+                    </ButtonComponent>
                   </div>
 
                   <div className="pt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">

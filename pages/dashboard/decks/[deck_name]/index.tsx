@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -10,14 +9,6 @@ import { fetcher } from "@/infra/fetcher";
 import { Card } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import SearchBar from "@/components/search/bar";
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      deckName: context.params?.deck_name,
-    },
-  };
-}
 
 export default function DeckDetailsPage() {
   const { query } = useRouter();

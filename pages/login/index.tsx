@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import Layout from "@/components/layout";
-import LoadingIcon from "@/components/icon/loading";
+import ButtonComponent from "@/components/button";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -125,14 +125,13 @@ export default function LoginPage() {
               </div>
 
               <div className="pt-2">
-                <button
-                  type="submit"
+                <ButtonComponent
+                  className="w-full justify-center"
                   disabled={isDisabled}
-                  className={`w-full inline-flex justify-center items-center px-4 py-2 rounded-md ${isDisabled ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"} text-white font-medium`}
+                  isLoading={isSubmitting}
                 >
-                  <LoadingIcon isLoading={isSubmitting} />
-                  Entrar
-                </button>
+                  {isSubmitting ? "Entrando" : "Entrar"}
+                </ButtonComponent>
               </div>
 
               <div className="pt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">

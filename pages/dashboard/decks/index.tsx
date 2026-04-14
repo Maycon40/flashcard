@@ -55,7 +55,9 @@ export default function DecksPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Meus baralhos</h1>
-          <p className="text-sm text-zinc-500">Gerencie os baralhos</p>
+          <p className="text-sm text-zinc-500">
+            Gerencie os {(decks || []).length} baralhos
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">

@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import LayoutDashboard from "@/components/layout/Dashboard";
 import ErrorComponent from "@/components/error";
 import { Deck } from "@/types/types";
+import ButtonComponent from "@/components/button";
 
 export default function ImportCardPage() {
   return (
@@ -95,17 +96,20 @@ function ImportCardForm() {
           deckIds[card.deck_name] = String(deck.id);
         }
 
-        const res = await fetch(`/api/v1/cards/${card.deck_name}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const res = await fetch(
+          `/api/v1/cards/${encodeURIComponent(card.deck_name)}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: card.name,
+              description: card.description,
+              important: card.important || false,
+            }),
           },
-          body: JSON.stringify({
-            name: card.name,
-            description: card.description,
-            important: card.important || false,
-          }),
-        });
+        );
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
@@ -148,13 +152,9 @@ function ImportCardForm() {
       </div>
 
       <div className="flex items-center gap-4 pt-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed cursor-pointer"
-        >
-          {isSubmitting ? "Importando..." : "Importar"}
-        </button>
+        <ButtonComponent isLoading={isSubmitting}>
+          {isSubmitting ? "Importando" : "Importar"}
+        </ButtonComponent>
         <button
           type="button"
           onClick={(e) => back(e)}
