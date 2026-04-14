@@ -2,24 +2,18 @@
 
 import useSWR from "swr";
 import { useState } from "react";
-import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Card } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
+import { useRouter } from "next/router";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      important: context.query?.important,
-    },
-  };
-}
+export default function ReviewPage() {
+  const { query } = useRouter();
 
-export default function ReviewPage({ important }: { important: string }) {
-  const { data: cards } = useSWR<Card[]>(
-    `/api/v1/cards/review?important=${important || "false"}`,
+  const { data: cards, isLoading } = useSWR<Card[]>(
+    `/api/v1/cards/review?important=${query?.important || "false"}`,
     fetcher,
   );
 
@@ -56,6 +50,22 @@ export default function ReviewPage({ important }: { important: string }) {
       setCurrentIndex(currentIndex + 1);
     }
   };
+
+  console.log("isLoading", isLoading);
+  console.log("query", query);
+
+  if (isLoading || !query) {
+    return (
+      <LayoutDashboard>
+        <h1 className="text-2xl font-semibold mb-2">Revisão</h1>
+        <p className="text-sm text-zinc-500 mb-6">Revisando cartão</p>
+
+        <div className="animate-pulse">
+          <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+      </LayoutDashboard>
+    );
+  }
 
   if (!cards || cards.length === 0 || currentIndex >= cards.length) {
     return (

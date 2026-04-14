@@ -187,7 +187,7 @@ export default function SignupPage() {
                     <button
                       type="submit"
                       disabled={isDisabled}
-                      className={`w-full inline-flex justify-center items-center px-4 py-2 rounded-md text-white font-medium ${isDisabled ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                      className={`w-full inline-flex justify-center items-center px-4 py-2 rounded-md text-white font-medium ${isDisabled ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"}`}
                     >
                       {isSubmitting ? "Criando..." : "Criar conta"}
                     </button>
