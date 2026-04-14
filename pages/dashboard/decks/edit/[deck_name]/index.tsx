@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import { useState, SubmitEvent } from "react";
-import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -8,18 +7,14 @@ import { Deck } from "@/types/types";
 import Link from "next/link";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
+import ButtonComponent from "@/components/button";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      deckName: context.params?.deck_name,
-    },
-  };
-}
+export default function EditDeckPage() {
+  const { query } = useRouter();
+  const deckName = query?.deck_name;
 
-export default function EditDeckPage({ deckName }: { deckName: string }) {
   const { data: deck, error } = useSWR<Deck>(
-    `/api/v1/decks/${encodeURIComponent(deckName)}`,
+    `/api/v1/decks/${encodeURIComponent(String(deckName))}`,
     fetcher,
   );
 
@@ -46,7 +41,7 @@ export default function EditDeckPage({ deckName }: { deckName: string }) {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
-        {deck ? (
+        {deck && query ? (
           <EditForm deck={deck} />
         ) : (
           <div className="animate-pulse">
@@ -120,13 +115,9 @@ function EditForm({ deck }: { deck: Deck }) {
       </div>
 
       <div className="flex items-center gap-4 pt-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? "Salvando..." : "Salvar Alterações"}
-        </button>
+        <ButtonComponent isLoading={isSubmitting}>
+          {isSubmitting ? "Salvando" : "Salvar Alterações"}
+        </ButtonComponent>
         <Link
           href="/dashboard/decks"
           className="text-sm text-zinc-600 hover:underline"

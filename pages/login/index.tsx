@@ -5,17 +5,20 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import Layout from "@/components/layout";
+import ButtonComponent from "@/components/button";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [errorAction, setErrorAction] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setErrorAction(null);
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/v1/sessions", {
@@ -33,6 +36,7 @@ export default function LoginPage() {
 
       if (response.status === 201) {
         setErrorAction(null);
+        setIsSubmitting(false);
         router.push("/dashboard");
       } else {
         const action =
@@ -40,11 +44,15 @@ export default function LoginPage() {
           responseBody?.message ||
           "Falha ao autenticar.";
         setErrorAction(action);
+        setIsSubmitting(false);
       }
     } catch (err: any) {
       setErrorAction(err?.message || "Erro de rede");
+      setIsSubmitting(false);
     }
   }
+
+  const isDisabled = !identifier || !password || isSubmitting;
 
   return (
     <Layout>
@@ -117,12 +125,13 @@ export default function LoginPage() {
               </div>
 
               <div className="pt-2">
-                <button
-                  type="submit"
-                  className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 cursor-pointer"
+                <ButtonComponent
+                  className="w-full justify-center"
+                  disabled={isDisabled}
+                  isLoading={isSubmitting}
                 >
-                  Entrar
-                </button>
+                  {isSubmitting ? "Entrando" : "Entrar"}
+                </ButtonComponent>
               </div>
 
               <div className="pt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">

@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import ErrorComponent from "@/components/error";
+import ButtonComponent from "@/components/button";
 
 export default function DeckPage() {
   const router = useRouter();
@@ -84,13 +85,9 @@ export default function DeckPage() {
           </div>
 
           <div>
-            <button
-              type="submit"
-              className={`inline-flex items-center px-4 py-2 rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"} `}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Criando..." : "Criar baralho"}
-            </button>
+            <ButtonComponent isLoading={isSubmitting}>
+              {isSubmitting ? "Criando" : "Criar cartão"}
+            </ButtonComponent>
           </div>
         </form>
       </div>
