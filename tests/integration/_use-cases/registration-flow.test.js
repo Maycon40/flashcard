@@ -119,6 +119,8 @@ describe("Use case: Registration Flow (all sucessful)", () => {
       "create:deck",
       "update:deck",
       "delete:deck",
+      "read:library",
+      "create:library",
     ]);
   });
 
@@ -173,6 +175,8 @@ describe("Use case: Registration Flow (all sucessful)", () => {
         "create:deck",
         "update:deck",
         "delete:deck",
+        "read:library",
+        "create:library",
       ],
       created_at: responseBody.created_at,
       updated_at: responseBody.updated_at,

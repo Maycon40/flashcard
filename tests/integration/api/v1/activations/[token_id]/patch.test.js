@@ -97,6 +97,8 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
         "create:deck",
         "update:deck",
         "delete:deck",
+        "read:library",
+        "create:library",
       ]);
     });
 

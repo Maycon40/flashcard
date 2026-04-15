@@ -43,6 +43,11 @@ const availableFeatures = [
   "create:deck",
   "update:deck",
   "delete:deck",
+
+  // LIBRARY
+  "read:library",
+  "read:library:all",
+  "create:library",
 ];
 
 function can(userObject: User, requiredFeature: string, resource?: Resource) {
@@ -178,6 +183,18 @@ function filterOutput(userObject: User, feature: string, resource: any) {
         date_to_review: item.date_to_review,
         created_at: item.created_at,
         updated_at: item.updated_at,
+      };
+    });
+  } else if (feature === "read:library:all") {
+    return resource.map((item: any) => {
+      return {
+        id: item.id,
+        name: item.name,
+        username: item.username,
+        description: item.description,
+        deck_id: item.deck_id,
+        deck_name: item.deck_name,
+        date_to_review: item.date_to_review,
       };
     });
   } else if (feature === "read:recovery_token") {

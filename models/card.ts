@@ -178,10 +178,12 @@ async function findOneById(cardId: string, userId: string) {
 }
 
 async function updateById(
-  cardValues: Card,
-  cardNewValues: Card & { difficulty: string },
+  cardId: string,
   userId: string,
+  cardNewValues: Card & { difficulty: string; public: boolean },
 ) {
+  const cardValues: Card = await card.findOneById(cardId as string, userId);
+
   let deckId: string | undefined;
 
   if (cardNewValues.deck_name) {
@@ -212,6 +214,12 @@ async function updateById(
     cardWithNewValues.important = Boolean(cardValues.important);
   }
 
+  if (cardNewValues.public) {
+    cardWithNewValues.published_at = new Date();
+  } else {
+    cardWithNewValues.published_at = null;
+  }
+
   const updatedUser = await runUpdateQuery(cardWithNewValues);
 
   return updatedUser;
@@ -228,6 +236,7 @@ async function updateById(
           important = $5,
           box = $6,
           deck_id = $7,
+          published_at = $8,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -243,6 +252,7 @@ async function updateById(
         cardValues.important,
         cardValues.box,
         cardValues.deck_id,
+        cardValues.published_at,
       ],
     });
 

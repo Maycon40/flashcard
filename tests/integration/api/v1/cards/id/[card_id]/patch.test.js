@@ -262,6 +262,74 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(response5Body.box).toBe("new");
     });
 
+    test("With valid data and public card", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Baralho altera box",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "Cartão publico",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            public: true,
+          }),
+        },
+      );
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        name: "Cartão publico",
+        description: "Descrição do Cartão",
+        deck_id: createdDeck.id,
+        box: "new",
+        important: false,
+        date_to_review: responseBody.date_to_review,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      const response2 = await fetch(`http://localhost:3000/api/v1/library`);
+
+      expect(response2.status).toBe(200);
+
+      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify({
+          public: false,
+        }),
+      });
+
+      const response3 = await fetch(`http://localhost:3000/api/v1/library`);
+
+      expect(response3.status).toBe(404);
+    });
+
     test("With not created card", async () => {
       const createdUser = await orchestrator.createUser();
 
