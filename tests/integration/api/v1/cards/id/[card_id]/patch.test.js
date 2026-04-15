@@ -135,6 +135,133 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       });
     });
 
+    test("With valid data, changing box", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Baralho altera box",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "Cartão altera box",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: true,
+            difficulty: "easy",
+          }),
+        },
+      );
+
+      expect(createdCard.box).toBe("new");
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody.box).toBe("progress");
+
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: true,
+            difficulty: "very easy",
+          }),
+        },
+      );
+
+      const response2Body = await response2.json();
+
+      expect(response2Body.box).toBe("secure");
+
+      const response3 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: true,
+            difficulty: "very easy",
+          }),
+        },
+      );
+
+      const response3Body = await response3.json();
+
+      expect(response3Body.box).toBe("advanced");
+
+      const response4 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: true,
+            difficulty: "very easy",
+          }),
+        },
+      );
+
+      const response4Body = await response4.json();
+
+      expect(response4Body.box).toBe("consolidated");
+
+      const response5 = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Novo nome",
+            description: "Nova descrição",
+            important: true,
+            difficulty: "wrong",
+          }),
+        },
+      );
+
+      const response5Body = await response5.json();
+
+      expect(response5Body.box).toBe("new");
+    });
+
     test("With not created card", async () => {
       const createdUser = await orchestrator.createUser();
 
