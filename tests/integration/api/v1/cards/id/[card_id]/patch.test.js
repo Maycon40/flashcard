@@ -81,6 +81,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         box: "progress",
         important: true,
         date_to_review: responseBody.date_to_review,
+        published_at: null,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -130,6 +131,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         box: "progress",
         important: false,
         date_to_review: response2Body.date_to_review,
+        published_at: null,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -260,6 +262,96 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       const response5Body = await response5.json();
 
       expect(response5Body.box).toBe("new");
+    });
+
+    test("With valid data and public card", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Baralho altera box",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "Cartão publico",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            public: true,
+          }),
+        },
+      );
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        name: "Cartão publico",
+        description: "Descrição do Cartão",
+        deck_id: createdDeck.id,
+        box: "new",
+        important: false,
+        date_to_review: responseBody.date_to_review,
+        published_at: responseBody.published_at,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(Date.parse(responseBody.published_at)).not.toBeNaN();
+
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+      );
+
+      expect(response2.status).toBe(200);
+
+      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify({
+          name: "Outro nome",
+        }),
+      });
+
+      const response3 = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+      );
+
+      expect(response3.status).toBe(200);
+
+      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify({
+          public: false,
+        }),
+      });
+
+      const response4 = await fetch(`http://localhost:3000/api/v1/library`);
+
+      expect(response4.status).toBe(404);
     });
 
     test("With not created card", async () => {

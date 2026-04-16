@@ -26,7 +26,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/dashboard/cards"
-                className="inline-flex items-center px-5 py-3 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100"
+                className="inline-flex items-center px-5 py-3 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 Criar cartão
               </Link>
@@ -108,6 +108,49 @@ export default function Home() {
                 </div>
               </li>
             </ul>
+          </div>
+        </section>
+
+        <section className="mt-12 rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex-1">
+            <h3 className="text-2xl font-semibold mb-2">
+              Biblioteca pública de flashcards
+            </h3>
+            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+              Explore centenas de cartões criados por outros usuários para
+              acelerar seus estudos e compartilhe seus próprios cartões com a
+              comunidade.
+            </p>
+            <Link
+              href="/library"
+              className="inline-flex items-center px-6 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+            >
+              Explorar biblioteca
+            </Link>
+          </div>
+          <div className="shrink-0 mt-6 md:mt-0 md:ml-8 hidden md:flex items-center justify-center">
+            <svg
+              className="w-28 h-28 text-indigo-500 drop-shadow-lg"
+              fill="none"
+              viewBox="0 0 64 64"
+              stroke="currentColor"
+              aria-hidden
+            >
+              <path
+                d="M12 52c6-4 18-4 24 0M12 12v40c6-4 18-4 24 0V12M12 12c6-4 18-4 24 0m0 0v40"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="stroke-indigo-300 dark:stroke-indigo-600"
+              />
+              <path
+                d="M36 12c6-4 18-4 24 0v40c-6-4-18-4-24 0"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="stroke-indigo-300 dark:stroke-indigo-600"
+              />
+            </svg>
           </div>
         </section>
 

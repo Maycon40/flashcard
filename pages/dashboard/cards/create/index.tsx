@@ -88,9 +88,7 @@ function CreateCardForm({ router }: { router: NextRouter }) {
       if (res.status === 201) {
         router.back();
       } else {
-        setCreateError(
-          body?.action || body?.message || "Falha ao criar cartão.",
-        );
+        setCreateError(body?.message || "Falha ao criar cartão.");
         setIsSubmitting(false);
       }
     } catch (err: any) {

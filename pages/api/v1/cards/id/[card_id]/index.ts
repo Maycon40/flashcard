@@ -41,15 +41,10 @@ async function patchHandler(
   const cardId = request.query.card_id;
   const cardNewValues = request.body;
 
-  const cardValues = await card.findOneById(
+  const updatedCard = await card.updateById(
     cardId as string,
     userTryingToPatch.id,
-  );
-
-  const updatedCard = await card.updateById(
-    cardValues,
     cardNewValues,
-    userTryingToPatch.id,
   );
 
   const secureOutputValues = authorization.filterOutput(

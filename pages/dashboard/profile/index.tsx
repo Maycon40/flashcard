@@ -115,7 +115,7 @@ function ProfileForm({ user, mutate }: { user: User; mutate: any }) {
         <input
           id="email"
           value={user?.email}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-gray-800 outline-0 text-sm cursor-auto"
+          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-zinc-100 dark:bg-gray-800 outline-0 text-sm cursor-not-allowed"
           readOnly={true}
         />
       </div>

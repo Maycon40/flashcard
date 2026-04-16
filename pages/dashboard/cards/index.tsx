@@ -57,7 +57,6 @@ export default function CardsPage() {
       cardsJson.push({
         name: card.name,
         description: card.description,
-        important: card.important,
         deck_name: card.deck_name,
       });
     }

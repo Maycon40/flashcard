@@ -9,8 +9,8 @@ async function createUser() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: "maycon",
-      email: "mayconteste@gmail.com",
+      username: "teste",
+      email: "teste@gmail.com",
       password: "senha123",
     }),
   });

@@ -87,6 +87,10 @@ async function createCard(name, description, deckId) {
   );
 }
 
+async function updateCard(cardId, userId, cardObject) {
+  return await card.updateById(cardId, userId, cardObject);
+}
+
 async function createActivation(userObject) {
   const activationToken = await activation.create(userObject.id);
 
@@ -175,6 +179,7 @@ const orchestrator = {
   createRecoveryToken,
   createDeck,
   createCard,
+  updateCard,
   createActivation,
   activateUser,
   createSession,

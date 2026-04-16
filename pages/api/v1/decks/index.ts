@@ -20,7 +20,7 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,
-    "read:deck:all",
+    "read:deck",
     deckData,
   );
 

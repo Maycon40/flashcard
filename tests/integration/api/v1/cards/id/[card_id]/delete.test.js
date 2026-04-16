@@ -73,6 +73,7 @@ describe("DELETE /api/v1/cards/id/[card_id]", () => {
         important: false,
         deck_id: createdDeck.id,
         date_to_review: responseBody.date_to_review,
+        published_at: null,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });

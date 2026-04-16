@@ -82,6 +82,8 @@ async function markTokenAsUsed(tokenId: string) {
       "create:deck",
       "update:deck",
       "delete:deck",
+      "read:library",
+      "create:library",
     ]);
 
     return activatedUser;

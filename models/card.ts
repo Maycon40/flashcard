@@ -1,9 +1,15 @@
 import database from "@/infra/database";
-import { NotFoundError } from "@/infra/errors";
+import { NotFoundError, ValidationError } from "@/infra/errors";
 import { Card, Deck } from "@/types/types";
 import deck from "@/models/deck";
 
 async function create(card: Card, deckId: string): Promise<Card> {
+  await validateUniqueCardNameAndDescription(
+    String(card.name),
+    String(card.description),
+    deckId,
+  );
+
   const newCard = await runInsertQuery(card, deckId);
 
   return newCard;
@@ -24,6 +30,193 @@ async function create(card: Card, deckId: string): Promise<Card> {
     });
 
     return results.rows[0];
+  }
+}
+
+type DeckIds = { [key: string]: string };
+
+async function importCards(cards: Card[] | Card, userId: string) {
+  cards = ensureArray(cards);
+
+  const deckIds = await createDecks(cards, userId);
+
+  cards = await validateUniqueCard(cards, deckIds);
+
+  const { values, placeholders } = createQuery(cards, deckIds);
+
+  const newCards = await runInsertQuery(values, placeholders);
+
+  return newCards;
+
+  async function runInsertQuery(values: string[], placeholders: string) {
+    if (values.length === 0) {
+      throw new ValidationError({
+        message: "Todos os cartões já foram importados.",
+        action: "Tente importar outros cartões.",
+      });
+    }
+
+    const results = await database.query({
+      text: `
+        INSERT INTO
+          cards (name, description, deck_id)
+        VALUES
+          ${placeholders}
+        RETURNING
+          *
+      ;`,
+      values,
+    });
+
+    if (results.rowCount === 1) {
+      return results.rows[0];
+    }
+
+    return results.rows;
+  }
+
+  function ensureArray(array: any[] | any): any[] {
+    if (!Array.isArray(array)) {
+      array = [array];
+    }
+
+    return array;
+  }
+
+  function createQuery(cards: Card[], deckIds: DeckIds) {
+    const values: string[] = [];
+
+    const placeholders = cards
+      .map(
+        (_, i) =>
+          `($${Number(i * 3 + 1)}, $${Number(i * 3 + 2)}, $${Number(i * 3 + 3)})`,
+      )
+      .join(", ");
+
+    for (const card of cards) {
+      const deckId = deckIds[String(card.deck_name).toLowerCase()];
+
+      values.push(String(card.name));
+      values.push(String(card.description));
+      values.push(deckId);
+    }
+
+    return { values, placeholders };
+  }
+
+  async function validateUniqueCard(cards: Card[], deckIds: DeckIds) {
+    const validatedCards = [];
+
+    for (const card of cards) {
+      const deckId = deckIds[String(card.deck_name).toLowerCase()];
+
+      try {
+        await validateUniqueCardNameAndDescription(
+          String(card.name),
+          String(card.description),
+          deckId,
+        );
+
+        validatedCards.push(card);
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          continue;
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    return validatedCards;
+  }
+
+  async function createDecks(cards: Card[], userId: string) {
+    const deckIds: DeckIds = {};
+
+    const decks: Deck[] = await deck.findAllByUserId(userId).catch(() => []);
+
+    getDeckIds(deckIds, decks);
+
+    const decksToCreate = getDecksToCreate(cards, deckIds);
+
+    let createdDecks = [];
+
+    if (decksToCreate.length >= 1) {
+      createdDecks = await deck.create(decksToCreate, userId);
+    }
+
+    getDeckIds(deckIds, createdDecks);
+
+    return deckIds;
+  }
+
+  function getDecksToCreate(cards: Card[], deckIds: DeckIds) {
+    const decksToCreate: Deck[] = [];
+    const deckNames: string[] = [];
+
+    for (const card of cards) {
+      if (!card.name || !card.description || !card.deck_name) {
+        throw new ValidationError({
+          message:
+            "Todos os cartões devem ter nome, descrição e nome do baralho.",
+          action: "Corriga as informações enviadas.",
+        });
+      }
+
+      if (
+        !deckIds[card.deck_name.toLowerCase()] &&
+        !deckNames.includes(card.deck_name.toLowerCase())
+      ) {
+        decksToCreate.push({ name: card.deck_name });
+        deckNames.push(card.deck_name.toLowerCase());
+      }
+    }
+
+    return decksToCreate;
+  }
+
+  function getDeckIds(deckIds: DeckIds, decks: Deck[] | Deck) {
+    decks = ensureArray(decks);
+
+    for (const item of decks) {
+      deckIds[String(item.name).toLowerCase()] = String(item.id);
+    }
+  }
+}
+
+async function validateUniqueCardNameAndDescription(
+  cardName: string,
+  description: string,
+  deckId: string,
+) {
+  await runSelectQuery(cardName, description, deckId);
+
+  async function runSelectQuery(
+    cardName: string,
+    description: string,
+    deckId: string,
+  ) {
+    const results = await database.query({
+      text: `
+        SELECT
+          name,
+          description
+        FROM
+          cards
+        WHERE
+          LOWER(name) = LOWER($1) AND
+          LOWER(description) = LOWER($2) AND
+          deck_id = $3
+      ;`,
+      values: [cardName, description, deckId],
+    });
+
+    if (results.rowCount && results.rowCount > 0) {
+      throw new ValidationError({
+        message: "O mesmo nome e descrição foi utilizado em outro cartão.",
+        action: "Utilize outro nome ou descrição.",
+      });
+    }
   }
 }
 
@@ -178,10 +371,12 @@ async function findOneById(cardId: string, userId: string) {
 }
 
 async function updateById(
-  cardValues: Card,
-  cardNewValues: Card & { difficulty: string },
+  cardId: string,
   userId: string,
+  cardNewValues: Card & { difficulty: string; public: boolean },
 ) {
+  const cardValues: Card = await card.findOneById(cardId as string, userId);
+
   let deckId: string | undefined;
 
   if (cardNewValues.deck_name) {
@@ -212,6 +407,12 @@ async function updateById(
     cardWithNewValues.important = Boolean(cardValues.important);
   }
 
+  if (cardNewValues.public) {
+    cardWithNewValues.published_at = new Date();
+  } else if (cardNewValues.public == false) {
+    cardWithNewValues.published_at = null;
+  }
+
   const updatedUser = await runUpdateQuery(cardWithNewValues);
 
   return updatedUser;
@@ -228,6 +429,7 @@ async function updateById(
           important = $5,
           box = $6,
           deck_id = $7,
+          published_at = $8,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -243,6 +445,7 @@ async function updateById(
         cardValues.important,
         cardValues.box,
         cardValues.deck_id,
+        cardValues.published_at,
       ],
     });
 
@@ -319,6 +522,7 @@ async function deleteById(cardId: string) {
 
 const card = {
   create,
+  importCards,
   findAll,
   findAllToReview,
   findAllByDeckId,
