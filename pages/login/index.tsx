@@ -1,5 +1,6 @@
 "use client";
 
+import { useSWRConfig } from "swr";
 import { useState, SubmitEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -8,6 +9,8 @@ import Layout from "@/components/layout";
 import ButtonComponent from "@/components/button";
 
 export default function LoginPage() {
+  const { mutate } = useSWRConfig();
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [errorAction, setErrorAction] = useState<string | null>(null);
@@ -37,6 +40,7 @@ export default function LoginPage() {
       if (response.status === 201) {
         setErrorAction(null);
         setIsSubmitting(false);
+        mutate(() => true, undefined, { revalidate: false });
         router.push("/dashboard");
       } else {
         const action =
