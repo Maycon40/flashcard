@@ -81,6 +81,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         box: "progress",
         important: true,
         date_to_review: responseBody.date_to_review,
+        published_at: null,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -130,6 +131,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         box: "progress",
         important: false,
         date_to_review: response2Body.date_to_review,
+        published_at: null,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -306,13 +308,35 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         box: "new",
         important: false,
         date_to_review: responseBody.date_to_review,
+        published_at: responseBody.published_at,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
 
-      const response2 = await fetch(`http://localhost:3000/api/v1/library`);
+      expect(Date.parse(responseBody.published_at)).not.toBeNaN();
+
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+      );
 
       expect(response2.status).toBe(200);
+
+      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify({
+          name: "Outro nome",
+        }),
+      });
+
+      const response3 = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+      );
+
+      expect(response3.status).toBe(200);
 
       await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
         method: "PATCH",
@@ -325,9 +349,9 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
         }),
       });
 
-      const response3 = await fetch(`http://localhost:3000/api/v1/library`);
+      const response4 = await fetch(`http://localhost:3000/api/v1/library`);
 
-      expect(response3.status).toBe(404);
+      expect(response4.status).toBe(404);
     });
 
     test("With not created card", async () => {

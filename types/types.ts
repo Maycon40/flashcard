@@ -20,11 +20,13 @@ export interface Deck {
   id?: string;
   name?: string;
   user_id?: string;
+  username?: string;
 }
 
 export interface Card {
   id?: string;
   name?: string;
+  username?: string;
   description?: string;
   date_to_review?: Date | string;
   published_at?: Date | string | null;

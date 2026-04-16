@@ -3,29 +3,64 @@ import { NotFoundError, ValidationError } from "@/infra/errors";
 import { Deck } from "@/types/types";
 import card from "@/models/card";
 
-async function create(deck: Deck, userId: string) {
-  await validateUniqueDeckName(deck.name || "", userId);
+async function create(decks: Deck[] | Deck, userId: string) {
+  decks = ensureArray(decks);
 
-  const newDeck = await runInsertQuery(deck, userId);
+  if (decks.length == 0) {
+    return {};
+  }
+
+  for (const deck of decks) {
+    await validateUniqueDeckName(deck.name || "", userId);
+  }
+
+  const { values, placeholders } = createQuery(decks, userId);
+
+  const newDeck = await runInsertQuery(values, placeholders);
 
   return newDeck;
 
-  async function runInsertQuery(deck: Deck, userId: string) {
-    const { name } = deck;
-
+  async function runInsertQuery(values: string[], placeholders: string) {
     const results = await database.query({
       text: `
         INSERT INTO
           decks (name, user_id)
         VALUES
-          ($1, $2)
+          ${placeholders}
         RETURNING
           *
       ;`,
-      values: [name, userId],
+      values,
     });
 
-    return results.rows[0];
+    if (results.rowCount === 1) {
+      return results.rows[0];
+    }
+
+    return results.rows;
+  }
+
+  function ensureArray(decks: Deck[] | Deck) {
+    if (!Array.isArray(decks)) {
+      decks = [decks];
+    }
+
+    return decks;
+  }
+
+  function createQuery(decks: Deck[], userId: string) {
+    const values: string[] = [];
+
+    const placeholders = decks
+      .map((_, i) => `($${Number(i * 2 + 1)}, $${Number(i * 2 + 2)})`)
+      .join(", ");
+
+    for (const deck of decks) {
+      values.push(String(deck.name));
+      values.push(userId);
+    }
+
+    return { values, placeholders };
   }
 }
 

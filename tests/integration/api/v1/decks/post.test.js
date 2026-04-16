@@ -65,6 +65,59 @@ describe("POST /api/v1/decks", () => {
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
     });
 
+    test("With many valid deck", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch("http://localhost:3000/api/v1/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify([
+          {
+            name: "Nome do Baralho 1",
+          },
+          {
+            name: "Nome do Baralho 2",
+          },
+        ]),
+      });
+
+      expect(response.status).toBe(201);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual([
+        {
+          id: responseBody[0].id,
+          name: "Nome do Baralho 1",
+          user_id: createdUser.id,
+          created_at: responseBody[0].created_at,
+          updated_at: responseBody[0].updated_at,
+        },
+        {
+          id: responseBody[1].id,
+          name: "Nome do Baralho 2",
+          user_id: createdUser.id,
+          created_at: responseBody[1].created_at,
+          updated_at: responseBody[1].updated_at,
+        },
+      ]);
+
+      expect(uuidVersion(responseBody[0].id)).toBe(4);
+      expect(Date.parse(responseBody[0].created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody[0].updated_at)).not.toBeNaN();
+
+      expect(uuidVersion(responseBody[1].id)).toBe(4);
+      expect(Date.parse(responseBody[1].created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody[1].updated_at)).not.toBeNaN();
+    });
+
     test("With created deck", async () => {
       const createdUser = await orchestrator.createUser();
 
@@ -94,6 +147,59 @@ describe("POST /api/v1/decks", () => {
         body: JSON.stringify({
           name: "Nome do Baralho",
         }),
+      });
+
+      expect(response2.status).toBe(400);
+
+      const response2Body = await response2.json();
+
+      expect(response2Body).toEqual({
+        name: "ValidationError",
+        message: "O nome do baralho já está sendo utilizado.",
+        action: "Utilize outro nome.",
+        status_code: 400,
+      });
+    });
+
+    test("With many created deck", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response1 = await fetch("http://localhost:3000/api/v1/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify([
+          {
+            name: "Baralho Repetido 1",
+          },
+          {
+            name: "Baralho Repetido 2",
+          },
+        ]),
+      });
+
+      expect(response1.status).toBe(201);
+
+      const response2 = await fetch("http://localhost:3000/api/v1/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${newSession.token}`,
+        },
+        body: JSON.stringify([
+          {
+            name: "Baralho Repetido 1",
+          },
+          {
+            name: "Baralho Repetido 2",
+          },
+        ]),
       });
 
       expect(response2.status).toBe(400);

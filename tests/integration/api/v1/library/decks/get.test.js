@@ -8,7 +8,7 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("GET /api/v1/library", () => {
+describe("GET /api/v1/library/decks", () => {
   describe("Anonymous user", () => {
     test("With valid data", async () => {
       const createdUser = await orchestrator.createUser();
@@ -32,7 +32,9 @@ describe("GET /api/v1/library", () => {
         public: true,
       });
 
-      const response = await fetch(`http://localhost:3000/api/v1/library`);
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+      );
 
       expect(response.status).toBe(200);
 
@@ -41,18 +43,17 @@ describe("GET /api/v1/library", () => {
       expect(responseBody).toEqual([
         {
           id: responseBody[0].id,
-          name: "Nome do Cartão",
-          description: "Descrição do Cartão",
-          deck_id: createdDeck.id,
-          deck_name: "Baralho publico",
-          date_to_review: responseBody[0].date_to_review,
+          name: "Baralho publico",
+          username: createdUser.username,
         },
       ]);
+
+      expect(uuidVersion(responseBody[0].id)).toBe(4);
     });
   });
 
   describe("Default user", () => {
-    test("With not published card", async () => {
+    test("With not created deck", async () => {
       await orchestrator.clearDatabase();
       await orchestrator.runPendingMigrations();
 
@@ -62,11 +63,14 @@ describe("GET /api/v1/library", () => {
 
       const newSession = await orchestrator.createSession(createdUser.id);
 
-      const response = await fetch(`http://localhost:3000/api/v1/library`, {
-        headers: {
-          Cookie: `session_id=${newSession.token}`,
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
         },
-      });
+      );
 
       expect(response.status).toBe(404);
 
@@ -74,8 +78,50 @@ describe("GET /api/v1/library", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "Nenhum baralho foi publicado.",
+        action: "Verifique se algum usuário publicou algum baralho.",
+        status_code: 404,
+      });
+    });
+
+    test("With not published deck", async () => {
+      await orchestrator.clearDatabase();
+      await orchestrator.runPendingMigrations();
+
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "Nenhum baralho foi publicado.",
+        action: "Verifique se algum usuário publicou algum baralho.",
         status_code: 404,
       });
     });
@@ -102,11 +148,14 @@ describe("GET /api/v1/library", () => {
         public: true,
       });
 
-      const response = await fetch(`http://localhost:3000/api/v1/library`, {
-        headers: {
-          Cookie: `session_id=${newSession.token}`,
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
         },
-      });
+      );
 
       expect(response.status).toBe(200);
 
@@ -115,16 +164,12 @@ describe("GET /api/v1/library", () => {
       expect(responseBody).toEqual([
         {
           id: responseBody[0].id,
-          name: "Nome do Cartão",
-          description: "Descrição do Cartão",
-          deck_id: createdDeck.id,
-          deck_name: "Nome do Baralho",
-          date_to_review: responseBody[0].date_to_review,
+          name: "Nome do Baralho",
+          username: createdUser.username,
         },
       ]);
 
       expect(uuidVersion(responseBody[0].id)).toBe(4);
-      expect(Date.parse(responseBody[0].date_to_review)).not.toBeNaN();
     });
   });
 
@@ -154,11 +199,14 @@ describe("GET /api/v1/library", () => {
 
       const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
 
-      const response = await fetch(`http://localhost:3000/api/v1/library`, {
-        headers: {
-          Cookie: `session_id=${newSessionUser2.token}`,
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks`,
+        {
+          headers: {
+            Cookie: `session_id=${newSessionUser2.token}`,
+          },
         },
-      });
+      );
 
       expect(response.status).toBe(404);
 
@@ -166,8 +214,8 @@ describe("GET /api/v1/library", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "Nenhum baralho foi publicado.",
+        action: "Verifique se algum usuário publicou algum baralho.",
         status_code: 404,
       });
     });

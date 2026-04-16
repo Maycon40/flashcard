@@ -24,7 +24,7 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,
-    "read:card:all",
+    "read:card",
     cardData,
   );
 

@@ -47,6 +47,7 @@ const availableFeatures = [
   // LIBRARY
   "read:library",
   "read:library:all",
+  "read:library:deck",
   "create:library",
 ];
 
@@ -140,6 +141,18 @@ function filterOutput(userObject: User, feature: string, resource: any) {
 
     return result;
   } else if (feature === "read:deck") {
+    if (Array.isArray(resource)) {
+      return resource.map((item: any) => {
+        return {
+          id: item.id,
+          name: item.name,
+          user_id: item.user_id,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        };
+      });
+    }
+
     return {
       id: resource.id,
       name: resource.name,
@@ -147,17 +160,25 @@ function filterOutput(userObject: User, feature: string, resource: any) {
       created_at: resource.created_at,
       updated_at: resource.updated_at,
     };
-  } else if (feature === "read:deck:all") {
-    return resource.map((item: any) => {
-      return {
-        id: item.id,
-        name: item.name,
-        user_id: item.user_id,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      };
-    });
   } else if (feature === "read:card") {
+    if (Array.isArray(resource)) {
+      return resource.map((item: any) => {
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          box: item.box,
+          important: item.important,
+          deck_id: item.deck_id,
+          deck_name: item.deck_name,
+          date_to_review: item.date_to_review,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          published_at: item.published_at,
+        };
+      });
+    }
+
     return {
       id: resource.id,
       name: resource.name,
@@ -169,22 +190,8 @@ function filterOutput(userObject: User, feature: string, resource: any) {
       date_to_review: resource.date_to_review,
       created_at: resource.created_at,
       updated_at: resource.updated_at,
+      published_at: resource.published_at,
     };
-  } else if (feature === "read:card:all") {
-    return resource.map((item: any) => {
-      return {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        box: item.box,
-        important: item.important,
-        deck_id: item.deck_id,
-        deck_name: item.deck_name,
-        date_to_review: item.date_to_review,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      };
-    });
   } else if (feature === "read:library:all") {
     return resource.map((item: any) => {
       return {
@@ -192,9 +199,16 @@ function filterOutput(userObject: User, feature: string, resource: any) {
         name: item.name,
         username: item.username,
         description: item.description,
-        deck_id: item.deck_id,
         deck_name: item.deck_name,
-        date_to_review: item.date_to_review,
+        published_at: item.published_at,
+      };
+    });
+  } else if (feature === "read:library:deck") {
+    return resource.map((item: any) => {
+      return {
+        id: item.id,
+        name: item.name,
+        username: item.username,
       };
     });
   } else if (feature === "read:recovery_token") {

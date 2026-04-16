@@ -16,11 +16,11 @@ export default router.handler(controller.errorHandlers);
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context?.user;
 
-  const libraryData = await library.findAll();
+  const libraryData = await library.findAllDecks();
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,
-    "read:library:all",
+    "read:library:deck",
     libraryData,
   );
 
