@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { useState, SubmitEvent, MouseEvent } from "react";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Card, Deck } from "@/types/types";
@@ -11,14 +11,14 @@ import { fetcher } from "@/infra/fetcher";
 import ButtonComponent from "@/components/button";
 
 export default function EditCardPage() {
-  const { query } = useRouter();
+  const router = useRouter();
 
   const {
     data: card,
     error,
     isLoading,
     isValidating,
-  } = useSWR<Card>(`/api/v1/cards/id/${query?.id}`, fetcher, {
+  } = useSWR<Card>(`/api/v1/cards/id/${router.query?.id}`, fetcher, {
     revalidateOnMount: true,
   });
 
@@ -46,8 +46,8 @@ export default function EditCardPage() {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
-        {card && !isValidating && !isLoading && query ? (
-          <EditCardForm card={card} />
+        {card && !isValidating && !isLoading && router.query ? (
+          <EditCardForm card={card} router={router} />
         ) : (
           <div className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
         )}
@@ -56,9 +56,7 @@ export default function EditCardPage() {
   );
 }
 
-function EditCardForm({ card }: { card: Card }) {
-  const router = useRouter();
-
+function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
   const { data: decks } = useSWR<Deck[]>(`/api/v1/decks`, fetcher);
 
   const [name, setName] = useState(card.name || "");

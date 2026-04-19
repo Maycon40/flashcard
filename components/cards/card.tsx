@@ -1,4 +1,11 @@
-import { useState, MouseEvent, useEffect, useRef } from "react";
+import {
+  useState,
+  MouseEvent,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import Link from "next/link";
 
 import { Card } from "@/types/types";
@@ -12,15 +19,17 @@ export function sliceText(text: string) {
   return text;
 }
 
+interface CardComponentProps {
+  card: Card;
+  setCardToDelete: Dispatch<SetStateAction<string | null>>;
+  mutateCard: any;
+}
+
 export default function CardComponent({
   card,
   setCardToDelete,
-  mutate,
-}: {
-  card: Card;
-  setCardToDelete: any;
-  mutate: any;
-}) {
+  mutateCard,
+}: CardComponentProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +80,7 @@ export default function CardComponent({
   async function publish(e: MouseEvent) {
     e.preventDefault();
 
-    await fetch(`/api/v1/cards/id/${card.id as string}`, {
+    const response = await fetch(`/api/v1/cards/id/${card.id as string}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -79,11 +88,11 @@ export default function CardComponent({
       }),
     });
 
-    await mutate(
-      (key: any) => typeof key === "string" && key.includes("/api/v1/cards"),
-      undefined,
-      { revalidate: true },
-    );
+    if (response.ok) {
+      const updatedCard = await response.json();
+
+      await mutateCard(updatedCard);
+    }
   }
 
   return (
