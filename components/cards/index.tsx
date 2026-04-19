@@ -1,12 +1,22 @@
 import { useSWRConfig } from "swr";
 import { useState, MouseEvent, ReactNode } from "react";
+import { useRouter } from "next/router";
 
 import { Card } from "@/types/types";
 import ConfirmDelete from "@/components/delete";
 import CardComponent from "@/components/cards/card";
 
+export function getCardPathApi(pathname: string, deckName: string) {
+  if (pathname == "/dashboard/cards") {
+    return `/api/v1/cards`;
+  }
+
+  return `/api/v1/cards/${encodeURIComponent(deckName)}`;
+}
+
 export default function Cards({ cards }: { cards: Card[] }): ReactNode {
   const { mutate } = useSWRConfig();
+  const router = useRouter();
 
   const [cardToDelete, setCardToDelete] = useState<string | null>(null);
 
@@ -17,13 +27,27 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
       method: "DELETE",
     });
 
-    await mutate(
-      (key: any) => typeof key === "string" && key.includes("/api/v1/cards"),
-      undefined,
-      { revalidate: true },
+    const newCards = cards.filter((card) => card != cardId);
+
+    const cardPathApi = getCardPathApi(
+      router.pathname,
+      String(router.query?.deck_name),
     );
 
+    await mutate(cardPathApi, newCards);
+
     setCardToDelete(null);
+  }
+
+  async function mutateCard(card: Card) {
+    const newCards = cards.map((item) => (item.id == card.id ? card : item));
+
+    const cardPathApi = getCardPathApi(
+      router.pathname,
+      String(router.query?.deck_name),
+    );
+
+    await mutate(cardPathApi, newCards);
   }
 
   return (
@@ -31,7 +55,7 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
       <ConfirmDelete
         deleteState={cardToDelete}
         setDeleteState={setCardToDelete}
-        callback={(e: any) => deleteCard(e, cardToDelete as string)}
+        callback={(e: MouseEvent) => deleteCard(e, cardToDelete as string)}
       >
         Você tem certeza que deseja excluir esse cartão? Esta ação não pode ser
         desfeita.
@@ -45,7 +69,7 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
                 key={card.id}
                 card={card}
                 setCardToDelete={setCardToDelete}
-                mutate={mutate}
+                mutateCard={mutateCard}
               />
             ))}
           </div>
