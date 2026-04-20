@@ -93,7 +93,9 @@ export default function SignupPage() {
           <div className="rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg">
             {success ? (
               <div className="text-center">
-                <h3 className="text-xl font-semibold mb-4">Conta Criada!</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  Confira seu email!
+                </h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
                   Sua conta foi criada com sucesso.
                 </p>
