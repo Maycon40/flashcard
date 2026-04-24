@@ -41,7 +41,10 @@ export default function RecoveryPage() {
   }
 
   return (
-    <Layout>
+    <Layout
+      title="Alteração de senha | MyFlashcard"
+      description="Altere sua senha no MyFlashcard"
+    >
       <main className="mx-auto max-w-3xl px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
