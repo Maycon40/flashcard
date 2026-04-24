@@ -19,6 +19,15 @@ export default function Home() {
               rápido e com menos esforço. Simples, eficiente e baseado em
               evidências.
             </p>
+
+            <div className="flex gap-3">
+              <Link
+                href="/signup"
+                className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
+              >
+                Criar cartão
+              </Link>
+            </div>
           </div>
 
           <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
