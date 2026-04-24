@@ -35,7 +35,7 @@ export default function LayoutDashboard({ children }: Props) {
             </div>
             <span className="font-semibold text-base">
               <Link href="/dashboard" className="text-sm font-semibold">
-                Flashcard
+                MyFlashcard
               </Link>
             </span>
           </div>
@@ -118,7 +118,7 @@ export default function LayoutDashboard({ children }: Props) {
                 </div>
                 <div>
                   <Link href="/dashboard" className="text-md font-semibold">
-                    Flashcard
+                    MyFlashcard
                   </Link>
                 </div>
               </div>

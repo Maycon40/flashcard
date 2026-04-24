@@ -26,7 +26,7 @@ export default function Layout({ title, description, children }: LayoutProps) {
               <div className="h-8 w-8 md:h-10 md:w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-base text-white font-bold">
                 FC
               </div>
-              <p className="text-base md:text-lg font-semibold">Flashcard</p>
+              <p className="text-base md:text-lg font-semibold">MyFlashcard</p>
             </Link>
           </div>
 
@@ -39,7 +39,7 @@ export default function Layout({ title, description, children }: LayoutProps) {
             </Link>
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
+              className="hidden sm:inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
             >
               Criar conta
             </Link>
