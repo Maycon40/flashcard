@@ -32,12 +32,15 @@ export default function LibraryPage() {
 
   if (error) {
     return (
-      <Layout>
+      <Layout
+        title="Biblioteca de Flashcards | MyFlashcard"
+        description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
+      >
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4">
               Biblioteca Comunitária
-            </h2>
+            </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Encontre baralhos prontos para acelerar seu aprendizado.
             </p>
@@ -50,12 +53,15 @@ export default function LibraryPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <Layout
+        title="Biblioteca de Flashcards | MyFlashcard"
+        description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
+      >
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4">
               Biblioteca Comunitária
-            </h2>
+            </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Encontre baralhos prontos para acelerar seu aprendizado.
             </p>
@@ -69,12 +75,15 @@ export default function LibraryPage() {
   }
 
   return (
-    <Layout>
+    <Layout
+      title="Biblioteca de Flashcards | MyFlashcard"
+      description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
+    >
       <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
         <section className="flex flex-col items-center">
-          <h2 className="text-4xl font-extrabold leading-tight mb-4">
+          <h1 className="text-4xl font-extrabold leading-tight mb-4">
             Biblioteca Comunitária
-          </h2>
+          </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
             Encontre baralhos prontos para acelerar seu aprendizado.
           </p>
@@ -177,7 +186,7 @@ function DeckComponent({
       <div>
         <div className="flex justify-between items-start">
           <div className="flex-1 mr-2">
-            <h3 className="font-semibold">{deck.name}</h3>
+            <p className="font-semibold">{deck.name}</p>
           </div>
         </div>
         <p className="text-xs text-zinc-400 mt-2">

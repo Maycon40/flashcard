@@ -2,14 +2,23 @@
 
 import React from "react";
 import Link from "next/link";
+import Head from "next/head";
 
 interface LayoutProps {
+  title: string;
+  description: string;
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ title, description, children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans">
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
       <header className="border-b border-zinc-200 dark:border-zinc-800">
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
@@ -17,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="h-8 w-8 md:h-10 md:w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-base text-white font-bold">
                 FC
               </div>
-              <h1 className="text-base md:text-lg font-semibold">Flashcard</h1>
+              <p className="text-base md:text-lg font-semibold">MyFlashcard</p>
             </Link>
           </div>
 
@@ -30,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
             </Link>
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
+              className="hidden sm:inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
             >
               Criar conta
             </Link>

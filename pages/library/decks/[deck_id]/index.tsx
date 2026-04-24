@@ -36,7 +36,10 @@ export default function LibraryPage() {
 
   if (error) {
     return (
-      <Layout>
+      <Layout
+        title="Biblioteca de Flashcards | MyFlashcard"
+        description="Encontre cartões prontos para acelerar seu aprendizado."
+      >
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
           <section className="flex flex-col items-center">
             <h2 className="text-4xl font-extrabold leading-tight mb-4">
@@ -54,7 +57,10 @@ export default function LibraryPage() {
 
   if (isLoading || !query) {
     return (
-      <Layout>
+      <Layout
+        title="Biblioteca de Flashcards | MyFlashcard"
+        description="Encontre cartões prontos para acelerar seu aprendizado."
+      >
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
           <section className="flex flex-col items-center">
             <h2 className="text-4xl font-extrabold leading-tight mb-4">
@@ -73,7 +79,10 @@ export default function LibraryPage() {
   }
 
   return (
-    <Layout>
+    <Layout
+      title="Biblioteca de Flashcards | MyFlashcard"
+      description="Encontre cartões prontos para acelerar seu aprendizado."
+    >
       <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
         <section className="flex flex-col items-center">
           <h2 className="text-4xl font-extrabold leading-tight mb-4">

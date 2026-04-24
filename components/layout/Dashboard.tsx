@@ -28,12 +28,16 @@ export default function LayoutDashboard({ children }: Props) {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans">
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-zinc-50 dark:bg-black shadow flex items-center justify-between px-4 h-14">
-        <div className="lg:hidden fixed top-4 left-3 right-3 z-30 rounded-2xl bg-white dark:bg-zinc-900 shadow-black shadow-md flex items-center justify-between px-4 h-17">
+        <div className="lg:hidden fixed top-4 left-3 right-3 z-30 rounded-2xl bg-white dark:bg-zinc-900 shadow-gray-500 dark:shadow-black shadow-sm dark:shadow-md flex items-center justify-between px-4 h-17">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
               FC
             </div>
-            <span className="font-semibold text-base">Flashcard</span>
+            <span className="font-semibold text-base">
+              <Link href="/dashboard" className="text-sm font-semibold">
+                MyFlashcard
+              </Link>
+            </span>
           </div>
           <button
             className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -109,16 +113,13 @@ export default function LayoutDashboard({ children }: Props) {
           <aside className="hidden lg:block lg:col-span-1">
             <div className="sticky top-6 rounded-lg bg-white dark:bg-zinc-900 p-4 shadow-sm">
               <div className="mb-6 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                <div className="h-8 w-8 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                   FC
                 </div>
                 <div>
-                  <Link href="/" className="text-sm font-semibold">
-                    Flashcard
+                  <Link href="/dashboard" className="text-md font-semibold">
+                    MyFlashcard
                   </Link>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Dashboard
-                  </div>
                 </div>
               </div>
 
@@ -171,11 +172,11 @@ export default function LayoutDashboard({ children }: Props) {
             Você tem certeza que deseja <strong>sair</strong>?
           </ConfirmLogout>
 
-          <section className="lg:col-span-5">
+          <main className="lg:col-span-5">
             <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
               {children}
             </div>
-          </section>
+          </main>
         </div>
       </div>
     </div>

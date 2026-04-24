@@ -65,11 +65,14 @@ export default function SignupPage() {
     isSubmitting;
 
   return (
-    <Layout>
+    <Layout
+      title="Criar Conta | MyFlashcard"
+      description="Crie sua conta no MyFlashcard"
+    >
       <main className="mx-auto max-w-3xl px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
-            <h2 className="text-3xl font-extrabold mb-4">Crie sua conta</h2>
+            <h1 className="text-3xl font-extrabold mb-4">Crie sua conta</h1>
             <p className="hidden md:block text-zinc-600 dark:text-zinc-400 mb-6">
               Comece a criar e revisar seus flashcards com revisão espaçada e
               retenção otimizada.

@@ -4,13 +4,16 @@ import Layout from "@/components/layout";
 
 export default function Home() {
   return (
-    <Layout>
+    <Layout
+      title="Flashcard - Aprenda com Revisão Espaçada | MyFlashcard"
+      description="Domine qualquer assunto com flashcards inteligentes. Use o método de revisão espaçada para nunca mais esquecer o que estudou. Comece agora gratuitamente no MyFlashcard!"
+    >
       <div className="mx-auto max-w-5xl px-6 py-12">
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4">
               Aprenda de verdade com flashcards
-            </h2>
+            </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Use a repetição ativa e a revisão espaçada para memorizar mais
               rápido e com menos esforço. Simples, eficiente e baseado em
@@ -19,14 +22,8 @@ export default function Home() {
 
             <div className="flex gap-3">
               <Link
-                href="/dashboard/decks"
+                href="/signup"
                 className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
-              >
-                Criar baralho
-              </Link>
-              <Link
-                href="/dashboard/cards"
-                className="inline-flex items-center px-5 py-3 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 Criar cartão
               </Link>
@@ -34,9 +31,9 @@ export default function Home() {
           </div>
 
           <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
-            <h3 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4">
               Por que flashcards funcionam?
-            </h3>
+            </h2>
             <ul className="space-y-4 text-zinc-700 dark:text-zinc-300">
               <li className="flex gap-3">
                 <svg

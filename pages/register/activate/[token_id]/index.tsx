@@ -41,7 +41,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 export default function RegisterPage({ success }: Props) {
   return (
-    <Layout>
+    <Layout
+      title="Ativação da conta | MyFlashcard"
+      description="Ative sua conta no MyFlashcard"
+    >
       <main className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex justify-center">
           <div className="w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg text-center">
