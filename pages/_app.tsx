@@ -33,7 +33,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       >
         <Component {...pageProps} />
       </SWRConfig>
-      <GoogleAnalytics gaId={process.env.GA_ID || ""} />
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
       <Analytics />
       <SpeedInsights />
     </main>
