@@ -2,6 +2,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import type { AppProps } from "next/app";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { SWRConfig } from "swr";
 
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       >
         <Component {...pageProps} />
       </SWRConfig>
+      <GoogleAnalytics gaId={process.env.GA_ID || ""} />
       <Analytics />
       <SpeedInsights />
     </main>
