@@ -31,6 +31,7 @@
     "cookie": "^1.1.1",
     "dotenv": "^17.3.1",
     "dotenv-expand": "^12.0.3",
+    "lucide-react": "^1.12.0",
     "next": "^16.2.3",
     "next-connect": "^1.0.0",
     "node-pg-migrate": "^7.6.1",
