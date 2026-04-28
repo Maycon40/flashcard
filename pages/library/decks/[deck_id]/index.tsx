@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import { MouseEvent, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import Layout from "@/components/layout";
 import { fetcher } from "@/infra/fetcher";
@@ -114,6 +115,12 @@ export default function LibraryPage() {
               />
             ))}
           </div>
+          <Link
+            href="/library"
+            className="inline-block mt-8 text-indigo-600 hover:underline font-medium"
+          >
+            ← Ver todos os baralhos
+          </Link>
         </section>
       </div>
     </Layout>
