@@ -5,8 +5,8 @@ import Layout from "@/components/layout";
 export default function Home() {
   return (
     <Layout
-      title="Flashcard - Aprenda com Revisão Espaçada | MyFlashcard"
-      description="Domine qualquer assunto com flashcards inteligentes. Use o método de revisão espaçada para nunca mais esquecer o que estudou. Comece agora gratuitamente no MyFlashcard!"
+      title="MyFlashcard | Aprenda com Revisão Espaçada"
+      description="Domine qualquer assunto com flashcards inteligentes. Use o método de revisão espaçada para nunca mais esquecer o que estudou!"
     >
       <div className="mx-auto max-w-5xl px-6 py-12">
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -52,7 +52,7 @@ export default function Home() {
                 </svg>
                 <div>
                   <strong>Recuperação ativa</strong>
-                  <div className="text-sm text-zinc-500">
+                  <div className="text-sm text-zinc-600 dark:text-zinc-400">
                     Lembrar ativamente fortalece memórias mais que releituras.
                   </div>
                 </div>
@@ -75,7 +75,7 @@ export default function Home() {
                 </svg>
                 <div>
                   <strong>Repetição espaçada</strong>
-                  <div className="text-sm text-zinc-500">
+                  <div className="text-sm text-zinc-600 dark:text-zinc-400">
                     Revisões em intervalos aumentam retenção a longo prazo.
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export default function Home() {
                 </svg>
                 <div>
                   <strong>Foco no essencial</strong>
-                  <div className="text-sm text-zinc-500">
+                  <div className="text-sm text-zinc-600 dark:text-zinc-400">
                     Fragmentar o conteúdo em perguntas objetivas facilita a
                     revisão.
                   </div>

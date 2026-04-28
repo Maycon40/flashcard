@@ -50,3 +50,18 @@ export interface ActivationToken {
 export interface Resource {
   id: string;
 }
+
+export interface Topic {
+  id: string;
+  label: string;
+}
+
+export interface Article {
+  title: string;
+  description: string;
+  author: string;
+  image: string;
+  date: string;
+  url: string;
+  topics: Topic[];
+}
