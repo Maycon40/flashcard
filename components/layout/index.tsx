@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Head from "next/head";
+import Image from "next/image";
 
 interface LayoutProps {
   title: string;
@@ -23,9 +24,13 @@ export default function Layout({ title, description, children }: LayoutProps) {
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
             <Link href="/" className="flex items-center gap-2 md:gap-3">
-              <div className="h-8 w-8 md:h-10 md:w-10 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-base text-white font-bold">
-                FC
-              </div>
+              <Image
+                src="/flashcard.png"
+                width={40}
+                height={40}
+                className="rounded-md"
+                alt=""
+              />
               <p className="text-base md:text-lg font-semibold">MyFlashcard</p>
             </Link>
           </div>
