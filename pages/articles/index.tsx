@@ -9,7 +9,7 @@ const articles = [
     excerpt:
       "Descubra o que são e como utilizar os flashcards para potencializar seus estudos.",
     image: "/post-it-notes.jpg",
-    date: "2024-06-01",
+    date: "2026-04-28",
   },
 ];
 
