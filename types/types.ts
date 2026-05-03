@@ -6,6 +6,7 @@ export interface User {
   features?: string[];
   password?: string;
   token_id?: string;
+  offensive?: number;
 }
 
 export interface Token {
