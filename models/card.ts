@@ -260,7 +260,7 @@ async function findAll(decks: Deck[]): Promise<Card[]> {
   }
 }
 
-async function findAllToReview(decks: Deck[], important: boolean) {
+async function findAllToReview(decks: Deck[], important: boolean | null) {
   const cards = await findAll(decks);
   const cardIds: Card["id"][] = [];
 
@@ -272,7 +272,10 @@ async function findAllToReview(decks: Deck[], important: boolean) {
 
   return cardsToReview;
 
-  async function runSelectQuery(cardIds: Card["id"][], important: boolean) {
+  async function runSelectQuery(
+    cardIds: Card["id"][],
+    important: boolean | null,
+  ) {
     const results = await database.query({
       text: `
         SELECT
@@ -283,8 +286,8 @@ async function findAllToReview(decks: Deck[], important: boolean) {
         JOIN decks ON cards.deck_id = decks.id
         WHERE
           cards.id = ANY($1) AND
-          cards.date_to_review <= timezone('utc', now()) AND
-          cards.important = $2
+          cards.date_to_review <= CURRENT_DATE AND
+          ($2::boolean IS NULL OR cards.important = $2)
         ORDER BY
           cards.date_to_review ASC
         ;`,
@@ -481,20 +484,21 @@ function getNewBox(box: string, difficulty: string) {
 
 function getNewDateToReview(newBox: string) {
   const day = 1000 * 60 * 60 * 24;
+  let newDate = new Date(Date.now());
 
   if (newBox == "new") {
-    return new Date(Date.now() + day);
+    newDate = new Date(Date.now() + day);
   } else if (newBox == "progress") {
-    return new Date(Date.now() + day * 2);
+    newDate = new Date(Date.now() + day * 2);
   } else if (newBox == "secure") {
-    return new Date(Date.now() + day * 5);
+    newDate = new Date(Date.now() + day * 5);
   } else if (newBox == "advanced") {
-    return new Date(Date.now() + day * 14);
+    newDate = new Date(Date.now() + day * 14);
   } else if (newBox == "consolidated") {
-    return new Date(Date.now() + day * 30);
+    newDate = new Date(Date.now() + day * 30);
   }
 
-  return new Date(Date.now());
+  return newDate.toISOString().split("T")[0];
 }
 
 async function deleteById(cardId: string) {
