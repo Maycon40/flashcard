@@ -17,10 +17,11 @@ export default router.handler(controller.errorHandlers);
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context?.user;
   const { important } = request.query;
+  const boolImportant = important ? important == "true" : null;
 
   const decks = await deck.findAllByUserId(userTryingToGet.id);
 
-  const cardData = await card.findAllToReview(decks, important === "true");
+  const cardData = await card.findAllToReview(decks, boolImportant);
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,

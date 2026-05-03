@@ -9,6 +9,7 @@ import { Card, Deck } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 import ButtonComponent from "@/components/button";
+import SearchableSelect from "@/components/search/select";
 
 export default function EditCardPage() {
   const router = useRouter();
@@ -123,26 +124,12 @@ function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
         <label htmlFor="deck" className="block text-sm font-medium mb-1">
           Baralho
         </label>
-        <select
-          id="deck"
-          value={selectedDeck}
-          onChange={(e) => setSelectedDeck(e.target.value)}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-          disabled={isSubmitting}
-        >
-          <option className="bg-zinc-900" value="">
-            -- selecione um baralho --
-          </option>
-          {decks?.map((d) => (
-            <option
-              key={d.id || d.name}
-              className="bg-zinc-900"
-              value={d.name || ""}
-            >
-              {d.name}
-            </option>
-          ))}
-        </select>
+        <SearchableSelect
+          decks={decks || []}
+          selectedDeck={selectedDeck}
+          setSelectedDeck={setSelectedDeck}
+          isSubmitting={isSubmitting}
+        />
       </div>
 
       <div>

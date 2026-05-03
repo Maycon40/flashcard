@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -12,10 +12,22 @@ import { useRouter } from "next/router";
 export default function ReviewPage() {
   const { query } = useRouter();
 
-  const { data: cards, isLoading } = useSWR<Card[]>(
-    `/api/v1/cards/review?important=${query?.important || "false"}`,
+  const urlCardApi =
+    query?.important == undefined
+      ? `/api/v1/cards/review`
+      : `/api/v1/cards/review?important=${query?.important || "false"}`;
+
+  const { data: responseCards, isLoading } = useSWR<Card[]>(
+    urlCardApi,
     fetcher,
   );
+
+  const cards: Card[] = useMemo(() => {
+    if (!responseCards) return [];
+    return responseCards?.filter(
+      (card) => !query.subject || card.deck_id == query.subject,
+    );
+  }, [responseCards, query.subject]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);

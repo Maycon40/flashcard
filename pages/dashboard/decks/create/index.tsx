@@ -80,7 +80,7 @@ export default function DeckPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-              placeholder="Título do baralho"
+              placeholder="Título do Baralho. Ex: Matemática, Português, Geografia."
             />
           </div>
 

@@ -97,7 +97,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       const day = 1000 * 60 * 60 * 24;
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day * 2),
+        new Date(Date.now() + day * 2).setHours(0, 0, 0, 0),
         new Date(responseBody.date_to_review),
       );
 

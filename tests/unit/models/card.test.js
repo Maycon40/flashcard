@@ -114,8 +114,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview();
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now()),
-        dateToReview,
+        new Date(Date.now()).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -125,8 +125,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("unknow box");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now()),
-        dateToReview,
+        new Date(Date.now()).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -136,8 +136,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("new");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day),
-        dateToReview,
+        new Date(Date.now() + day).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -147,8 +147,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("progress");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day * 2),
-        dateToReview,
+        new Date(Date.now() + day * 2).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -158,8 +158,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("secure");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day * 5),
-        dateToReview,
+        new Date(Date.now() + day * 5).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -169,8 +169,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("advanced");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day * 14),
-        dateToReview,
+        new Date(Date.now() + day * 14).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);
@@ -180,8 +180,8 @@ describe("@/models/card", () => {
       const dateToReview = card.getNewDateToReview("consolidated");
 
       const dateIsSimilar = orchestrator.verifyDateIsSimilar(
-        new Date(Date.now() + day * 30),
-        dateToReview,
+        new Date(Date.now() + day * 30).setHours(0, 0, 0, 0),
+        new Date(dateToReview),
       );
 
       expect(dateIsSimilar).toBe(true);

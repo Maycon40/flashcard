@@ -1,43 +1,27 @@
-import useSWR, { useSWRConfig } from "swr";
-import Link from "next/link";
+import useSWR from "swr";
+import { Layers, BookOpen } from "lucide-react";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
-import { Card, User } from "@/types/types";
+import { Card, Deck, User } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
-import { useEffect } from "react";
+import CardsToReview from "@/components/cards/review";
+import ReviewWeeklyGraph from "@/components/cards/review/weeklyGraph";
 
 export default function DashboardPage() {
-  const { mutate } = useSWRConfig();
-
   const { data: user, isLoading: userLoading } = useSWR<User>(
     "/api/v1/user",
     fetcher,
   );
 
-  useEffect(() => {
-    mutate("/api/v1/cards/review?important=true", undefined, {
-      revalidate: true,
-    });
-    mutate("/api/v1/cards/review?important=false", undefined, {
-      revalidate: true,
-    });
-  }, [mutate]);
+  const { data: cards, isLoading: cardLoading } = useSWR<Card[]>(
+    "/api/v1/cards",
+    fetcher,
+  );
 
-  const {
-    data: importantCardsToReview = [],
-    isLoading: reviewLoadingImportant,
-    isValidating: reviewValidatingImportant,
-  } = useSWR<Card[]>("/api/v1/cards/review?important=true", fetcher, {
-    revalidateOnMount: true,
-  });
-
-  const {
-    data: cardsToReview = [],
-    isLoading: reviewLoading,
-    isValidating: reviewValidating,
-  } = useSWR<Card[]>("/api/v1/cards/review?important=false", fetcher, {
-    revalidateOnMount: true,
-  });
+  const { data: decks, isLoading: deckLoading } = useSWR<Deck[]>(
+    "/api/v1/decks",
+    fetcher,
+  );
 
   return (
     <LayoutDashboard>
@@ -53,78 +37,73 @@ export default function DashboardPage() {
             👋
           </h1>
           <p className="text-sm text-zinc-500">
-            Aqui estão suas revisões pendentes.
+            Bem-vindo(a) ao seu gerenciador de flashcards.
           </p>
         </div>
       </div>
 
-      <section className="mb-8">
-        <h2>Cartão Importante para Revisar:</h2>
-        {reviewLoadingImportant || reviewValidatingImportant ? (
-          <div className="animate-pulse">
-            <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-          </div>
-        ) : importantCardsToReview.length > 0 ? (
-          <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold">Revisão pendente</h3>
-                <p className="text-zinc-500">
-                  Você tem {importantCardsToReview.length} flashcard
-                  {importantCardsToReview.length > 1 ? "s" : ""} para revisar.
-                </p>
-              </div>
-              <Link
-                href="/dashboard/cards/review?important=true"
-                className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 whitespace-nowrap"
-              >
-                Revisar agora
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg text-center">
-            <h3 className="text-lg font-semibold">Tudo em dia! 🎉</h3>
-            <p className="text-zinc-500 mt-2">
-              Parabéns! Você não tem nenhum flashcard para revisar no momento.
-            </p>
-          </div>
-        )}
+      <section className="grid grid-cols-2 sm:grid-cols-3 items-center gap-6 mb-8">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow dark:shadow-md shadow-gray-500 dark:shadow-black p-5 flex flex-col items-center">
+          <span className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900 p-2">
+              <Layers className="w-4 h-4 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" />
+            </span>
+            <span className="text-xl sm:text-3xl font-bold text-indigo-700 dark:text-indigo-400">
+              {cardLoading ? (
+                <div className="h-8 w-8 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+              ) : (
+                cards?.length || 0
+              )}
+            </span>
+          </span>
+          <span className="text-sm sm:text-base text-zinc-500 dark:text-zinc-300 mt-2">
+            Flashcards
+          </span>
+        </div>
+
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow dark:shadow-md shadow-gray-500 dark:shadow-black p-5 flex flex-col items-center">
+          <span className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900 p-2">
+              <BookOpen className="w-4 h-4 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
+            </span>
+            <span className="text-xl sm:text-3xl font-bold text-emerald-700 dark:text-emerald-400">
+              {deckLoading ? (
+                <div className="h-8 w-8 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+              ) : (
+                decks?.length || 0
+              )}
+            </span>
+          </span>
+          <span className="text-sm sm:text-base text-zinc-500 dark:text-zinc-300 mt-2">
+            Baralhos
+          </span>
+        </div>
       </section>
 
-      <section className="mb-8">
-        <h2>Cartão Não Importante para Revisar:</h2>
-        {reviewLoading || reviewValidating ? (
-          <div className="animate-pulse">
-            <div className="h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-          </div>
-        ) : cardsToReview.length > 0 ? (
-          <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold">Revisão pendente</h3>
-                <p className="text-zinc-500">
-                  Você tem {cardsToReview.length} flashcard
-                  {cardsToReview.length > 1 ? "s" : ""} para revisar.
-                </p>
-              </div>
-              <Link
-                href="/dashboard/cards/review?important=false"
-                className="inline-flex items-center px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 whitespace-nowrap"
-              >
-                Revisar agora
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg text-center">
-            <h3 className="text-lg font-semibold">Tudo em dia! 🎉</h3>
-            <p className="text-zinc-500 mt-2">
-              Parabéns! Você não tem nenhum flashcard para revisar no momento.
-            </p>
-          </div>
-        )}
-      </section>
+      <CardsToReview decks={decks} />
+
+      <ReviewWeeklyGraph cards={cards} />
     </LayoutDashboard>
   );
 }
+
+/*
+
+        <div className="col-span-2 sm:col-span-1 bg-white dark:bg-zinc-900 rounded-lg shadow dark:shadow-md shadow-gray-500 dark:shadow-black p-5 flex flex-col items-center">
+          <span className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900 p-2">
+              <Flame className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
+            </span>
+            <span className="text-xl sm:text-3xl font-bold text-orange-700 dark:text-orange-400">
+              {userLoading ? (
+                <div className="h-8 w-8 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+              ) : (
+                user?.offensive || 0
+              )}
+            </span>
+          </span>
+          <span className="text-sm sm:text-base text-zinc-500 dark:text-zinc-300 mt-2">
+            Dias Seguidos
+          </span>
+        </div>
+        */
