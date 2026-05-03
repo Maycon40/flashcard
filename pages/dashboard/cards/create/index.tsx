@@ -9,6 +9,7 @@ import { Deck } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 import ButtonComponent from "@/components/button";
+import SearchableSelect from "@/components/search/select";
 
 export default function CreateCardPage() {
   const router = useRouter();
@@ -52,7 +53,7 @@ function CreateCardForm({ router }: { router: NextRouter }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
-  const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
+  const [selectedDeck, setSelectedDeck] = useState<string>("");
   const [isImportant, setIsImportant] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -107,25 +108,12 @@ function CreateCardForm({ router }: { router: NextRouter }) {
       <form onSubmit={handleCreate} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Baralho</label>
-          <select
-            value={selectedDeck || deckName || ""}
-            onChange={(e) => setSelectedDeck(e.target.value || null)}
-            className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-          >
-            <option className="bg-zinc-900" value="">
-              -- selecione um baralho --
-            </option>
-            {decks?.length &&
-              decks.map((d) => (
-                <option
-                  className="bg-zinc-900"
-                  key={d.id || d.name}
-                  value={d.name || d.id}
-                >
-                  {d.name}
-                </option>
-              ))}
-          </select>
+          <SearchableSelect
+            decks={decks || []}
+            selectedDeck={selectedDeck || (deckName as string) || ""}
+            setSelectedDeck={setSelectedDeck}
+            isSubmitting={isSubmitting}
+          />
         </div>
 
         <div>
