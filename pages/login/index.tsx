@@ -39,8 +39,8 @@ export default function LoginPage() {
 
       if (response.status === 201) {
         setErrorAction(null);
+        mutate(() => true, undefined, { revalidate: true });
         setIsSubmitting(false);
-        mutate(() => true, undefined, { revalidate: false });
         router.push("/dashboard");
       } else {
         const action =
