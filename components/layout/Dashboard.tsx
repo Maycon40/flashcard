@@ -1,6 +1,6 @@
-"use client";
-
+import { useSWRConfig } from "swr";
 import { useState, ReactNode, MouseEvent } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ConfirmLogout from "@/components/logout";
@@ -11,6 +11,7 @@ interface Props {
 
 export default function LayoutDashboard({ children }: Props) {
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
   const [logoutState, setLogoutState] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -21,6 +22,8 @@ export default function LayoutDashboard({ children }: Props) {
     await fetch(`/api/v1/sessions`, {
       method: "DELETE",
     });
+
+    mutate(() => true, undefined, { revalidate: true });
 
     router.push("/");
   }
