@@ -44,8 +44,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       } else {
         const action =
-          responseBody?.action ||
-          responseBody?.message ||
+          responseBody?.message + " " + responseBody?.action ||
           "Falha ao autenticar.";
         setErrorAction(action);
         setIsSubmitting(false);
