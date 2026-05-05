@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, SubmitEvent, MouseEvent } from "react";
+import { useState, SubmitEvent, MouseEvent, useRef } from "react";
 import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -15,30 +15,97 @@ export default function ImportCardPage() {
       </div>
 
       <p>
-        Para importar um cartão é necessário usar um arquivo com a extensão
-        .json.
+        Caso queira importar um arquivo do Anki, certifique-se de que no momento
+        da exportação foi marcado a opção &quot;Incluir nome do baralho&quot; e
+        foi exportado no formato txt.
       </p>
 
-      <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
+      <div className="rounded-2xl bg-white py-6 shadow-lg dark:bg-zinc-900">
         <ImportCardForm />
       </div>
     </LayoutDashboard>
   );
 }
 
+function parseAnkiFile(content: string) {
+  const lines = content.trim().split("\n");
+  const result: any[] = [];
+
+  const config = {
+    deckColumn: -1,
+    separator: "\t",
+  };
+
+  const dataLines = lines.filter((line) => {
+    if (line.startsWith("#")) {
+      if (line.includes("deck column:")) {
+        config.deckColumn = parseInt(line.split(":")[1]) - 1;
+      }
+      return false;
+    }
+    return true;
+  });
+
+  dataLines.forEach((line) => {
+    const columns = line.split(config.separator);
+
+    let deckName = "Padrão";
+    let cardName = "";
+    let cardDescription = "";
+
+    if (config.deckColumn !== -1) {
+      deckName = columns[config.deckColumn] || "Padrão";
+
+      if (columns.length > 4) {
+        cardName = columns[3];
+        cardDescription = columns[4];
+      } else {
+        cardName = columns[1];
+        cardDescription = columns[2];
+      }
+    } else {
+      cardName = columns[0];
+      cardDescription = columns[1];
+    }
+
+    if (cardName && cardDescription) {
+      result.push({
+        deck_name: deckName.trim(),
+        name: cardName.trim(),
+        description: cardDescription.trim(),
+      });
+    }
+  });
+
+  return result;
+}
+
 function ImportCardForm() {
   const router = useRouter();
 
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState(
+    "Selecionar Arquivo (.txt) ou (.json)",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const fileInputRef = useRef<any>(null);
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setSubmitError(null);
 
     if (!file) {
-      setSubmitError("É necessário selecionar um arquivo.");
+      setSubmitError("É necessário selecionar um arquivo!");
+      return;
+    }
+
+    const extension = file.name.split(".").pop();
+
+    console.log("extension", extension);
+    if (!["json", "txt"].includes(extension as string)) {
+      setSubmitError("É necessário selecionar um arquivo *.json ou *.txt!");
       return;
     }
 
@@ -46,7 +113,13 @@ function ImportCardForm() {
 
     try {
       const content = await file.text();
-      const data = JSON.parse(content);
+      let data = [];
+
+      if (extension == "json") {
+        data = JSON.parse(content);
+      } else {
+        data = parseAnkiFile(content);
+      }
 
       const cardsToImport = Array.isArray(data) ? data : [data];
 
@@ -60,7 +133,9 @@ function ImportCardForm() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setSubmitError(body?.message || `Falha ao importar os cartãos`);
+        setSubmitError(
+          body?.message + " " + body?.action || `Falha ao importar os cartãos`,
+        );
         setIsSubmitting(false);
         return;
       }
@@ -79,18 +154,23 @@ function ImportCardForm() {
 
     if (selectedFile && selectedFile.size > maxSize) {
       setSubmitError("O arquivo é muito grande! O limite é de 5MB.");
-      e.target.value = ""; // Limpa o input
+      e.target.value = "";
       setFile(null);
       return;
     }
 
     setFile(selectedFile || null);
+    setFileName(selectedFile.name);
   };
 
   function back(e: MouseEvent) {
     e.preventDefault();
     router.back();
   }
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -103,11 +183,21 @@ function ImportCardForm() {
         <input
           id="file"
           type="file"
-          onChange={(e) => handleFileChange(e)}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-          placeholder="Arquivo .json"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".txt,.json"
+          className="hidden"
           disabled={isSubmitting}
         />
+
+        <button
+          type="button"
+          onClick={handleButtonClick}
+          disabled={isSubmitting}
+          className="w-full text-left cursor-pointer rounded-md border border-zinc-200 dark:border-zinc-800 px-4 py-2 bg-zinc-100 dark:bg-zinc-900 text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+        >
+          {fileName}
+        </button>
       </div>
 
       <div className="flex items-center gap-4 pt-2">
