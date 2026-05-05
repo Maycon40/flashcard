@@ -3,6 +3,8 @@ import controller from "infra/controller";
 import activation from "models/activation";
 import authorization from "models/authorization";
 import { NextApiRequest, NextApiResponse } from "next/types";
+import card from "@/models/card";
+import deck from "@/models/deck";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -23,6 +25,21 @@ async function patchHandler(
 
   const activatedToken = await activation.markTokenAsUsed(
     activationTokenId as string,
+  );
+
+  const createdDeck = await deck.create(
+    {
+      name: "Baralho de Exemplo",
+    },
+    activatedToken.user_id,
+  );
+
+  await card.create(
+    {
+      name: "Aqui fica o conteúdo a ser memorizado",
+      description: "Aqui fica a explicação ou resposta do cartão",
+    },
+    createdDeck.id,
   );
 
   const secureOutputValues = authorization.filterOutput(

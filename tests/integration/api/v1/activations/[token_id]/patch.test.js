@@ -100,6 +100,32 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
         "read:library",
         "create:library",
       ]);
+
+      const createdSession = await orchestrator.createSession(createdUser.id);
+
+      const responseCards = await fetch(`http://localhost:3000/api/v1/cards`, {
+        headers: {
+          Cookie: `session_id=${createdSession.token}`,
+        },
+      });
+
+      const responseBodyCards = await responseCards.json();
+
+      expect(responseBodyCards).toEqual([
+        {
+          id: responseBodyCards[0].id,
+          name: "Aqui fica o conteúdo a ser memorizado",
+          description: "Aqui fica a explicação ou resposta do cartão",
+          box: "new",
+          important: false,
+          deck_name: "Baralho de Exemplo",
+          deck_id: responseBodyCards[0].deck_id,
+          date_to_review: responseBodyCards[0].date_to_review,
+          published_at: responseBodyCards[0].published_at,
+          created_at: responseBodyCards[0].created_at,
+          updated_at: responseBodyCards[0].updated_at,
+        },
+      ]);
     });
 
     test("Without permission", async () => {
