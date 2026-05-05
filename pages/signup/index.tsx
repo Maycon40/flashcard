@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import Layout from "@/components/layout";
 import ButtonComponent from "@/components/button";
+import ErrorComponent from "@/components/error";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -43,8 +44,7 @@ export default function SignupPage() {
         setSuccess(true);
       } else {
         setErrorAction(
-          responseBody?.action ||
-            responseBody?.message ||
+          responseBody?.message + " " + responseBody?.action ||
             "Falha ao criar a conta.",
         );
       }
@@ -117,12 +117,12 @@ export default function SignupPage() {
             ) : (
               <>
                 <h3 className="text-xl font-semibold mb-4">Cadastro</h3>
-                {errorAction && (
-                  <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-200">
-                    {errorAction}
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                {errorAction && <ErrorComponent>{errorAction}</ErrorComponent>}
+                <form
+                  onSubmit={handleSubmit}
+                  className="mt-6 space-y-4"
+                  noValidate
+                >
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Usuário

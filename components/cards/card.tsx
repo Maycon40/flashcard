@@ -7,6 +7,7 @@ import {
   SetStateAction,
 } from "react";
 import Link from "next/link";
+import { Pencil, Trash2 } from "lucide-react";
 
 import { Card } from "@/types/types";
 import TagComponent from "@/components/cards/tag";
@@ -176,19 +177,21 @@ export default function CardComponent({
         >
           {card.published_at ? "Privar" : "Publicar"}
         </button>
-        <div>
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href={`/dashboard/cards/edit/${card.id}`}
-            className="mr-5 text-sm font-medium text-indigo-600 hover:underline"
+            className="p-2 text-blue-500 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500 rounded transition-colors"
           >
-            Editar
+            <Pencil size={20} />
+            <span className="sr-only">Editar</span>
           </Link>
           <button
             type="button"
-            className="text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
+            className="p-2 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
             onClick={() => setCardToDelete(card.id as string)}
           >
-            Deletar
+            <Trash2 size={20} />
+            <span className="sr-only">Deletar</span>
           </button>
         </div>
       </div>

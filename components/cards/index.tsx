@@ -27,7 +27,7 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
       method: "DELETE",
     });
 
-    const newCards = cards.filter((card) => card != cardId);
+    const newCards = cards.filter((card) => card.id != cardId);
 
     const cardPathApi = getCardPathApi(
       router.pathname,

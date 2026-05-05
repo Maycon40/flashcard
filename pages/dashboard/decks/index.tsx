@@ -1,8 +1,7 @@
-"use client";
-
-import { useState, useMemo, MouseEvent, Dispatch, SetStateAction } from "react";
 import useSWR, { useSWRConfig } from "swr";
+import { useState, useMemo, MouseEvent, Dispatch, SetStateAction } from "react";
 import Link from "next/link";
+import { Pencil, Trash2 } from "lucide-react";
 
 import { Deck } from "@/types/types";
 import LayoutDashboard from "@/components/layout/Dashboard";
@@ -158,19 +157,24 @@ function DecksData({
                 Ver baralho
               </Link>
             </div>
-            <div>
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href={`/dashboard/decks/edit/${encodeURIComponent(String(deck.name))}`}
-                className="mr-5 text-sm font-medium text-indigo-600 hover:underline"
+                className="p-2 text-blue-500 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500 rounded transition-colors"
+                title="Editar Baralho"
               >
-                Editar
+                <Pencil size={20} />
+                <span className="sr-only">Editar</span>
               </Link>
+
               <button
                 type="button"
-                className="text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
+                className="p-2 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
                 onClick={() => setDeckToDelete(deck.name as string)}
+                title="Deletar Baralho"
               >
-                Deletar
+                <Trash2 size={20} />
+                <span className="sr-only">Deletar</span>
               </button>
             </div>
           </div>
