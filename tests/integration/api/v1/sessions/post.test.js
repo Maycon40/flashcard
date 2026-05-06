@@ -153,5 +153,34 @@ describe("POST /api/v1/sessions", () => {
         status_code: 401,
       });
     });
+
+    test("With not activated user", async () => {
+      await orchestrator.createUser({
+        email: "notActivatedUser@gmail.com",
+        password: "notActivatedUser",
+      });
+
+      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "notActivatedUser@gmail.com",
+          password: "notActivatedUser",
+        }),
+      });
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não tem permissão para fazer login.",
+        action: "Verifique o seu email para ativar o seu usuário.",
+        status_code: 403,
+      });
+    });
   });
 });
