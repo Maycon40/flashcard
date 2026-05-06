@@ -5,8 +5,11 @@ export default async function exportCards(cards: Card[]) {
 
   for (const card of cards) {
     const deck = card.deck_name || "Padrao";
-    const name = card.name || "";
-    const description = card.description || "";
+    const name = (card.name || "").replace(/\n/g, "<br>").replace(/\t/g, " ");
+
+    const description = (card.description || "")
+      .replace(/\n/g, "<br>")
+      .replace(/\t/g, " ");
 
     txtContent += `${deck}\t${name}\t${description}\n`;
   }
