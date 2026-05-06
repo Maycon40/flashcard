@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/router";
 import { useState, SubmitEvent } from "react";
 import Link from "next/link";
 
@@ -8,6 +9,8 @@ import ButtonComponent from "@/components/button";
 import ErrorComponent from "@/components/error";
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +18,6 @@ export default function SignupPage() {
   const [touched, setTouched] = useState(false);
   const [errorAction, setErrorAction] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -41,7 +43,7 @@ export default function SignupPage() {
       const responseBody = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        setSuccess(true);
+        router.push("/signup/success");
       } else {
         setErrorAction(
           responseBody?.message + " " + responseBody?.action ||
@@ -94,123 +96,88 @@ export default function SignupPage() {
           </div>
 
           <div className="rounded-2xl bg-white dark:bg-zinc-900 p-8 shadow-lg">
-            {success ? (
-              <div className="text-center">
-                <h3 className="text-xl font-semibold mb-4">
-                  Confira seu email!
-                </h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Sua conta foi criada com sucesso.
-                </p>
-                <p className="text-zinc-600 dark:text-zinc-400 mt-2">
-                  Por favor, verifique seu e-mail para ativá-la.
-                </p>
-                <div className="mt-6">
-                  <Link
-                    href="/login"
-                    className="w-full inline-flex justify-center items-center px-4 py-2 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700"
-                  >
-                    Ir para o Login
-                  </Link>
-                </div>
+            <h3 className="text-xl font-semibold mb-4">Cadastro</h3>
+            {errorAction && <ErrorComponent>{errorAction}</ErrorComponent>}
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Usuário
+                </label>
+                <input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  type="text"
+                  name="username"
+                  required
+                  className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Seu nome de usuário"
+                />
               </div>
-            ) : (
-              <>
-                <h3 className="text-xl font-semibold mb-4">Cadastro</h3>
-                {errorAction && <ErrorComponent>{errorAction}</ErrorComponent>}
-                <form
-                  onSubmit={handleSubmit}
-                  className="mt-6 space-y-4"
-                  noValidate
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  name="email"
+                  required
+                  className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="seu@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Senha</label>
+                <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  name="password"
+                  required
+                  className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Crie uma senha"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Confirme a senha
+                </label>
+                <input
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => setTouched(true)}
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Repita a senha"
+                />
+
+                {touched && !passwordsMatch && (
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                    As senhas não coincidem.
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <ButtonComponent
+                  className="w-full justify-center"
+                  disabled={isDisabled}
+                  isLoading={isSubmitting}
                 >
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Usuário
-                    </label>
-                    <input
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      type="text"
-                      name="username"
-                      required
-                      className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Seu nome de usuário"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Email
-                    </label>
-                    <input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                      name="email"
-                      required
-                      className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="seu@email.com"
-                    />
-                  </div>
+                  {isSubmitting ? "Criando" : "Criar conta"}
+                </ButtonComponent>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Senha
-                    </label>
-                    <input
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      type="password"
-                      name="password"
-                      required
-                      className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Crie uma senha"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Confirme a senha
-                    </label>
-                    <input
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      onBlur={() => setTouched(true)}
-                      type="password"
-                      name="confirmPassword"
-                      required
-                      className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Repita a senha"
-                    />
-
-                    {touched && !passwordsMatch && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                        As senhas não coincidem.
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="pt-2">
-                    <ButtonComponent
-                      className="w-full justify-center"
-                      disabled={isDisabled}
-                      isLoading={isSubmitting}
-                    >
-                      {isSubmitting ? "Criando" : "Criar conta"}
-                    </ButtonComponent>
-                  </div>
-
-                  <div className="pt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
-                    <span>Já tem conta? </span>
-                    <Link
-                      href="/login"
-                      className="text-indigo-600 hover:underline"
-                    >
-                      Entre aqui
-                    </Link>
-                  </div>
-                </form>
-              </>
-            )}
+              <div className="pt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+                <span>Já tem conta? </span>
+                <Link href="/login" className="text-indigo-600 hover:underline">
+                  Entre aqui
+                </Link>
+              </div>
+            </form>
           </div>
         </div>
       </main>
