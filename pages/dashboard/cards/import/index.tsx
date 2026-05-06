@@ -92,57 +92,65 @@ function ImportCardForm() {
 
   const fileInputRef = useRef<any>(null);
 
+  const validateAndReadFile = async (file: File | null) => {
+    if (!file) throw new Error("É necessário selecionar um arquivo!");
+
+    const extension = file.name.split(".").pop();
+    if (!["json", "txt"].includes(extension as string)) {
+      throw new Error("É necessário selecionar um arquivo *.json ou *.txt!");
+    }
+
+    const content = await file.text();
+
+    if (extension === "json") {
+      return JSON.parse(content);
+    }
+
+    return parseAnkiFile(content);
+  };
+
+  const sanitizeContent = (text: string) => {
+    if (!text) return "";
+    return text
+      .replace(/<br\s*\/?>/gi, "\n") // Converte <br> em \n[cite: 3]
+      .replace(/<[^>]*>?/gm, ""); // Remove outras tags HTML
+  };
+
+  const prepareCardsForImport = (rawData: any) => {
+    const cardsArray = Array.isArray(rawData) ? rawData : [rawData];
+
+    return cardsArray.map((card) => ({
+      name: sanitizeContent(card.name || card.cardName),
+      description: sanitizeContent(card.description || card.cardDescription),
+      deck_name: card.deck_name || card.deckName || "Padrão",
+    }));
+  };
+
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setSubmitError(null);
-
-    if (!file) {
-      setSubmitError("É necessário selecionar um arquivo!");
-      return;
-    }
-
-    const extension = file.name.split(".").pop();
-
-    console.log("extension", extension);
-    if (!["json", "txt"].includes(extension as string)) {
-      setSubmitError("É necessário selecionar um arquivo *.json ou *.txt!");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const content = await file.text();
-      let data = [];
+      const rawData = await validateAndReadFile(file);
 
-      if (extension == "json") {
-        data = JSON.parse(content);
-      } else {
-        data = parseAnkiFile(content);
-      }
-
-      const cardsToImport = Array.isArray(data) ? data : [data];
+      const cardsToImport = prepareCardsForImport(rawData);
 
       const res = await fetch(`/api/v1/cards/import`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cardsToImport),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setSubmitError(
-          body?.message + " " + body?.action || `Falha ao importar os cartãos`,
-        );
-        setIsSubmitting(false);
-        return;
+        throw new Error(body?.message || "Falha ao importar os cartões");
       }
 
       router.back();
     } catch (err: any) {
-      setSubmitError(err?.message || "Erro de rede.");
+      setSubmitError(err.message || "Erro inesperado.");
+    } finally {
       setIsSubmitting(false);
     }
   }
