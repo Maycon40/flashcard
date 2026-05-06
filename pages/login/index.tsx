@@ -40,8 +40,8 @@ export default function LoginPage() {
       if (response.status === 201) {
         setErrorAction(null);
         mutate(() => true, undefined, { revalidate: true });
-        setIsSubmitting(false);
         router.push("/dashboard");
+        setIsSubmitting(false);
       } else {
         const action =
           responseBody?.message + " " + responseBody?.action ||

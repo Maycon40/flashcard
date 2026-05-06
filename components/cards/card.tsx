@@ -11,6 +11,7 @@ import { Pencil, Trash2 } from "lucide-react";
 
 import { Card } from "@/types/types";
 import TagComponent from "@/components/cards/tag";
+import exportCards from "@/components/cards/export";
 
 export function sliceText(text: string) {
   if (text.length > 300) {
@@ -52,30 +53,15 @@ export default function CardComponent({
   async function exportCard(e: MouseEvent) {
     e.preventDefault();
 
-    const jsonString = JSON.stringify(
+    exportCards([
       {
         name: card.name,
         description: card.description,
         deck_name: card.deck_name,
       },
-      null,
-      2,
-    );
+    ]);
 
     setOpenMenuId(null);
-
-    const blob = new Blob([jsonString], { type: "application/json" });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `cartão-${card.name}.json`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
   }
 
   async function publish(e: MouseEvent) {
