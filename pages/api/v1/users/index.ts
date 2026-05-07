@@ -1,17 +1,39 @@
-import { createRouter } from "next-connect";
+import { createRouter, NextHandler } from "next-connect";
+import { NextApiRequest, NextApiResponse } from "next/types";
+
 import controller from "infra/controller";
 import user from "models/user";
 import activation from "models/activation";
 import authorization from "models/authorization";
-import { NextApiRequest, NextApiResponse } from "next/types";
+import validator from "models/validator";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.use(controller.injectAnonymousOrUser);
 
-router.post(controller.canRequest("create:user"), postHandler);
+router.post(
+  postValidationHandler,
+  controller.canRequest("create:user"),
+  postHandler,
+);
 
 export default router.handler(controller.errorHandlers);
+
+function postValidationHandler(
+  request: NextApiRequest,
+  response: NextApiResponse,
+  next: NextHandler,
+) {
+  const cleanValues = validator.verify(request.body, {
+    username: "required",
+    email: "required",
+    password: "required",
+  });
+
+  request.body = cleanValues;
+
+  return next();
+}
 
 async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToPost = request.context?.user;
