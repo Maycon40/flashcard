@@ -5,11 +5,11 @@ import { useState, SubmitEvent, MouseEvent } from "react";
 import { NextRouter, useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
-import { Card, Deck } from "@/types/types";
+import { Card } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import { fetcher } from "@/infra/fetcher";
 import ButtonComponent from "@/components/button";
-import SearchableSelect from "@/components/search/select";
+import CardForm from "@/components/cards/form";
 
 export default function EditCardPage() {
   const router = useRouter();
@@ -58,8 +58,6 @@ export default function EditCardPage() {
 }
 
 function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
-  const { data: decks } = useSWR<Deck[]>(`/api/v1/decks`, fetcher);
-
   const [name, setName] = useState(card.name || "");
   const [description, setDescription] = useState(card.description || "");
   const [selectedDeck, setSelectedDeck] = useState(card.deck_name || "");
@@ -119,63 +117,17 @@ function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {submitError && <ErrorComponent>{submitError}</ErrorComponent>}
-
-      <div>
-        <label htmlFor="deck" className="block text-sm font-medium mb-1">
-          Baralho
-        </label>
-        <SearchableSelect
-          decks={decks || []}
-          selectedDeck={selectedDeck}
-          setSelectedDeck={setSelectedDeck}
-          isSubmitting={isSubmitting}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium mb-1">
-          Nome (Frente)
-        </label>
-        <input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-          placeholder="Título do cartão"
-          disabled={isSubmitting}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium mb-1">
-          Descrição (Verso)
-        </label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm min-h-30"
-          placeholder="Descrição ou resposta do cartão"
-          disabled={isSubmitting}
-        />
-      </div>
-
-      <div className="flex items-center">
-        <input
-          id="important"
-          name="important"
-          type="checkbox"
-          checked={isImportant}
-          onChange={(e) => setIsImportant(e.target.checked)}
-          className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-        />
-        <label
-          htmlFor="important"
-          className="ml-2 block text-sm text-zinc-700 dark:text-zinc-300"
-        >
-          É um cartão importante?
-        </label>
-      </div>
+      <CardForm
+        isSubmitting={isSubmitting}
+        name={name}
+        setName={setName}
+        isImportant={isImportant}
+        setIsImportant={setIsImportant}
+        description={description}
+        setDescription={setDescription}
+        selectedDeck={selectedDeck}
+        setSelectedDeck={setSelectedDeck}
+      />
 
       <div className="flex items-center gap-4 pt-2">
         <ButtonComponent isLoading={isSubmitting}>
