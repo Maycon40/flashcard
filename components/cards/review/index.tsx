@@ -3,14 +3,10 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, Filter, Star } from "lucide-react";
 
-import { Card, Deck } from "@/types/types";
+import { Card } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
 
-export default function CardsToReview({
-  decks,
-}: {
-  decks: Deck[] | undefined;
-}) {
+export default function CardsToReview() {
   const { mutate } = useSWRConfig();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -45,6 +41,32 @@ export default function CardsToReview({
     );
   }, [cardsToReview, subject, important]);
 
+  const filteredDecksToReview = useMemo(() => {
+    if (!cardsToReview) return [];
+
+    const addedDecks: string[] = [];
+
+    const decksToReview = cardsToReview.flatMap((card) => {
+      if (
+        card.deck_id &&
+        !addedDecks.includes(card.deck_id) &&
+        (card.important == important || important == null)
+      ) {
+        addedDecks.push(card.deck_id);
+        return [
+          {
+            id: card.deck_id,
+            name: card.deck_name,
+          },
+        ];
+      }
+
+      return [];
+    });
+
+    return decksToReview;
+  }, [cardsToReview, important]);
+
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-4">
@@ -71,16 +93,15 @@ export default function CardsToReview({
               className="w-full p-2 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Todas</option>
-              {decks?.length &&
-                decks.map((d) => (
-                  <option
-                    className="bg-zinc-50 dark:bg-zinc-900"
-                    key={d.id}
-                    value={d.id}
-                  >
-                    {d.name}
-                  </option>
-                ))}
+              {filteredDecksToReview.map((d) => (
+                <option
+                  className="bg-zinc-50 dark:bg-zinc-900"
+                  key={d.id}
+                  value={d.id}
+                >
+                  {d.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -123,6 +144,16 @@ export default function CardsToReview({
               Revisar
             </Link>
           </div>
+        </div>
+      ) : cardsToReview.length > 0 ? (
+        <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg text-center">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Nenhum cartão encontrado
+          </h3>
+          <p className="text-zinc-500 dark:text-zinc-400 mt-2">
+            Não há cartões que correspondam aos filtros aplicados. Tente ajustar
+            suas opções de busca para ver os resultados.
+          </p>
         </div>
       ) : (
         <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg text-center">
