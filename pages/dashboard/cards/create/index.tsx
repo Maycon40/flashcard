@@ -1,15 +1,10 @@
-"use client";
-
-import useSWR from "swr";
 import { useState, SubmitEvent } from "react";
 import { NextRouter, useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
-import { Deck } from "@/types/types";
 import ErrorComponent from "@/components/error";
-import { fetcher } from "@/infra/fetcher";
 import ButtonComponent from "@/components/button";
-import SearchableSelect from "@/components/search/select";
+import CardForm from "@/components/cards/form";
 
 export default function CreateCardPage() {
   const router = useRouter();
@@ -30,14 +25,14 @@ export default function CreateCardPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={(e: any) => back(e)}
-            className="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+            className="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
           >
             Cancelar
           </button>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
+      <div className="rounded-2xl py-6 dark:bg-zinc-900">
         <h3 className="text-lg font-semibold mb-3">Novo cartão</h3>
         <CreateCardForm router={router} />
       </div>
@@ -47,8 +42,6 @@ export default function CreateCardPage() {
 
 function CreateCardForm({ router }: { router: NextRouter }) {
   const deckName = router.query.deck_name;
-
-  const { data: decks } = useSWR<Deck[]>(`/api/v1/decks`, fetcher);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -106,56 +99,18 @@ function CreateCardForm({ router }: { router: NextRouter }) {
         </div>
       )}
       <form onSubmit={handleCreate} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Baralho</label>
-          <SearchableSelect
-            decks={decks || []}
-            selectedDeck={selectedDeck || (deckName as string) || ""}
-            setSelectedDeck={setSelectedDeck}
-            isSubmitting={isSubmitting}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Nome (Frente)
-          </label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm"
-            placeholder="Título do cartão"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Descrição (Verso)
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm min-h-30"
-            placeholder="Descrição ou resposta do cartão"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <input
-            id="important"
-            name="important"
-            type="checkbox"
-            checked={isImportant}
-            onChange={(e) => setIsImportant(e.target.checked)}
-            className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-          />
-          <label
-            htmlFor="important"
-            className="ml-2 block text-sm text-zinc-700 dark:text-zinc-300"
-          >
-            É um cartão importante?
-          </label>
-        </div>
+        <CardForm
+          deckName={deckName as string}
+          isSubmitting={isSubmitting}
+          name={name}
+          setName={setName}
+          isImportant={isImportant}
+          setIsImportant={setIsImportant}
+          description={description}
+          setDescription={setDescription}
+          selectedDeck={selectedDeck}
+          setSelectedDeck={setSelectedDeck}
+        />
 
         <div>
           <ButtonComponent isLoading={isSubmitting}>

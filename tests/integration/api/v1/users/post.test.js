@@ -132,6 +132,103 @@ describe("POST /api/v1/users", () => {
         status_code: 400,
       });
     });
+
+    test("Without 'email'", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "withoutEmail",
+          password: "senha123",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: 'O campo "email" é obrigatório.',
+        action: 'Preencha o campo "email".',
+        status_code: 400,
+      });
+    });
+
+    test("Without 'username'", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "withoutUsername@gmail.com",
+          password: "senha123",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: 'O campo "username" é obrigatório.',
+        action: 'Preencha o campo "username".',
+        status_code: 400,
+      });
+    });
+
+    test("Without 'password'", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "withoutPassword",
+          email: "withoutPassword@gmail.com",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: 'O campo "senha" é obrigatório.',
+        action: 'Preencha o campo "senha".',
+        status_code: 400,
+      });
+    });
+
+    test("With invalid 'email'", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "withInvalidEmail",
+          email: "withInvalidEmail",
+          password: "888888888832",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: 'O campo "email" foi preenchido de maneira inválida.',
+        action: "Ajuste os dados enviados e tente novamente.",
+        status_code: 400,
+      });
+    });
   });
 
   describe("Default user", () => {
