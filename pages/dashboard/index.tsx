@@ -80,7 +80,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <CardsToReview decks={decks} />
+      <CardsToReview />
 
       <ReviewWeeklyGraph cards={cards} />
     </LayoutDashboard>
