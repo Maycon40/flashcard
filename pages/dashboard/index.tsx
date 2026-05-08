@@ -23,6 +23,8 @@ export default function DashboardPage() {
     fetcher,
   );
 
+  const publisheds = (cards || []).filter((card) => card.published_at);
+
   return (
     <LayoutDashboard>
       <div className="flex items-center justify-between mb-6">
@@ -76,6 +78,24 @@ export default function DashboardPage() {
           </span>
           <span className="text-sm sm:text-base text-zinc-500 dark:text-zinc-300 mt-2">
             Baralhos
+          </span>
+        </div>
+
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow dark:shadow-md shadow-gray-500 dark:shadow-black p-5 flex flex-col items-center">
+          <span className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900 p-2">
+              <Layers className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600 dark:text-yellow-400" />
+            </span>
+            <span className="text-xl sm:text-3xl font-bold text-yellow-700 dark:text-yellow-400">
+              {cardLoading ? (
+                <div className="h-8 w-8 rounded-2xl bg-zinc-200 dark:bg-zinc-800"></div>
+              ) : (
+                publisheds?.length || 0
+              )}
+            </span>
+          </span>
+          <span className="text-sm sm:text-base text-zinc-500 dark:text-zinc-300 mt-2">
+            Publicados
           </span>
         </div>
       </section>
