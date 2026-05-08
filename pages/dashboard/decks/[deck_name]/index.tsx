@@ -9,6 +9,7 @@ import { fetcher } from "@/infra/fetcher";
 import { Card } from "@/types/types";
 import ErrorComponent from "@/components/error";
 import SearchBar from "@/components/search/bar";
+import exportCards from "@/components/cards/export";
 
 export default function DeckDetailsPage() {
   const { query } = useRouter();
@@ -52,34 +53,12 @@ export default function DeckDetailsPage() {
     );
   }, [cards, searchQuery]);
 
-  async function exportCards(e: MouseEvent) {
+  async function exportAll(e: MouseEvent) {
     e.preventDefault();
+
+    exportCards(filteredCards);
+
     setOpenMenu(false);
-
-    const cardsJson = [];
-
-    for (const card of filteredCards) {
-      cardsJson.push({
-        name: card.name,
-        description: card.description,
-        deck_name: card.deck_name,
-      });
-    }
-
-    const jsonString = JSON.stringify(cardsJson, null, 2);
-
-    const blob = new Blob([jsonString], { type: "application/json" });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `cartões.json`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
   }
 
   if (
@@ -154,7 +133,7 @@ export default function DeckDetailsPage() {
                   </Link>
                   <button
                     type="button"
-                    onClick={(e: any) => exportCards(e)}
+                    onClick={(e: any) => exportAll(e)}
                     className="w-full block px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                   >
                     Exportar
