@@ -13,7 +13,7 @@ interface LayoutProps {
 
 export default function Layout({ title, description, children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />

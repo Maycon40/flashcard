@@ -29,9 +29,9 @@ export default function LayoutDashboard({ children }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans">
-      <div className="xl:hidden fixed top-0 left-0 right-0 z-30 bg-zinc-50 dark:bg-black flex items-center justify-between px-4 h-18">
-        <div className="xl:hidden fixed top-4 left-3 right-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-gray-500 dark:shadow-black shadow-sm dark:shadow-md flex items-center justify-between px-4 h-17">
+    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
+      <div className="xl:hidden fixed top-0 left-0 right-0 z-30 bg-zinc-100 dark:bg-zinc-950 flex items-center justify-between px-4 h-18">
+        <div className="xl:hidden fixed top-4 left-3 right-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 shadow-gray-500 dark:shadow-black shadow-sm dark:shadow-md flex items-center justify-between px-4 h-17">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
               FC
@@ -60,7 +60,7 @@ export default function LayoutDashboard({ children }: Props) {
           onClick={() => setMobileMenuOpen(false)}
         >
           <nav
-            className="absolute rounded-b-2xl top-0 left-3 right-3 bg-white dark:bg-zinc-900 p-6 space-y-2"
+            className="absolute rounded-b-2xl top-0 left-3 right-3 bg-zinc-50 dark:bg-zinc-900 p-6 space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
             <Link
@@ -114,7 +114,7 @@ export default function LayoutDashboard({ children }: Props) {
       <div className="mx-auto max-w-7xl px-4 xl:px-6 pt-16 xl:pt-0">
         <div className="grid grid-cols-1 xl:grid-cols-6 gap-6 py-8">
           <aside className="hidden xl:block xl:col-span-1">
-            <div className="sticky top-6 rounded-lg bg-white dark:bg-zinc-900 p-4 shadow-sm">
+            <div className="sticky top-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-4 shadow-sm">
               <div className="mb-6 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-md bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                   FC
@@ -176,7 +176,7 @@ export default function LayoutDashboard({ children }: Props) {
           </ConfirmLogout>
 
           <main className="lg:col-span-5">
-            <div className="rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-lg">
+            <div className="rounded-2xl bg-zinc-50 dark:bg-zinc-900 p-6 shadow-lg">
               {children}
             </div>
           </main>
