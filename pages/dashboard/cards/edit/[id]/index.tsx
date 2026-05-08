@@ -46,7 +46,7 @@ export default function EditCardPage() {
         )}
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
+      <div className="rounded-2xl py-6 dark:bg-zinc-900">
         {card && !isValidating && !isLoading && router.query ? (
           <EditCardForm card={card} router={router} />
         ) : (
@@ -131,7 +131,7 @@ function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
 
       <div className="flex items-center gap-4 pt-2">
         <ButtonComponent isLoading={isSubmitting}>
-          {isSubmitting ? "Salvando" : "Salvar Alterações"}
+          {isSubmitting ? "Salvando" : "Salvar"}
         </ButtonComponent>
         <button
           type="button"

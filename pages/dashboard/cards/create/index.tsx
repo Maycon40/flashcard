@@ -32,7 +32,7 @@ export default function CreateCardPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
+      <div className="rounded-2xl py-6 dark:bg-zinc-900">
         <h3 className="text-lg font-semibold mb-3">Novo cartão</h3>
         <CreateCardForm router={router} />
       </div>

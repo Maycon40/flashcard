@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { fetcher } from "@/infra/fetcher";
 import { Deck } from "@/types/types";
 import SearchableSelect from "@/components/search/select";
+import { MarkdownEditor } from "@/components/markdown";
 
 interface CardFormProps {
   deckName?: string;
@@ -58,11 +59,13 @@ export default function CardForm({
         <label className="block text-sm font-medium mb-1">
           Descrição (Verso)
         </label>
-        <textarea
+        <MarkdownEditor
+          onChange={(value: string) => {
+            setDescription(value);
+          }}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-transparent text-sm min-h-30"
-          placeholder="Descrição ou resposta do cartão"
+          isInvalid={description.length > 5000}
+          clobberPrefix={`card-content-`}
         />
       </div>
 

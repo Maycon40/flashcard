@@ -40,7 +40,7 @@ export default function EditDeckPage() {
         )}
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow-lg dark:bg-zinc-900">
+      <div className="rounded-2xl py-6 dark:bg-zinc-900">
         {deck && query ? (
           <EditForm deck={deck} />
         ) : (
@@ -116,7 +116,7 @@ function EditForm({ deck }: { deck: Deck }) {
 
       <div className="flex items-center gap-4 pt-2">
         <ButtonComponent isLoading={isSubmitting}>
-          {isSubmitting ? "Salvando" : "Salvar Alterações"}
+          {isSubmitting ? "Salvando" : "Salvar"}
         </ButtonComponent>
         <Link
           href="/dashboard/decks"
