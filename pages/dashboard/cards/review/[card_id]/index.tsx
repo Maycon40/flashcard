@@ -100,7 +100,7 @@ export default function ReviewPage() {
             <h2 className="text-2xl font-semibold">{card?.name}</h2>
             <div className="w-full border-t border-zinc-200 dark:border-zinc-700 my-2"></div>
             <MarkdownViewer
-              value={card?.description}
+              value={card?.description || ""}
               clobberPrefix={`card-content-`}
             />
 

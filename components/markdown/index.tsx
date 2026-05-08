@@ -26,7 +26,16 @@ const bytemdPluginBaseList = [
   mermaidPlugin({ locale: mermaidLocale }),
 ];
 
-export function MarkdownViewer({ value: _value, clobberPrefix, ...props }) {
+interface MarkdownViewerProps {
+  value: string;
+  clobberPrefix: string;
+}
+
+export function MarkdownViewer({
+  value: _value,
+  clobberPrefix,
+  ...props
+}: MarkdownViewerProps) {
   clobberPrefix = clobberPrefix?.toLowerCase();
 
   return (
@@ -40,7 +49,19 @@ export function MarkdownViewer({ value: _value, clobberPrefix, ...props }) {
   );
 }
 
-export function MarkdownEditor({ clobberPrefix, editorConfig = {}, ...props }) {
+interface MarkdownEditorProps {
+  value: string;
+  clobberPrefix: string;
+  editorConfig?: Object;
+  // eslint-disable-next-line no-unused-vars
+  onChange: (value: string) => void;
+}
+
+export function MarkdownEditor({
+  clobberPrefix,
+  editorConfig = {},
+  ...props
+}: MarkdownEditorProps) {
   clobberPrefix = clobberPrefix?.toLowerCase();
 
   return (
@@ -59,7 +80,6 @@ export function MarkdownEditor({ clobberPrefix, editorConfig = {}, ...props }) {
           ...editorConfig,
         }}
         remarkRehype={{ clobberPrefix }}
-        value={""}
         {...props}
       />
     </div>

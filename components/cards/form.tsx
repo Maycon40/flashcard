@@ -64,7 +64,6 @@ export default function CardForm({
             setDescription(value);
           }}
           value={description}
-          isInvalid={description.length > 5000}
           clobberPrefix={`card-content-`}
         />
       </div>
