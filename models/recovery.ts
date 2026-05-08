@@ -106,7 +106,7 @@ async function create(user: User) {
 
 async function sendEmailToUser(user: User, tokenId: string, origin: string) {
   await email.send({
-    from: `Contato <${process.env.EMAIL_FROM_ADDRESS}>`,
+    from: `MyFlashcard <${process.env.EMAIL_FROM_ADDRESS}>`,
     to: user.email,
     subject: "Recuperação de Senha",
     text: `${user.username}, uma recuperação de senha foi solicitada.
@@ -114,7 +114,8 @@ async function sendEmailToUser(user: User, tokenId: string, origin: string) {
 Clique no link abaixo para definir uma nova senha:
 ${origin}/recovery/confirm-email/${tokenId}
 
-Atenciosamente`,
+Atenciosamente,
+MyFlashcard`,
   });
 }
 

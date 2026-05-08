@@ -129,14 +129,15 @@ async function sendEmailToUser(
   origin: string,
 ) {
   await email.send({
-    from: `Contato <${process.env.EMAIL_FROM_ADDRESS}>`,
+    from: `MyFlashcard <${process.env.EMAIL_FROM_ADDRESS}>`,
     to: user.email,
     subject: "Ative o seu cadastro",
     text: `${user.username}, clique no link abaixo para ativar o seu cadastro:
 
 ${origin}/register/activate/${activationToken.id}
 
-Atenciosamente`,
+Atenciosamente,
+MyFlashcard`,
   });
 }
 
