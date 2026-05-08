@@ -11,7 +11,9 @@ import { Editor as ByteMdEditor, Viewer as ByteMdViewer } from "@bytemd/react";
 import byteMDLocale from "bytemd/locales/pt_BR.json";
 
 import { externalLinksPlugin } from "./plugins/external-links";
+
 import "bytemd/dist/index.css";
+import "katex/dist/katex.css";
 
 const bytemdPluginBaseList = [
   gfmPlugin({ locale: gfmLocale }),
