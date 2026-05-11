@@ -45,18 +45,18 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
           id: responseBody[0].id,
           name: "Nome do Cartão",
           username: createdUser.username,
-          description: "Descrição do Cartão",
+          deck_id: responseBody[0].deck_id,
           deck_name: "Baralho publico",
           published_at: responseBody[0].published_at,
         },
       ]);
 
+      expect(uuidVersion(responseBody[0].id)).toBe(4);
+      expect(uuidVersion(responseBody[0].deck_id)).toBe(4);
       expect(Date.parse(responseBody[0].published_at)).not.toBeNaN();
     });
-  });
 
-  describe("Default user", () => {
-    test("With card not created", async () => {
+    test("With deck not created", async () => {
       await orchestrator.clearDatabase();
       await orchestrator.runPendingMigrations();
 
@@ -64,15 +64,8 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
 
       await orchestrator.activateUser(createdUser.id);
 
-      const newSession = await orchestrator.createSession(createdUser.id);
-
       const response = await fetch(
         `http://localhost:3000/api/v1/library/decks/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
-        {
-          headers: {
-            Cookie: `session_id=${newSession.token}`,
-          },
-        },
       );
 
       expect(response.status).toBe(404);
@@ -81,13 +74,42 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
         status_code: 404,
       });
     });
 
-    test("With card not published", async () => {
+    test("With deck created and card not created", async () => {
+      await orchestrator.clearDatabase();
+      await orchestrator.runPendingMigrations();
+
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks/${createdDeck.id}`,
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
+        status_code: 404,
+      });
+    });
+
+    test("With deck created and card not published", async () => {
       await orchestrator.clearDatabase();
       await orchestrator.runPendingMigrations();
 
@@ -106,15 +128,8 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
         createdDeck.id,
       );
 
-      const newSession = await orchestrator.createSession(createdUser.id);
-
       const response = await fetch(
-        `http://localhost:3000/api/v1/library/decks/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
-        {
-          headers: {
-            Cookie: `session_id=${newSession.token}`,
-          },
-        },
+        `http://localhost:3000/api/v1/library/decks/${createdDeck.id}`,
       );
 
       expect(response.status).toBe(404);
@@ -123,12 +138,14 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
         status_code: 404,
       });
     });
+  });
 
+  describe("Default user", () => {
     test("With valid data", async () => {
       const createdUser = await orchestrator.createUser();
 
@@ -169,14 +186,124 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
           id: responseBody[0].id,
           name: "Nome do Cartão",
           username: createdUser.username,
-          description: "Descrição do Cartão",
+          deck_id: responseBody[0].deck_id,
           deck_name: "Nome do Baralho",
           published_at: responseBody[0].published_at,
         },
       ]);
 
       expect(uuidVersion(responseBody[0].id)).toBe(4);
+      expect(uuidVersion(responseBody[0].deck_id)).toBe(4);
       expect(Date.parse(responseBody[0].published_at)).not.toBeNaN();
+    });
+
+    test("With deck not created", async () => {
+      await orchestrator.clearDatabase();
+      await orchestrator.runPendingMigrations();
+
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
+        status_code: 404,
+      });
+    });
+
+    test("With deck created and card not created", async () => {
+      await orchestrator.clearDatabase();
+      await orchestrator.runPendingMigrations();
+
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks/${createdDeck.id}`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
+        status_code: 404,
+      });
+    });
+
+    test("With deck created and card not published", async () => {
+      await orchestrator.clearDatabase();
+      await orchestrator.runPendingMigrations();
+
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Nome do Baralho",
+        createdUser.id,
+      );
+
+      await orchestrator.createCard(
+        "Nome do Cartão",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/library/decks/${createdDeck.id}`,
+        {
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response.status).toBe(404);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "NotFoundError",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
+        status_code: 404,
+      });
     });
   });
 
@@ -221,8 +348,8 @@ describe("GET /api/v1/library/decks/[deck_id]", () => {
 
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
         status_code: 404,
       });
     });
