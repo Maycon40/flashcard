@@ -36,9 +36,9 @@ export default function LibraryPage() {
         title="Biblioteca de Flashcards | MyFlashcard"
         description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
       >
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+        <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h1 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
               Biblioteca Comunitária
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
@@ -57,16 +57,16 @@ export default function LibraryPage() {
         title="Biblioteca de Flashcards | MyFlashcard"
         description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
       >
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+        <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h1 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
               Biblioteca Comunitária
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Encontre baralhos prontos para acelerar seu aprendizado.
             </p>
             <div className="animate-pulse">
-              <div className="w-200 h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+              <div className="w-[80vw] sm:w-[50vw] h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </section>
         </div>
@@ -79,9 +79,9 @@ export default function LibraryPage() {
       title="Biblioteca de Flashcards | MyFlashcard"
       description="Acelere sua memorização com nossa biblioteca de flashcards. Encontre baralhos prontos para estudar onde quiser e nunca mais esqueça o que aprendeu."
     >
-      <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+      <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
         <section className="flex flex-col items-center">
-          <h1 className="text-4xl font-extrabold leading-tight mb-4">
+          <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
             Biblioteca Comunitária
           </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
@@ -94,13 +94,10 @@ export default function LibraryPage() {
             onChange={(e: any) => setSearchQuery(e.target.value)}
           />
 
-          {libraryError && <ErrorComponent>{libraryError}</ErrorComponent>}
+          <ErrorComponent>{libraryError}</ErrorComponent>
+          <SuccessComponent>{librarySuccess}</SuccessComponent>
 
-          {librarySuccess && (
-            <SuccessComponent>{librarySuccess}</SuccessComponent>
-          )}
-
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          <div className="w-full min-w-[43vw] grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
             {(filteredDecks || []).map((deck) => (
               <DeckComponent
                 key={deck.id}
@@ -200,7 +197,7 @@ function DeckComponent({
         >
           Ver baralho
         </Link>
-        <div>
+        <div className="flex">
           {isImporting && (
             <div className="flex justify-center items-center mx-2">
               <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
