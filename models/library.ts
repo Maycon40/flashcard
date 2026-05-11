@@ -1,6 +1,45 @@
 import database from "@/infra/database";
 import { NotFoundError } from "@/infra/errors";
 
+async function findOneById(deckId: string, cardId: string) {
+  const card = await runSelectQuery(deckId, cardId);
+
+  return card;
+
+  async function runSelectQuery(deckId: string, cardId: string) {
+    const results = await database.query({
+      text: `
+        SELECT
+          cards.*,
+          decks.name as deck_name,
+          decks.id as deck_id,
+          decks.user_id as user_id,
+          users.username as username
+        FROM
+          cards
+        JOIN
+          decks ON cards.deck_id = decks.id
+        JOIN
+          users ON users.id = decks.user_id
+        WHERE
+          cards.published_at IS NOT NULL AND
+          decks.id = $1 AND
+          cards.id = $2
+      ;`,
+      values: [deckId, cardId],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O cartão não foi encontrado.",
+        action: "Verifique se o cartão procurado foi publicado.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function findManyByDeckId(deckId: string) {
   const cards = await runSelectQuery(deckId);
 
@@ -32,8 +71,8 @@ async function findManyByDeckId(deckId: string) {
 
     if (results.rowCount === 0) {
       throw new NotFoundError({
-        message: "Nenhum cartão foi publicado.",
-        action: "Verifique se algum usuário publicou algum cartão.",
+        message: "O baralho não foi encontrado.",
+        action: "Verifique se o baralho procurado foi publicado.",
       });
     }
 
@@ -74,7 +113,7 @@ async function findAllDecks() {
     if (results.rowCount === 0) {
       throw new NotFoundError({
         message: "Nenhum baralho foi publicado.",
-        action: "Verifique se algum usuário publicou algum baralho.",
+        action: "Publique o primeiro baralho da Biblioteca.",
       });
     }
 
@@ -83,6 +122,7 @@ async function findAllDecks() {
 }
 
 const library = {
+  findOneById,
   findManyByDeckId,
   findAllDecks,
 };

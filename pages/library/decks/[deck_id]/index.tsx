@@ -7,11 +7,10 @@ import Layout from "@/components/layout";
 import { fetcher } from "@/infra/fetcher";
 import ErrorComponent from "@/components/error";
 import { Card } from "@/types/types";
-import { sliceText } from "@/components/cards/card";
 import SuccessComponent from "@/components/success";
 import SearchBar from "@/components/search/bar";
 
-export default function LibraryPage() {
+export default function LibraryDeckPage() {
   const { query } = useRouter();
   const { deck_id: deckId } = query;
 
@@ -41,11 +40,11 @@ export default function LibraryPage() {
         title="Biblioteca de Flashcards | MyFlashcard"
         description="Encontre cartões prontos para acelerar seu aprendizado."
       >
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+        <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
               Biblioteca Comunitária
-            </h2>
+            </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Encontre cartões prontos para acelerar seu aprendizado.
             </p>
@@ -62,16 +61,16 @@ export default function LibraryPage() {
         title="Biblioteca de Flashcards | MyFlashcard"
         description="Encontre cartões prontos para acelerar seu aprendizado."
       >
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+        <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
           <section className="flex flex-col items-center">
-            <h2 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
               Biblioteca Comunitária
-            </h2>
+            </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
               Encontre cartões prontos para acelerar seu aprendizado.
             </p>
             <div className="animate-pulse">
-              <div className="w-200 h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+              <div className="w-[80vw] sm:w-[50vw] h-24 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </section>
         </div>
@@ -84,11 +83,11 @@ export default function LibraryPage() {
       title="Biblioteca de Flashcards | MyFlashcard"
       description="Encontre cartões prontos para acelerar seu aprendizado."
     >
-      <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-center">
+      <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-center">
         <section className="flex flex-col items-center">
-          <h2 className="text-4xl font-extrabold leading-tight mb-4">
+          <h1 className="text-4xl font-extrabold leading-tight mb-4 text-indigo-700 dark:text-indigo-400">
             Biblioteca Comunitária
-          </h2>
+          </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
             Encontre cartões prontos para acelerar seu aprendizado.
           </p>
@@ -99,13 +98,10 @@ export default function LibraryPage() {
             onChange={(e: any) => setSearchQuery(e.target.value)}
           />
 
-          {libraryError && <ErrorComponent>{libraryError}</ErrorComponent>}
+          <ErrorComponent>{libraryError}</ErrorComponent>
+          <SuccessComponent>{librarySuccess}</SuccessComponent>
 
-          {librarySuccess && (
-            <SuccessComponent>{librarySuccess}</SuccessComponent>
-          )}
-
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          <div className="w-full min-w-[43vw] grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
             {(filteredCards || []).map((card) => (
               <CardComponent
                 key={card.id}
@@ -202,27 +198,32 @@ function CardComponent({
             <h3 className="font-semibold">{card.name}</h3>
           </div>
         </div>
-        <p className="text-sm text-zinc-500 mt-3">
-          {sliceText(card.description as string)}
-        </p>
         <p className="text-xs text-zinc-400 mt-2">
           {card.username && `Criado por: ${card.username}`}
         </p>
       </div>
-      <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center">
-        {isImporting && (
-          <div className="flex justify-center items-center mx-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={(e) => importCard(e, card)}
-          className="mr-5 text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
-          disabled={isImporting}
+      <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+        <Link
+          href={`/library/decks/${card.deck_id}/card/${card.id}`}
+          className="mr-5 text-sm font-medium text-indigo-600 hover:underline"
         >
-          {isImporting ? "Importando" : "Importar"}
-        </button>
+          Ver cartão
+        </Link>
+        <div className="flex">
+          {isImporting && (
+            <div className="flex justify-center items-center mx-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={(e) => importCard(e, card)}
+            className="mr-5 text-sm font-medium text-indigo-600 hover:underline cursor-pointer"
+            disabled={isImporting}
+          >
+            {isImporting ? "Importando" : "Importar"}
+          </button>
+        </div>
       </div>
     </div>
   );
