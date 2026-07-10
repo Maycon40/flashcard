@@ -87,6 +87,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
         "create:session",
         "read:session",
         "update:user",
+        "delete:user",
         "create:recovery_token",
         "update:recovery_token",
         "read:card",

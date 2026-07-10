@@ -249,6 +249,35 @@ async function findOneByEmail(email: string) {
   }
 }
 
+async function deleteById(userId: string) {
+  const userFound = await runSelectQuery(userId);
+
+  return userFound;
+
+  async function runSelectQuery(userId: string) {
+    const results = await database.query({
+      text: `
+        DELETE FROM
+          users
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;`,
+      values: [userId],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O usuário não foi encontrado no sistema.",
+        action: "Verifique se o usuário existe.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function setFeatures(userId: string, features: User["features"]) {
   const updatedUser = await runUpdateQuery(userId, features);
 
@@ -307,6 +336,7 @@ const user = {
   findOneById,
   findOneByUsername,
   findOneByEmail,
+  deleteById,
   setFeatures,
   addFeatures,
 };

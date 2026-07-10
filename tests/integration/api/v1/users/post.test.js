@@ -32,7 +32,6 @@ describe("POST /api/v1/users", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "test",
-        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -42,6 +41,9 @@ describe("POST /api/v1/users", () => {
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
 
       const userInDatabase = await user.findOneByUsername("test");
+
+      expect(userInDatabase.features).toEqual(["read:activation_token"]);
+
       const correctPasswordMatch = await password.compare(
         "senha123",
         userInDatabase.password,
