@@ -173,7 +173,8 @@ async function updateByUserIdAndName(deckValues: Deck, deckNewValues: Deck) {
         UPDATE
           decks
         SET
-          name = $2
+          name = $2,
+          updated_at = timezone('utc', now())
         WHERE
           id = $1
         RETURNING
