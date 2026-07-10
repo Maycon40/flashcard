@@ -3,11 +3,11 @@
 import useSWR from "swr";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import LayoutDashboard from "@/components/layout/Dashboard";
 import { Card } from "@/types/types";
 import { fetcher } from "@/infra/fetcher";
-import { useRouter } from "next/router";
 import CardsReviewLayout from "@/components/cards/review/layout";
 
 export default function ReviewPage() {
@@ -47,7 +47,7 @@ export default function ReviewPage() {
     setIsSubmitting(true);
 
     try {
-      await fetch(`/api/v1/cards/name/${card.name}`, {
+      await fetch(`/api/v1/cards/identifier/${card.name}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
