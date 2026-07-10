@@ -88,7 +88,7 @@ async function createCard(name, description, deckId) {
 }
 
 async function updateCard(cardId, userId, cardObject) {
-  return await card.updateById(cardId, userId, cardObject);
+  return await card.update(cardId, userId, cardObject);
 }
 
 async function createActivation(userObject) {
