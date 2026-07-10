@@ -67,13 +67,16 @@ export default function CardComponent({
   async function publish(e: MouseEvent) {
     e.preventDefault();
 
-    const response = await fetch(`/api/v1/cards/id/${card.id as string}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        public: card.published_at ? false : true,
-      }),
-    });
+    const response = await fetch(
+      `/api/v1/cards/identifier/${card.id as string}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          public: card.published_at ? false : true,
+        }),
+      },
+    );
 
     if (response.ok) {
       const updatedCard = await response.json();
@@ -148,9 +151,6 @@ export default function CardComponent({
             </div>
           </div>
         </div>
-        <p className="text-sm text-zinc-500 mt-3">
-          {sliceText(card.description as string)}
-        </p>
         <p className="text-xs text-zinc-400 mt-2">
           {card.deck_name && `Baralho: ${card.deck_name}`}
         </p>
