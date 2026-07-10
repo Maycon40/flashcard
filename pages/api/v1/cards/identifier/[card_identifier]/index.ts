@@ -17,12 +17,9 @@ export default router.handler(controller.errorHandlers);
 
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context?.user;
-  const cardId = request.query.card_id;
+  const cardName = request.query.card_identifier;
 
-  const cardValues = await card.findOneById(
-    cardId as string,
-    userTryingToGet.id,
-  );
+  const cardValues = await card.findOne(cardName as string, userTryingToGet.id);
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToGet,
@@ -38,11 +35,11 @@ async function patchHandler(
   response: NextApiResponse,
 ) {
   const userTryingToPatch = request.context?.user;
-  const cardId = request.query.card_id;
+  const cardIdentifier = request.query.card_identifier;
   const cardNewValues = request.body;
 
-  const updatedCard = await card.updateById(
-    cardId as string,
+  const updatedCard = await card.update(
+    cardIdentifier as string,
     userTryingToPatch.id,
     cardNewValues,
   );
@@ -61,11 +58,12 @@ async function deleteHandler(
   response: NextApiResponse,
 ) {
   const userTryingToDelete = request.context?.user;
-  const cardId = request.query.card_id;
+  const cardIdentifier = request.query.card_identifier;
 
-  await card.findOneById(cardId as string, userTryingToDelete.id);
-
-  const deletedCard = await card.deleteById(cardId as string);
+  const deletedCard = await card.delete(
+    cardIdentifier as string,
+    userTryingToDelete.id,
+  );
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToDelete,

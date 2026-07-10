@@ -73,6 +73,68 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
+    test("With invalid session", async () => {
+      const createdUser = await orchestrator.createUser({
+        email: "invalidSession@gmail.com",
+        password: "invalidSession",
+      });
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: "session_id=cf5a330c-5fdf-4a06-9cff-5ebdf85be465",
+        },
+        body: JSON.stringify({
+          email: "invalidSession@gmail.com",
+          password: "invalidSession",
+        }),
+      });
+
+      expect(response.status).toBe(201);
+
+      const cacheControl = response.headers.get("Cache-control");
+
+      expect(cacheControl).toBe(
+        "no-store, no-cache, max-age=0, must-revalidate",
+      );
+
+      const responseBody = await response.json();
+
+      expect(responseBody.user_id).toEqual(createdUser.id);
+
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(Date.parse(responseBody.expires_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const expiresAt = new Date(responseBody.expires_at);
+
+      const createdAt = new Date(responseBody.created_at);
+
+      expect(
+        orchestrator.verifyDateIsSimilar(
+          new Date(createdAt.getTime() + session.EXPIRATION_IN_MILLISECONDS),
+          expiresAt,
+        ),
+      ).toBe(true);
+
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: responseBody.token,
+        maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
+        path: "/",
+        httpOnly: true,
+        sameSite: "Lax",
+      });
+    });
+
     test("With incorrect 'email', but correct 'password'", async () => {
       await orchestrator.createUser({
         password: "senha123",
@@ -95,8 +157,9 @@ describe("POST /api/v1/sessions", () => {
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Dados de autenticação não conferem.",
-        action: "Verifique se os dados enviados estão corretos.",
+        message: "Não foi possível realizar o login.",
+        action:
+          "Por favor, certifique-se de que o e-mail e a senha estão corretos.",
         status_code: 401,
       });
     });
@@ -123,8 +186,9 @@ describe("POST /api/v1/sessions", () => {
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Dados de autenticação não conferem.",
-        action: "Verifique se os dados enviados estão corretos.",
+        message: "Não foi possível realizar o login.",
+        action:
+          "Por favor, certifique-se de que o e-mail e a senha estão corretos.",
         status_code: 401,
       });
     });
@@ -149,8 +213,9 @@ describe("POST /api/v1/sessions", () => {
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Dados de autenticação não conferem.",
-        action: "Verifique se os dados enviados estão corretos.",
+        message: "Não foi possível realizar o login.",
+        action:
+          "Por favor, certifique-se de que o e-mail e a senha estão corretos.",
         status_code: 401,
       });
     });

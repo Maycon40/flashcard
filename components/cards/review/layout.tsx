@@ -41,7 +41,7 @@ export default function CardsReviewLayout({
           <div className="w-full border-t border-zinc-200 dark:border-zinc-700 my-2"></div>
           <MarkdownViewer
             value={card?.description || ""}
-            clobberPrefix={`card-content-`}
+            clobberPrefix={`card-content`}
           />
 
           <div className="mt-6 w-full">

@@ -12,11 +12,13 @@ router.use(controller.injectAnonymousOrUser);
 
 router.get(controller.canRequest("read:session"), getHandler);
 
+router.delete(controller.canRequest("delete:user"), deleteHandler);
+
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context?.user;
-  const sessionToken = request.cookies.session_id;
+  const sessionToken = controller.getSessionToken(request);
 
   const sessionObject = await session.findOneValidByToken(
     sessionToken as string,
@@ -36,6 +38,23 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
     userTryingToGet,
     "read:user:self",
     userFound,
+  );
+
+  response.status(200).json(secureOutputValues);
+}
+
+async function deleteHandler(
+  request: NextApiRequest,
+  response: NextApiResponse,
+) {
+  const userTryingToDelete = request.context?.user;
+
+  const userDeleted = await user.deleteById(userTryingToDelete.id);
+
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToDelete,
+    "read:user:self",
+    userDeleted,
   );
 
   response.status(200).json(secureOutputValues);

@@ -15,8 +15,9 @@ async function validate(email: string, providedPassword: string) {
   } catch (error) {
     if (error instanceof ValidationError) {
       throw new UnauthorizedError({
-        message: "Dados de autenticação não conferem.",
-        action: "Verifique se os dados enviados estão corretos.",
+        message: "Não foi possível realizar o login.",
+        action:
+          "Por favor, certifique-se de que o e-mail e a senha estão corretos.",
         cause: error,
       });
     }

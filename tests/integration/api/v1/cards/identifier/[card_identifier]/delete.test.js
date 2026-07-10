@@ -8,11 +8,14 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("GET /api/v1/cards/id/[card_id]", () => {
+describe("DELETE /api/v1/cards/identifier/[card_identifier]", () => {
   describe("Anonymous user", () => {
     test("Without permission", async () => {
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        `http://localhost:3000/api/v1/cards/identifier/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        {
+          method: "DELETE",
+        },
       );
 
       expect(response.status).toBe(403);
@@ -49,8 +52,9 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
         {
+          method: "DELETE",
           headers: {
             Cookie: `session_id=${newSession.token}`,
           },
@@ -65,10 +69,9 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
         id: responseBody.id,
         name: "Nome do Cartão",
         description: "Descrição do Cartão",
-        deck_id: createdDeck.id,
-        deck_name: createdDeck.name,
         box: "new",
         important: false,
+        deck_id: createdDeck.id,
         date_to_review: responseBody.date_to_review,
         published_at: null,
         created_at: responseBody.created_at,
@@ -79,6 +82,18 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
       expect(Date.parse(responseBody.date_to_review)).not.toBeNaN();
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const response2 = await fetch(
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Cookie: `session_id=${newSession.token}`,
+          },
+        },
+      );
+
+      expect(response2.status).toBe(404);
     });
 
     test("With not created card", async () => {
@@ -89,8 +104,9 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
       const newSession = await orchestrator.createSession(createdUser.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        `http://localhost:3000/api/v1/cards/identifier/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
+          method: "DELETE",
           headers: {
             Cookie: `session_id=${newSession.token}`,
           },
@@ -134,8 +150,9 @@ describe("GET /api/v1/cards/id/[card_id]", () => {
       const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.id}`,
         {
+          method: "DELETE",
           headers: {
             Cookie: `session_id=${newSessionUser2.token}`,
           },

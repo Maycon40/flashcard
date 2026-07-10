@@ -23,7 +23,7 @@ export default function Cards({ cards }: { cards: Card[] }): ReactNode {
   async function deleteCard(e: MouseEvent, cardId: string) {
     e.preventDefault();
 
-    await fetch(`/api/v1/cards/id/${cardId}`, {
+    await fetch(`/api/v1/cards/identifier/${cardId}`, {
       method: "DELETE",
     });
 

@@ -92,7 +92,6 @@ describe("@/models/authorization", () => {
         {
           id: 1,
           username: "resouce",
-          features: ["read:user"],
           created_at: "2026-02-09T18:16:11.616Z",
           updated_at: "2026-02-09T18:16:11.616Z",
         },

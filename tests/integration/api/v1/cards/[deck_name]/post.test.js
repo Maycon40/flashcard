@@ -133,8 +133,8 @@ describe("POST /api/v1/cards/[deck_name]", () => {
 
       expect(response2Body).toEqual({
         name: "ValidationError",
-        message: "O mesmo nome e descrição foi utilizado em outro cartão.",
-        action: "Utilize outro nome ou descrição.",
+        message: "O mesmo nome foi utilizado em outro cartão.",
+        action: "Utilize outro nome.",
         status_code: 400,
       });
     });

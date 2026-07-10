@@ -49,7 +49,6 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "commonUser2",
-        features: defaultUser.features,
         created_at: defaultUser.created_at.toISOString(),
         updated_at: responseBody.updated_at,
       });
@@ -93,23 +92,6 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "uniqueUser2",
-        features: [
-          "create:session",
-          "read:session",
-          "update:user",
-          "create:recovery_token",
-          "update:recovery_token",
-          "read:card",
-          "create:card",
-          "update:card",
-          "delete:card",
-          "read:deck",
-          "create:deck",
-          "update:deck",
-          "delete:deck",
-          "read:library",
-          "create:library",
-        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -153,23 +135,6 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "uniqueEmail",
-        features: [
-          "create:session",
-          "read:session",
-          "update:user",
-          "create:recovery_token",
-          "update:recovery_token",
-          "read:card",
-          "create:card",
-          "update:card",
-          "delete:card",
-          "read:deck",
-          "create:deck",
-          "update:deck",
-          "delete:deck",
-          "read:library",
-          "create:library",
-        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -218,23 +183,6 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "newPassword",
-        features: [
-          "create:session",
-          "read:session",
-          "update:user",
-          "create:recovery_token",
-          "update:recovery_token",
-          "read:card",
-          "create:card",
-          "update:card",
-          "delete:card",
-          "read:deck",
-          "create:deck",
-          "update:deck",
-          "delete:deck",
-          "read:library",
-          "create:library",
-        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -431,8 +379,9 @@ describe("PATCH /api/v1/users/[username]", () => {
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Dados de autenticação não conferem.",
-        action: "Verifique se os dados enviados estão corretos.",
+        message: "Não foi possível realizar o login.",
+        action:
+          "Por favor, certifique-se de que o e-mail e a senha estão corretos.",
         status_code: 401,
       });
     });

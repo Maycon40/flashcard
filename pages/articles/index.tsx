@@ -5,11 +5,24 @@ import Layout from "@/components/layout";
 const articles = [
   {
     slug: "o-que-sao-flashcards",
-    title: "Flashcards: o que são, como funcionam",
+    title: "Flashcards: o que são e como funcionam?",
     excerpt:
       "Descubra o que são e como utilizar os flashcards para potencializar seus estudos.",
-    image: "/post-it-notes.jpg",
     date: "2026-04-28",
+  },
+  {
+    slug: "prompt-criacao-flashcards",
+    title: "Prompt para Criação de Flashcards",
+    excerpt:
+      "Utilize a Inteligência Artificial para criar flashcards de maneira rápida e eficiente.",
+    date: "2026-05-13",
+  },
+  {
+    slug: "markdown-latex-flashcards",
+    title: "Domine o Markdown e LaTeX: O Guia para Flashcards Profissionais",
+    excerpt:
+      "Aprenda a elevar o nível técnico das suas descrições no MyFlashcard utilizando formatação avançada e fórmulas matemáticas com Markdown e LaTeX.",
+    date: "2026-05-14",
   },
 ];
 

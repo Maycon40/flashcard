@@ -81,7 +81,7 @@ describe("GET /api/v1/cards/review", () => {
       expect(Date.parse(responseBody[0].updated_at)).not.toBeNaN();
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createCard.name}`,
         {
           method: "PATCH",
           headers: {

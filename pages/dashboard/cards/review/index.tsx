@@ -47,7 +47,7 @@ export default function ReviewPage() {
     setIsSubmitting(true);
 
     try {
-      await fetch(`/api/v1/cards/id/${card.id}`, {
+      await fetch(`/api/v1/cards/name/${card.name}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

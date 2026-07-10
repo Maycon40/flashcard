@@ -5,9 +5,9 @@ import { Article } from "@/types/types";
 import ArticleComponent from "@/components/article";
 
 const article: Article = {
-  title: "Flashcards: o que são, como funcionam",
+  title: "Flashcards: o que são e como funcionam?",
   description:
-    "Dicas, técnicas e ciência para aprender melhor com flashcards e revisão espaçada.",
+    "Descubra o que são e como utilizar os flashcards para potencializar seus estudos.",
   author: "Maycon Santos",
   image: "/post-it-notes.jpg",
   date: "2026-04-28",
@@ -54,14 +54,17 @@ export default function ArticlePage() {
           profissionais ao redor do mundo e como você pode começar a aplicá-la
           hoje mesmo para melhorar seus resultados.
         </p>
-        <h2 className="text-2xl font-bold mb-2" id="o-que-sao-flashcards">
+        <h2
+          className="text-2xl text-indigo-600 font-bold mb-2"
+          id="o-que-sao-flashcards"
+        >
           O que são flashcards?
         </h2>
         <p>
           Flashcards são cartões de estudo que contêm informações organizadas de
           forma simples e objetiva. Normalmente, eles possuem:
         </p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Uma pergunta, termo ou conceito na frente</li>
           <li>Uma resposta ou explicação no verso</li>
         </ul>
@@ -71,7 +74,7 @@ export default function ArticlePage() {
           para uma memorização mais eficiente.
         </p>
         <p>Por exemplo:</p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Frente: O que é fotossíntese?</li>
           <li>
             Verso: Processo pelo qual as plantas convertem luz solar em energia
@@ -79,7 +82,10 @@ export default function ArticlePage() {
           </li>
         </ul>
         <p>Simples, direto e altamente eficaz.</p>
-        <h2 id="como-funcionam" className="text-2xl font-bold mb-2">
+        <h2
+          className="text-2xl text-indigo-600 font-bold mb-2"
+          id="como-funcionam"
+        >
           Como funcionam os flashcards?
         </h2>
         <p>
@@ -87,13 +93,17 @@ export default function ArticlePage() {
           como são utilizados. Eles se baseiam em dois princípios fundamentais
           da ciência da aprendizagem:
         </p>
-        <h3 className="text-xl font-bold">1. Recuperação ativa</h3>
+        <h3 className="text-xl text-indigo-600 font-bold">
+          1. Recuperação ativa
+        </h3>
         <p>
           Ao tentar lembrar a resposta antes de virar o cartão, você força o
           cérebro a acessar a informação. Esse esforço fortalece as conexões
           neurais e melhora a retenção.
         </p>
-        <h3 className="text-xl font-bold">2. Repetição espaçada</h3>
+        <h3 className="text-xl text-indigo-600 font-bold">
+          2. Repetição espaçada
+        </h3>
         <p>
           Nem todo conteúdo precisa ser revisado com a mesma frequência. A
           repetição espaçada organiza as revisões com base no seu desempenho:
@@ -103,7 +113,10 @@ export default function ArticlePage() {
           mais frequentemente.
         </p>
         <p>Esse método evita o esquecimento e otimiza seu tempo de estudo.</p>
-        <h2 className="text-2xl font-bold mb-2" id="porque-sao-eficazes">
+        <h2
+          className="text-2xl text-indigo-600 font-bold mb-2"
+          id="porque-sao-eficazes"
+        >
           Por que os flashcards são tão eficazes?
         </h2>
         <p>
@@ -111,7 +124,7 @@ export default function ArticlePage() {
           simplicidade e resultados comprovados. Entre os principais benefícios,
           destacam-se:
         </p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Melhora significativa na memorização</li>
 
           <li>Estudo mais ativo e menos cansativo</li>
@@ -126,7 +139,7 @@ export default function ArticlePage() {
           Além disso, eles são extremamente versáteis. Você pode utilizá-los
           para aprender:
         </p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Idiomas</li>
           <li>Conceitos técnicos</li>
           <li>Fórmulas</li>
@@ -134,7 +147,7 @@ export default function ArticlePage() {
           <li>Definições importantes</li>
         </ul>
         <h2
-          className="text-2xl font-bold mb-2"
+          className="text-2xl text-indigo-600 font-bold mb-2"
           id="flashcards-fisicos-digitais"
         >
           Flashcards físicos vs. digitais
@@ -145,13 +158,13 @@ export default function ArticlePage() {
           potencializam ainda mais essa técnica.
         </p>
         <p>Flashcards físicos:</p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Simples de criar</li>
           <li>Não dependem de tecnologia</li>
           <li>Menos eficientes para organizar revisões</li>
         </ul>
         <p>Flashcards digitais:</p>
-        <ul className="list-disc">
+        <ul className="list-disc ml-6">
           <li>Automatizam a repetição espaçada</li>
           <li>Permitem acesso em qualquer lugar</li>
           <li>Facilitam a criação e organização</li>
@@ -162,7 +175,7 @@ export default function ArticlePage() {
           reais.
         </p>
         <h2
-          className="text-2xl font-bold mb-2"
+          className="text-2xl text-indigo-600 font-bold mb-2"
           id="transforme-sua-forma-de-aprender"
         >
           Comece agora: transforme sua forma de aprender

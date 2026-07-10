@@ -8,11 +8,11 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("PATCH /api/v1/cards/id/[card_id]", () => {
+describe("PATCH /api/v1/cards/identifier/[card_identifier]", () => {
   describe("Anonymous user", () => {
     test("Without permission", async () => {
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        `http://localhost:3000/api/v1/cards/identifier/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
           method: "PATCH",
         },
@@ -52,7 +52,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
         {
           method: "PATCH",
           headers: {
@@ -104,7 +104,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(dateIsSimilar).toBe(true);
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${responseBody.name}`,
         {
           method: "PATCH",
           headers: {
@@ -156,7 +156,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
         {
           method: "PATCH",
           headers: {
@@ -180,7 +180,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(responseBody.box).toBe("progress");
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${responseBody.name}`,
         {
           method: "PATCH",
           headers: {
@@ -201,7 +201,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(response2Body.box).toBe("secure");
 
       const response3 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${response2Body.name}`,
         {
           method: "PATCH",
           headers: {
@@ -222,7 +222,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(response3Body.box).toBe("advanced");
 
       const response4 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${response3Body.name}`,
         {
           method: "PATCH",
           headers: {
@@ -243,7 +243,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(response4Body.box).toBe("consolidated");
 
       const response5 = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${response4Body.name}`,
         {
           method: "PATCH",
           headers: {
@@ -283,7 +283,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       );
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
         {
           method: "PATCH",
           headers: {
@@ -321,16 +321,19 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
 
       expect(response2.status).toBe(200);
 
-      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `session_id=${newSession.token}`,
+      await fetch(
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            name: "Outro nome",
+          }),
         },
-        body: JSON.stringify({
-          name: "Outro nome",
-        }),
-      });
+      );
 
       const response3 = await fetch(
         `http://localhost:3000/api/v1/library/decks`,
@@ -338,16 +341,19 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
 
       expect(response3.status).toBe(200);
 
-      await fetch(`http://localhost:3000/api/v1/cards/id/${createdCard.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `session_id=${newSession.token}`,
+      await fetch(
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            public: false,
+          }),
         },
-        body: JSON.stringify({
-          public: false,
-        }),
-      });
+      );
 
       const response4 = await fetch(`http://localhost:3000/api/v1/library`);
 
@@ -362,7 +368,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       const newSession = await orchestrator.createSession(createdUser.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
+        `http://localhost:3000/api/v1/cards/identifier/cf5a330c-5fdf-4a06-9cff-5ebdf85be465`,
         {
           method: "PATCH",
           headers: {
@@ -408,7 +414,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       const newSessionUser2 = await orchestrator.createSession(createdUser2.id);
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/cards/id/${createdCard.id}`,
+        `http://localhost:3000/api/v1/cards/identifier/${createdCard.name}`,
         {
           method: "PATCH",
           headers: {
@@ -431,7 +437,7 @@ describe("PATCH /api/v1/cards/id/[card_id]", () => {
       expect(responseBody).toEqual({
         name: "NotFoundError",
         message: "Esse cartão não foi encontrado no sistema.",
-        action: "Verifique se o id do cartão está correto.",
+        action: "Verifique se o nome do cartão está correto.",
         status_code: 404,
       });
     });

@@ -1,14 +1,12 @@
+import { validate as uuidValidate } from "uuid";
+
 import database from "@/infra/database";
 import { NotFoundError, ValidationError } from "@/infra/errors";
 import { Card, Deck } from "@/types/types";
 import deck from "@/models/deck";
 
 async function create(card: Card, deckId: string): Promise<Card> {
-  await validateUniqueCardNameAndDescription(
-    String(card.name),
-    String(card.description),
-    deckId,
-  );
+  await validateUniqueCardName(String(card.name), deckId);
 
   const newCard = await runInsertQuery(card, deckId);
 
@@ -111,11 +109,7 @@ async function importCards(cards: Card[] | Card, userId: string) {
       const deckId = deckIds[String(card.deck_name).toLowerCase()];
 
       try {
-        await validateUniqueCardNameAndDescription(
-          String(card.name),
-          String(card.description),
-          deckId,
-        );
+        await validateUniqueCardName(String(card.name), deckId);
 
         validatedCards.push(card);
       } catch (error) {
@@ -184,37 +178,27 @@ async function importCards(cards: Card[] | Card, userId: string) {
   }
 }
 
-async function validateUniqueCardNameAndDescription(
-  cardName: string,
-  description: string,
-  deckId: string,
-) {
-  await runSelectQuery(cardName, description, deckId);
+async function validateUniqueCardName(cardName: string, deckId: string) {
+  await runSelectQuery(cardName, deckId);
 
-  async function runSelectQuery(
-    cardName: string,
-    description: string,
-    deckId: string,
-  ) {
+  async function runSelectQuery(cardName: string, deckId: string) {
     const results = await database.query({
       text: `
         SELECT
-          name,
-          description
+          name
         FROM
           cards
         WHERE
           LOWER(name) = LOWER($1) AND
-          LOWER(description) = LOWER($2) AND
-          deck_id = $3
+          deck_id = $2
       ;`,
-      values: [cardName, description, deckId],
+      values: [cardName, deckId],
     });
 
     if (results.rowCount && results.rowCount > 0) {
       throw new ValidationError({
-        message: "O mesmo nome e descrição foi utilizado em outro cartão.",
-        action: "Utilize outro nome ou descrição.",
+        message: "O mesmo nome foi utilizado em outro cartão.",
+        action: "Utilize outro nome.",
       });
     }
   }
@@ -373,12 +357,58 @@ async function findOneById(cardId: string, userId: string) {
   }
 }
 
-async function updateById(
-  cardId: string,
+async function findOneByName(cardName: string, userId: string) {
+  const cardFound = await runSelectQuery(cardName, userId);
+
+  return cardFound;
+
+  async function runSelectQuery(cardName: string, userId: string) {
+    const results = await database.query({
+      text: `
+        SELECT
+          cards.*,
+          decks.name as deck_name
+        FROM
+          cards
+        JOIN decks ON cards.deck_id = decks.id
+        WHERE
+          LOWER(cards.name) = LOWER($1) AND
+          decks.user_id = $2
+        LIMIT
+          1
+        ;`,
+      values: [cardName, userId],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "Esse cartão não foi encontrado no sistema.",
+        action: "Verifique se o nome do cartão está correto.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
+async function findOne(cardIdentifier: string, userId: string) {
+  let cardFound;
+
+  if (uuidValidate(cardIdentifier)) {
+    cardFound = await card.findOneById(cardIdentifier, userId);
+  } else {
+    cardFound = await card.findOneByName(cardIdentifier, userId);
+  }
+
+  return cardFound;
+}
+
+async function update(
+  cardIdentifier: string,
   userId: string,
   cardNewValues: Card & { difficulty: string; public: boolean },
 ) {
-  const cardValues: Card = await card.findOneById(cardId as string, userId);
+  const cardValues = await card.findOne(cardIdentifier, userId);
 
   let deckId: string | undefined;
 
@@ -501,12 +531,14 @@ function getNewDateToReview(newBox: string) {
   return newDate.toISOString().split("T")[0];
 }
 
-async function deleteById(cardId: string) {
-  const deletedUser = await runUpdateQuery(cardId);
+async function deleteOne(cardIdentifier: string, userId: string) {
+  const cardFound = await card.findOne(cardIdentifier, userId);
+
+  const deletedUser = await runUpdateQuery(cardFound);
 
   return deletedUser;
 
-  async function runUpdateQuery(cardId: string) {
+  async function runUpdateQuery(card: Card) {
     const result = await database.query({
       text: `
         DELETE FROM
@@ -517,7 +549,7 @@ async function deleteById(cardId: string) {
           *
         ;
       `,
-      values: [cardId],
+      values: [card.id],
     });
 
     return result.rows[0];
@@ -531,8 +563,10 @@ const card = {
   findAllToReview,
   findAllByDeckId,
   findOneById,
-  updateById,
-  deleteById,
+  findOneByName,
+  findOne,
+  update,
+  delete: deleteOne,
   getNewBox,
   getNewDateToReview,
 };

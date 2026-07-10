@@ -72,6 +72,7 @@ async function markTokenAsUsed(tokenId: string) {
       "create:session",
       "read:session",
       "update:user",
+      "delete:user",
       "create:recovery_token",
       "update:recovery_token",
       "read:card",
