@@ -14,6 +14,15 @@ import authorization from "@/models/authorization";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler } from "next-connect";
 
+const ANONYMOUS_USER_FEATURES = [
+  "read:library",
+  "read:activation_token",
+  "create:session",
+  "create:user",
+  "create:recovery_token",
+  "update:recovery_token",
+];
+
 function onNoMatchHandler(request: NextApiRequest, response: NextApiResponse) {
   const publicErrorObject = new MethodNotAllowedError();
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
@@ -55,6 +64,14 @@ function canRequest(requiredFeature: string) {
     next: NextHandler,
   ) {
     const userTryingToRequest = request.context?.user;
+    const error = request.context?.error;
+
+    if (
+      error instanceof UnauthorizedError &&
+      !ANONYMOUS_USER_FEATURES.includes(requiredFeature)
+    ) {
+      throw error;
+    }
 
     if (!authorization.can(userTryingToRequest, requiredFeature)) {
       throw new ForbiddenError({
@@ -68,15 +85,28 @@ function canRequest(requiredFeature: string) {
   }
 }
 
+function getSessionToken(request: NextApiRequest) {
+  const authHeader = request.headers.authorization;
+  let token: string | null = null;
+
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  }
+
+  const sessionToken = request.cookies?.session_id;
+
+  return token || sessionToken;
+}
+
 async function injectAnonymousOrUser(
   request: NextApiRequest,
   response: NextApiResponse,
   next: NextHandler,
 ) {
-  const sessionToken = request.cookies?.session_id;
+  const sessionToken = getSessionToken(request);
 
   if (sessionToken) {
-    await injectAuthenticatedUser(request);
+    await injectAuthenticatedUser(request, sessionToken);
   } else {
     await injectAnonymousUser(request);
   }
@@ -84,33 +114,41 @@ async function injectAnonymousOrUser(
   await next();
 }
 
-async function injectAuthenticatedUser(request: NextApiRequest) {
-  const sessionToken = request.cookies?.session_id;
+async function injectAuthenticatedUser(
+  request: NextApiRequest,
+  sessionToken: string,
+) {
+  try {
+    const sessionObject = await session.findOneValidByToken(sessionToken);
 
-  const sessionObject = await session.findOneValidByToken(
-    sessionToken as string,
-  );
+    const userFound = await user.findOneById(sessionObject.user_id);
 
-  const userFound = await user.findOneById(sessionObject.user_id);
+    request.context = {
+      ...request.context,
+      user: userFound,
+    };
+  } catch (error) {
+    if (
+      error instanceof UnauthorizedError &&
+      error.message === "Usuário não possui sessão ativa."
+    ) {
+      request.context = {
+        ...request.context,
+        error: error,
+      };
 
-  request.context = {
-    ...request.context,
-    user: userFound,
-  };
+      return await injectAnonymousUser(request);
+    }
+
+    throw error;
+  }
 }
 
 async function injectAnonymousUser(request: NextApiRequest) {
   request.context = {
     ...request.context,
     user: {
-      features: [
-        "read:library",
-        "read:activation_token",
-        "create:session",
-        "create:user",
-        "create:recovery_token",
-        "update:recovery_token",
-      ],
+      features: ANONYMOUS_USER_FEATURES,
     },
   };
 }
@@ -144,6 +182,7 @@ const controller = {
     onNoMatch: onNoMatchHandler,
     onError: onErrorHandler,
   },
+  getSessionToken,
   injectAnonymousOrUser,
   setSessionCookie,
   clearSessionCookie,
