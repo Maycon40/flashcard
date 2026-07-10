@@ -144,13 +144,13 @@ async function runPendingMigrations() {
 
   // Default User
 
-  const createdDefaultUser = await createUser({
+  await createUser({
     username: "test",
     email: "test@gmail.com",
     password: "senha123",
   });
   await activateLastToken();
-  const defaultSession = await createSession({
+  await createSession({
     email: "user@gmail.com",
     password: "senha123",
   });
