@@ -14,7 +14,7 @@ export default function ReviewPage() {
   const { query } = useRouter();
 
   const { data: card, isLoading } = useSWR<Card>(
-    `/api/v1/cards/id/${query?.card_id}`,
+    `/api/v1/cards/identifier/${query?.card_id}`,
     fetcher,
   );
 
@@ -29,7 +29,7 @@ export default function ReviewPage() {
 
     try {
       if (new Date(String(card?.date_to_review)) < new Date(Date.now())) {
-        await fetch(`/api/v1/cards/id/${card?.id}`, {
+        await fetch(`/api/v1/cards/identifier/${card?.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

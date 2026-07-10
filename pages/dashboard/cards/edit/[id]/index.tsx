@@ -19,7 +19,7 @@ export default function EditCardPage() {
     error,
     isLoading,
     isValidating,
-  } = useSWR<Card>(`/api/v1/cards/id/${router.query?.id}`, fetcher, {
+  } = useSWR<Card>(`/api/v1/cards/identifier/${router.query?.id}`, fetcher, {
     revalidateOnMount: true,
   });
 
@@ -85,7 +85,7 @@ function EditCardForm({ card, router }: { card: Card; router: NextRouter }) {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`/api/v1/cards/id/${card.id as string}`, {
+      const res = await fetch(`/api/v1/cards/identifier/${card.id as string}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
