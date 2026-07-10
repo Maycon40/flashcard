@@ -8,6 +8,7 @@ const availableFeatures = [
   "read:user:self",
   "update:user",
   "update:user:others",
+  "delete:user",
 
   // SESSION
   "create:session",
@@ -85,7 +86,6 @@ function filterOutput(userObject: User, feature: string, resource: any) {
     return {
       id: resource.id,
       username: resource.username,
-      features: resource.features,
       created_at: resource.created_at,
       updated_at: resource.updated_at,
     };
