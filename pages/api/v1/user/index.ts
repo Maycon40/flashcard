@@ -5,6 +5,8 @@ import controller from "infra/controller";
 import session from "models/session";
 import user from "models/user";
 import authorization from "models/authorization";
+import authentication from "models/authentication";
+import { UnauthorizedError, ValidationError } from "infra/errors";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -12,7 +14,7 @@ router.use(controller.injectAnonymousOrUser);
 
 router.get(controller.canRequest("read:session"), getHandler);
 
-router.delete(controller.canRequest("delete:user"), deleteHandler);
+router.delete(deleteHandler);
 
 export default router.handler(controller.errorHandlers);
 
@@ -47,12 +49,30 @@ async function deleteHandler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const userTryingToDelete = request.context?.user;
+  const { username, email, password } = request.body || {};
 
-  const userDeleted = await user.deleteById(userTryingToDelete.id);
+  if (!username || !email || !password) {
+    throw new ValidationError({
+      message: "Credenciais insuficientes fornecidas para exclusão de conta.",
+      action: "Informe o nome de usuário, e-mail e senha corretos.",
+    });
+  }
+
+  const authenticatedUser = await authentication.validate(email, password);
+
+  if (authenticatedUser.username.toLowerCase() !== username.toLowerCase()) {
+    throw new UnauthorizedError({
+      message: "O nome de usuário não coincide com as credenciais informadas.",
+      action: "Verifique as informações digitadas e tente novamente.",
+    });
+  }
+
+  const userDeleted = await user.deleteById(authenticatedUser.id);
+
+  controller.clearSessionCookie(response);
 
   const secureOutputValues = authorization.filterOutput(
-    userTryingToDelete,
+    authenticatedUser,
     "read:user:self",
     userDeleted,
   );

@@ -129,8 +129,10 @@ async function injectAuthenticatedUser(
     };
   } catch (error) {
     if (
-      error instanceof UnauthorizedError &&
-      error.message === "Usuário não possui sessão ativa."
+      (error instanceof UnauthorizedError &&
+        error.message === "Usuário não possui sessão ativa.") ||
+      (error instanceof NotFoundError &&
+        error.message === "O id do usuário não foi encontrado no sistema.")
     ) {
       request.context = {
         ...request.context,
