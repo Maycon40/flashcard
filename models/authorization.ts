@@ -51,6 +51,9 @@ const availableFeatures = [
   "read:library:deck",
   "read:library:card",
   "create:library",
+
+  // APP
+  "read:app",
 ];
 
 function can(userObject: User, requiredFeature: string, resource?: Resource) {
@@ -228,6 +231,13 @@ function filterOutput(userObject: User, feature: string, resource: any) {
       deck_name: resource.deck_name,
       username: resource.username,
       published_at: resource.published_at,
+    };
+  } else if (feature === "read:app") {
+    return {
+      minVersionRequired: resource.minVersionRequired,
+      latestVersion: resource.latestVersion,
+      updateUrl: resource.updateUrl,
+      updated_at: resource.updated_at,
     };
   }
 }
