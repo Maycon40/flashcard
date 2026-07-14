@@ -13,7 +13,7 @@ export default function DeleteAccountPage() {
       title="Excluir Conta - MyFlashcard"
       description="Exclua sua conta da MyFlashcard"
     >
-      <div className="my-10 flex flex-col items-center justify-center">
+      <div className="my-10 mx-10 flex flex-col items-center justify-center">
         <h1 className="text-2xl font-semibold mb-6 text-red-600 dark:text-red-500">
           Excluir Conta
         </h1>
