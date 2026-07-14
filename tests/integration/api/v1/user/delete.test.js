@@ -265,6 +265,7 @@ describe("DELETE /api/v1/user", () => {
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
+
       expect(responseBody).toEqual({
         id: createdUser.id,
         username: createdUser.username,
@@ -286,6 +287,87 @@ describe("DELETE /api/v1/user", () => {
         httpOnly: true,
         sameSite: "Lax",
       });
+    });
+  });
+
+  describe("Another user", () => {
+    test("With other user's credentials", async () => {
+      const createdUser = await orchestrator.createUser({
+        username: "UserToBeDeleted",
+        email: "to-delete@email.com",
+        password: "password",
+      });
+      const activatedUser = await orchestrator.activateUser(createdUser.id);
+
+      const createdUser2 = await orchestrator.createUser({
+        username: "UserToKeep",
+        email: "to-keep@email.com",
+        password: "password",
+      });
+
+      await orchestrator.activateUser(createdUser2.id);
+      const validSessionUser2 = await orchestrator.createSession(
+        createdUser2.id,
+      );
+
+      const response = await fetch("http://localhost:3000/api/v1/user", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${validSessionUser2.token}`,
+        },
+        body: JSON.stringify({
+          username: createdUser.username,
+          email: createdUser.email,
+          password: "password",
+        }),
+      });
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        id: createdUser.id,
+        username: createdUser.username,
+        email: createdUser.email,
+        features: [
+          "create:session",
+          "read:session",
+          "update:user",
+          "delete:user",
+          "create:recovery_token",
+          "update:recovery_token",
+          "read:card",
+          "create:card",
+          "update:card",
+          "delete:card",
+          "read:deck",
+          "create:deck",
+          "update:deck",
+          "delete:deck",
+          "read:library",
+          "create:library",
+        ],
+        created_at: createdUser.created_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
+      });
+
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      // Garante que o usuário do corpo foi deletado
+      const responseLookupDeleted = await fetch(
+        `http://localhost:3000/api/v1/users/${createdUser.username}`,
+      );
+      expect(responseLookupDeleted.status).toBe(404);
+
+      // Garante que o usuário dono da sessão original não foi influenciado nem deletado
+      const responseLookupKept = await fetch(
+        `http://localhost:3000/api/v1/users/${createdUser2.username}`,
+      );
+      expect(responseLookupKept.status).toBe(200);
     });
   });
 });
