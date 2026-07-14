@@ -56,6 +56,7 @@ function DeleteAccountForm() {
     setDeleteError(null);
     setDeleteSuccess(null);
     setIsSubmitting(true);
+    setUserDelete(null);
 
     try {
       const res = await fetch(`/api/v1/user`, {
