@@ -18,8 +18,8 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const updatedAt = new Date().toISOString();
 
   const statusObject = {
-    minVersionRequired: "1.0.0",
-    latestVersion: "1.0.5",
+    minVersionRequired: "1.1.1",
+    latestVersion: "1.1.2",
     updateUrl:
       "https://play.google.com/store/apps/details?id=com.maycon.myflashcard",
     updated_at: updatedAt,
