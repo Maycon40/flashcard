@@ -16,8 +16,8 @@ describe("GET /api/v1/app", () => {
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        minVersionRequired: "1.0.0",
-        latestVersion: "1.0.5",
+        minVersionRequired: "1.1.1",
+        latestVersion: "1.1.2",
         updateUrl:
           "https://play.google.com/store/apps/details?id=com.maycon.myflashcard",
         updated_at: responseBody.updated_at,
@@ -48,8 +48,8 @@ describe("GET /api/v1/app", () => {
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        minVersionRequired: "1.0.0",
-        latestVersion: "1.0.5",
+        minVersionRequired: "1.1.1",
+        latestVersion: "1.1.2",
         updateUrl:
           "https://play.google.com/store/apps/details?id=com.maycon.myflashcard",
         updated_at: responseBody.updated_at,
