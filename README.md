@@ -1,8 +1,15 @@
-# Flashcard
+# MyFlashcard
 
-O **Flashcard** é uma aplicação web focada em produtividade acadêmica. Utilizando a técnica de cartões de memória, o sistema ajuda o usuário a transferir informações da memória de curto prazo para a de longo prazo, otimizando a retenção do conteúdo aprendido.
+O **MyFlashcard** é uma aplicação web focada em produtividade acadêmica. Utilizando a técnica de cartões de memória, o sistema ajuda o usuário a transferir informações da memória de curto prazo para a de longo prazo, otimizando a retenção do conteúdo aprendido.
 
 Caso queira entender mais sobre os beneficios do flashcard: [Exame](https://exame.com/carreira/guia-de-carreira/como-usar-flashcards-para-estudar-melhor-e-aprender-materias-complexas/)
+
+---
+
+## Versão online do projeto:
+
+- Caso você queira começar a usar flashcards: https://myflashcard.com.br/
+- Caso queira baixar o aplicativo: https://play.google.com/store/apps/details?id=com.maycon.myflashcard
 
 ---
 
@@ -36,12 +43,6 @@ O projeto foi construído com o que há de mais moderno no ecossistema web:
 
 ---
 
-## Versão online do projeto:
-
-- Caso você queira começar a usar flashcards: https://flash.maycon.dev.br/
-
----
-
 ## Como Executar o Projeto:
 
 1. **Clone o Repositório:**
@@ -57,7 +58,7 @@ O projeto foi construído com o que há de mais moderno no ecossistema web:
    npm run dev
    ```
 
-- Acesse o aplicativo em http://localhost:3000.
+- Acesse o site em http://localhost:3000.
 
 ---
 
