@@ -137,6 +137,47 @@ describe("PATCH /api/v1/cards/identifier/[card_identifier]", () => {
       });
     });
 
+    test("With accented card name", async () => {
+      const createdUser = await orchestrator.createUser();
+
+      await orchestrator.activateUser(createdUser.id);
+
+      const newSession = await orchestrator.createSession(createdUser.id);
+
+      const createdDeck = await orchestrator.createDeck(
+        "Baralho com acento",
+        createdUser.id,
+      );
+
+      const createdCard = await orchestrator.createCard(
+        "O que é Ciência?",
+        "Descrição do Cartão",
+        createdDeck.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/cards/identifier/${encodeURIComponent(createdCard.name)}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${newSession.token}`,
+          },
+          body: JSON.stringify({
+            difficulty: "easy",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody.name).toBe("O que é Ciência?");
+      expect(responseBody.box).toBe("progress");
+      expect(Date.parse(responseBody.date_to_review)).not.toBeNaN();
+    });
+
     test("With valid data, changing box", async () => {
       const createdUser = await orchestrator.createUser();
 

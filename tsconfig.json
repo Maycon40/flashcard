@@ -18,9 +18,11 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "infra/*": ["./infra/*"],
+      "models/*": ["./models/*"],
+      "tests/*": ["./tests/*"]
     }
   },
   "include": [
