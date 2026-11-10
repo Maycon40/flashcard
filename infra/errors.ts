@@ -30,7 +30,6 @@ export class InternalServerError extends Error {
     this.action = action || "Entre em contato com o suporte";
     this.statusCode = statusCode ?? 500;
   }
-
   toJSON(): ErrorJSON {
     return {
       name: this.name,
