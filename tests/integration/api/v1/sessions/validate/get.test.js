@@ -33,8 +33,12 @@ describe("GET /api/v1/sessions/validate", () => {
       createdSession.token,
     );
 
-    expect(sessionAfterValidation.expires_at).toEqual(createdSession.expires_at);
-    expect(sessionAfterValidation.updated_at).toEqual(createdSession.updated_at);
+    expect(sessionAfterValidation.expires_at).toEqual(
+      createdSession.expires_at,
+    );
+    expect(sessionAfterValidation.updated_at).toEqual(
+      createdSession.updated_at,
+    );
   });
 
   test("With revoked session", async () => {
